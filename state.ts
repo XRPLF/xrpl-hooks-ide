@@ -136,7 +136,8 @@ export const compileCode = async (activeId: number) => {
     state.compiling = false;
     toast.success('Compiled successfully!');
     console.log(json)
-  } catch {
+  } catch (err) {
+    console.log(err)
     state.logs.push({ type: 'error', message: 'Error occured while compiling!' })
     state.compiling = false;
   }
