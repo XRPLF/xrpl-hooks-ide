@@ -6,6 +6,8 @@ import Document, {
   DocumentContext,
 } from "next/document";
 
+import { globalStyles, getCssText } from "../stitches.config";
+
 class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
     const initialProps = await Document.getInitialProps(ctx);
@@ -13,6 +15,7 @@ class MyDocument extends Document {
     return initialProps;
   }
   render() {
+    globalStyles();
     return (
       <Html>
         <Head>
@@ -27,6 +30,10 @@ class MyDocument extends Document {
           <link
             href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital@0;1&family=Work+Sans:wght@400;600;700&display=swap"
             rel="stylesheet"
+          />
+          <style
+            id="stitches"
+            dangerouslySetInnerHTML={{ __html: getCssText() }}
           />
         </Head>
         <body>
