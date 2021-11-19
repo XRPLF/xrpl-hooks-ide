@@ -8,6 +8,7 @@ import {
   green,
   plum,
   slate,
+  mauve,
   pink,
   yellow,
   grayDark,
@@ -16,8 +17,9 @@ import {
   greenDark,
   plumDark,
   slateDark,
+  mauveDark,
   pinkDark,
-  yellowDark
+  yellowDark,
 } from '@radix-ui/colors';
 
 export const {
@@ -38,6 +40,7 @@ export const {
       ...green,
       ...plum,
       ...slate,
+      ...mauve,
       ...pink,
       ...yellow,
       background: "$gray1",
@@ -293,6 +296,7 @@ export const darkTheme = createTheme('dark', {
     ...greenDark,
     ...plumDark,
     ...slateDark,
+    ...mauveDark,
     ...pinkDark,
     ...yellowDark
   },
@@ -300,5 +304,12 @@ export const darkTheme = createTheme('dark', {
 
 export const globalStyles = globalCss({
   // body: { backgroundColor: '$background', color: '$text', fontFamily: 'Helvetica' },
-  'html, body': { backgroundColor: '$gray1', color: '$gray12', fontFamily: '$body', fontSize: '$md' },
+  'html, body': {
+    backgroundColor: '$gray1',
+    color: '$gray12',
+    fontFamily: '$body',
+    fontSize: '$md',
+    '-webkit-font-smoothing': 'antialiased',
+    '-moz-osx-font-smoothing': 'grayscale'
+  },
 });
