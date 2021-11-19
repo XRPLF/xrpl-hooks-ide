@@ -3,11 +3,12 @@ import { styled, keyframes } from "../stitches.config";
 
 const rotate = keyframes({
   "0%": { transform: "rotate(0deg)" },
-  "100%": { transform: "rotate(360deg)" },
+  "100%": { transform: "rotate(-360deg)" },
 });
 
 const Spinner = styled(SpinnerIcon, {
-  animation: `${rotate} 150ms cubic-bezier(0.16, 1, 0.3, 1) infinite`,
+  animation: `${rotate} 150ms linear infinite`,
+  fontSize: "16px",
 });
 
 export default Spinner;

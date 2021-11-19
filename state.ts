@@ -7,9 +7,9 @@ import toast from 'react-hot-toast';
 const octokit = new Octokit();
 
 interface File {
-  name: string,
-  language: string,
-  content: string
+  name: string;
+  language: string;
+  content: string;
 }
 
 interface IState {
@@ -98,11 +98,20 @@ export const updateEditorSettings = (editorSettings: IState['editorSettings']) =
 }
 
 export const saveFile = (value: string) => {
+  const editorModels = state.editorCtx?.getModels();
+  const currentModel = editorModels?.find(editorModel => editorModel.uri.path === `/${state.files[state.active].name}`);
+  console.log(currentModel?.getValue())
+  if (state.files.length > 0) {
+    console.log('häää')
+    state.files[state.active].content = currentModel?.getValue() || '';
+  }
+  console.log(state.files[state.active])
   toast.success('Saved successfully', { position: 'bottom-center' })
 }
 
 export const createNewFile = (name: string) => {
-  state.files.push({ name, language: 'c', content: "" })
+  const emptyFile: File = { name, language: 'c', content: "" };
+  state.files.push(emptyFile)
   state.active = state.files.length - 1;
 }
 
@@ -135,8 +144,19 @@ export const compileCode = async (activeId: number) => {
     });
     const json = await res.json();
     state.compiling = false;
-    toast.success('Compiled successfully!');
-    console.log(json)
+    if (!json.success) {
+      state.logs.push({ type: 'error', message: json.message })
+      if (json.tasks && json.tasks.length > 0) {
+        json.tasks.forEach((task: any) => {
+          if (!task.success) {
+            state.logs.push({ type: 'error', message: task?.console })
+          }
+        })
+      }
+      return toast.error(`Couldn't compile!`, { position: 'bottom-center' });
+    }
+    state.logs.push({ type: 'log', message: 'Compiled successfully ✅' })
+    toast.success('Compiled successfully!', { position: 'bottom-center' });
   } catch (err) {
     console.log(err)
     state.logs.push({ type: 'error', message: 'Error occured while compiling!' })

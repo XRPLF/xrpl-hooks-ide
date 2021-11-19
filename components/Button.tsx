@@ -1,4 +1,9 @@
+import { CSS } from "@stitches/react/types/css-util";
+import { StyledComponent } from "@stitches/react/types/styled-component";
+import React from "react";
 import { styled } from "../stitches.config";
+import Flex from "./Flex";
+import Spinner from "./Spinner";
 
 const Button = styled("button", {
   // Reset
@@ -30,8 +35,9 @@ const Button = styled("button", {
   backgroundColor: "red",
   cursor: "pointer",
   "&:disabled": {
-    opacity: 0.8,
+    opacity: 0.6,
     pointerEvents: "none",
+    cursor: "not-allowed",
   },
   variants: {
     size: {
@@ -56,27 +62,27 @@ const Button = styled("button", {
     },
     variant: {
       default: {
-        backgroundColor: "$slate12",
-        boxShadow: "inset 0 0 0 1px $colors$slate12",
-        color: "$slate1",
+        backgroundColor: "$mauve12",
+        boxShadow: "inset 0 0 0 1px $colors$mauve12",
+        color: "$mauve1",
         "@hover": {
           "&:hover": {
-            backgroundColor: "$slate12",
-            boxShadow: "inset 0 0 0 1px $colors$slate12",
+            backgroundColor: "$mauve12",
+            boxShadow: "inset 0 0 0 1px $colors$mauve12",
           },
         },
         "&:active": {
-          backgroundColor: "$slate10",
-          boxShadow: "inset 0 0 0 1px $colors$slate11",
+          backgroundColor: "$mauve10",
+          boxShadow: "inset 0 0 0 1px $colors$mauve11",
         },
         "&:focus": {
           boxShadow:
-            "inset 0 0 0 1px $colors$slate12, 0 0 0 1px $colors$slate12",
+            "inset 0 0 0 1px $colors$mauve12, 0 0 0 1px $colors$mauve12",
         },
         '&[data-radix-popover-trigger][data-state="open"], &[data-radix-dropdown-menu-trigger][data-state="open"]':
           {
-            backgroundColor: "$slate4",
-            boxShadow: "inset 0 0 0 1px $colors$slate8",
+            backgroundColor: "$mauve4",
+            boxShadow: "inset 0 0 0 1px $colors$mauve8",
           },
       },
       primary: {
@@ -98,7 +104,7 @@ const Button = styled("button", {
         },
         '&[data-radix-popover-trigger][data-state="open"], &[data-radix-dropdown-menu-trigger][data-state="open"]':
           {
-            backgroundColor: "$slate4",
+            backgroundColor: "$mauve4",
             boxShadow: "inset 0 0 0 1px $colors$pink8",
           },
       },
@@ -117,15 +123,15 @@ const Button = styled("button", {
       true: {
         boxShadow: "none",
         background: "transparent",
-        color: "$slate12",
+        color: "$mauve12",
         "@hover": {
           "&:hover": {
-            backgroundColor: "$slate6",
+            backgroundColor: "$mauve6",
             boxShadow: "none",
           },
         },
         "&:active": {
-          backgroundColor: "$slate8",
+          backgroundColor: "$mauve8",
           boxShadow: "none",
         },
         "&:focus": {
@@ -133,19 +139,26 @@ const Button = styled("button", {
         },
       },
     },
+    isLoading: {
+      true: {
+        "& .button-content": {
+          visibility: "hidden",
+        },
+        pointerEvents: "none",
+      },
+    },
   },
-
   compoundVariants: [
     {
       outline: true,
       variant: "default",
       css: {
         background: "transparent",
-        color: "$slate12",
-        boxShadow: "inset 0 0 0 1px $colors$slate10",
+        color: "$mauve12",
+        boxShadow: "inset 0 0 0 1px $colors$mauve10",
         "&:hover": {
-          color: "$slate12",
-          background: "$slate5",
+          color: "$mauve12",
+          background: "$mauve5",
         },
       },
     },
@@ -154,10 +167,10 @@ const Button = styled("button", {
       variant: "primary",
       css: {
         background: "transparent",
-        color: "$slate12",
+        color: "$mauve12",
         "&:hover": {
-          color: "$slate12",
-          background: "$slate5",
+          color: "$mauve12",
+          background: "$mauve5",
         },
       },
     },
@@ -168,4 +181,22 @@ const Button = styled("button", {
   },
 });
 
-export default Button;
+const CustomButton: React.FC<
+  React.ComponentProps<typeof Button> & { as?: string }
+> = React.forwardRef(({ children, as = "button", ...rest }, ref) => (
+  // @ts-expect-error
+  <Button {...rest} ref={ref} as={as}>
+    <Flex
+      as="span"
+      css={{ gap: "$2", alignItems: "center" }}
+      className="button-content"
+    >
+      {children}
+    </Flex>
+    {rest.isLoading && <Spinner css={{ position: "absolute" }} />}
+  </Button>
+));
+
+CustomButton.displayName = "CustomButton";
+
+export default CustomButton;
