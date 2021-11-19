@@ -172,14 +172,6 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.0.tgz#87de7af9c231826fdd68ac7258f77c429e0e5fcf"
   integrity sha512-wdppn25U8z/2yiaT6YGquE6X8sSv7hNMWSXYSSU1jGv/yd6XqjXgTDJ8KP4NgjTXfJ3GbRjeeb8RTV7a/VpM+w==
 
-"@mattjennings/react-modal@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@mattjennings/react-modal/-/react-modal-1.0.3.tgz#f796c5238c6d799290edee2884f377aa2bc2902e"
-  integrity sha512-k3Kyhrt35fshWXa7jqAWCivf/aM5T5oM1kxc9zCsb3W87arRtt0s1pY43hQeV149OV3Wh9Tn+2xlgAq+Tsj0HQ==
-  dependencies:
-    "@theme-ui/match-media" "^0.3.1"
-    react-scrolllock "^5.0.1"
-
 "@monaco-editor/loader@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@monaco-editor/loader/-/loader-1.2.0.tgz#373fad69973384624e3d9b60eefd786461a76acd"
@@ -850,11 +842,6 @@
   version "0.11.3"
   resolved "https://registry.yarnpkg.com/@theme-ui/match-media/-/match-media-0.11.3.tgz#86fa82b47eae00e0f9dd5ae995e1fe5c28b4e48f"
   integrity sha512-UZXJ5DI/Q+3h9JtK0FFxEesfLUEP6JNXukng3SqprYcKcDBQRqVa1+Qc/pPkIklEK9li3/c0MBGGNHqKFMRnig==
-
-"@theme-ui/match-media@^0.3.1":
-  version "0.3.5"
-  resolved "https://registry.yarnpkg.com/@theme-ui/match-media/-/match-media-0.3.5.tgz#e676b9f74e1f58608cfdb48ae8be69c4b7517109"
-  integrity sha512-twhqy3H++jP7TqCZSRvSSc1/hxqjVokX+G/gf5S6lYQj4+zaksTO/AyzBzb/6iJLLkN2WeL9P2yjCeSTMxdJGw==
 
 "@types/aws-lambda@^8.10.83":
   version "8.10.84"
@@ -1955,11 +1942,6 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
   dependencies:
     md5.js "^1.3.4"
     safe-buffer "^5.1.1"
-
-exenv@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/exenv/-/exenv-1.2.2.tgz#2ae78e85d9894158670b03d47bec1f03bd91bb9d"
-  integrity sha1-KueOhdmJQVhnCwPUe+wfA72Ru50=
 
 fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"
@@ -3354,13 +3336,6 @@ react-remove-scroll@^2.4.0:
     tslib "^1.0.0"
     use-callback-ref "^1.2.3"
     use-sidecar "^1.0.1"
-
-react-scrolllock@^5.0.1:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/react-scrolllock/-/react-scrolllock-5.0.1.tgz#da1cfb7b6d55c86ae41dbad5274b778c307752b7"
-  integrity sha512-poeEsjnZAlpA6fJlaNo4rZtcip2j6l5mUGU/SJe1FFlicEudS943++u7ZSdA7lk10hoyYK3grOD02/qqt5Lxhw==
-  dependencies:
-    exenv "^1.2.2"
 
 react-style-singleton@^2.1.0:
   version "2.1.1"

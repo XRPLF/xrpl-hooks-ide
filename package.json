@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@mattjennings/react-modal": "^1.0.3",
     "@monaco-editor/react": "^4.3.1",
     "@octokit/core": "^3.5.1",
     "@radix-ui/colors": "^0.1.7",
