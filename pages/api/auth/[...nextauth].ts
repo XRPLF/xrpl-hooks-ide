@@ -20,10 +20,10 @@ export default NextAuth({
       token: "https://github.com/login/oauth/access_token",
       userinfo: "https://api.github.com/user",
       profile(profile) {
-        console.log(profile)
         return {
           id: profile.id.toString(),
           name: profile.name || profile.login,
+          username: profile.login,
           email: profile.email,
           image: profile.avatar_url,
         }
@@ -34,15 +34,16 @@ export default NextAuth({
   ],
   callbacks: {
     async jwt({ token, user, account, profile, isNewUser }) {
-      console.log('jwt', { token, account })
       if (account && account.access_token) {
         token.accessToken = account.access_token;
+        token.username = user?.username || '';
       }
       return token
     },
     async session({ session, token }) {
-      console.log('session', { token, session })
-      session.accessToken = token.accessToken;
+      session.accessToken = token.accessToken as string;
+      const user = { ...session.user, username: token.username };
+      session['user']['username'] = token.username as string;
       return session
     }
   },
