@@ -29,8 +29,8 @@ const StyledOverlay = styled(DialogPrimitive.Overlay, {
 
 const StyledContent = styled(DialogPrimitive.Content, {
   zIndex: 1000,
-  backgroundColor: "$slate2",
-  color: "$slate12",
+  backgroundColor: "$mauve2",
+  color: "$mauve12",
   borderRadius: "$md",
   boxShadow:
     "0px 10px 38px -5px rgba(22, 23, 24, 0.25), 0px 10px 20px -5px rgba(22, 23, 24, 0.2)",
@@ -47,7 +47,7 @@ const StyledContent = styled(DialogPrimitive.Content, {
   },
   "&:focus": { outline: "none" },
   ".dark &": {
-    backgroundColor: "$slate5",
+    backgroundColor: "$mauve5",
     boxShadow:
       "0px 10px 38px 0px rgba(22, 23, 24, 0.85), 0px 10px 20px 0px rgba(22, 23, 24, 0.6)",
   },
@@ -65,13 +65,13 @@ const Content: React.FC<{ css?: Stiches.CSS }> = ({ css, children }) => {
 const StyledTitle = styled(DialogPrimitive.Title, {
   margin: 0,
   fontWeight: 500,
-  color: "$slate12",
+  color: "$mauve12",
   fontSize: 17,
 });
 
 const StyledDescription = styled(DialogPrimitive.Description, {
   margin: "10px 0 20px",
-  color: "$slate11",
+  color: "$mauve11",
   fontSize: 15,
   lineHeight: 1.5,
 });
@@ -83,21 +83,3 @@ export const DialogContent = Content;
 export const DialogTitle = StyledTitle;
 export const DialogDescription = StyledDescription;
 export const DialogClose = DialogPrimitive.Close;
-
-const Input = styled("input", {
-  all: "unset",
-  width: "100%",
-  flex: "1",
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: 4,
-  padding: "0 10px",
-  fontSize: 15,
-  lineHeight: 1,
-  color: violet.violet11,
-  boxShadow: `0 0 0 1px ${violet.violet7}`,
-  height: 35,
-
-  "&:focus": { boxShadow: `0 0 0 2px ${violet.violet8}` },
-});

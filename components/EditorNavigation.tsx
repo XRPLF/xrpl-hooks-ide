@@ -19,6 +19,7 @@ import Stack from "./Stack";
 import { useSnapshot } from "valtio";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import Input from "./Input";
 
 const EditorNavigation = () => {
   const snap = useSnapshot(state);
@@ -40,7 +41,7 @@ const EditorNavigation = () => {
                   size="sm"
                   outline={snap.active !== index}
                   onClick={() => (state.active = index)}
-                  key={file.name}
+                  key={file.name + index}
                   css={{
                     "&:hover": {
                       span: {
@@ -54,13 +55,28 @@ const EditorNavigation = () => {
                     as="span"
                     css={{
                       display: "flex",
-                      p: "1px",
+                      p: "2px",
                       borderRadius: "$full",
                       mr: "-4px",
+                      "&:hover": {
+                        // boxSizing: "0px 0px 1px",
+                        backgroundColor: "$mauve2",
+                        color: "$mauve12",
+                      },
                     }}
-                    onClick={() => state.files.splice(index, 1)}
+                    onClick={(ev: React.MouseEvent<HTMLElement>) => {
+                      ev.stopPropagation();
+                      // Remove file from state
+                      state.files.splice(index, 1);
+                      // Change active file state
+                      // If deleted file is behind active tab
+                      // we keep the current state otherwise
+                      // select previous file on the list
+                      state.active =
+                        index > snap.active ? snap.active : snap.active - 1;
+                    }}
                   >
-                    <X size="13px" />
+                    <X size="9px" weight="bold" />
                   </Box>
                 </Button>
               ))}
@@ -79,10 +95,8 @@ const EditorNavigation = () => {
               <DialogContent>
                 <DialogTitle>Create new file</DialogTitle>
                 <DialogDescription>
-                  <span>
-                    Create empty C file or select one of the existing ones
-                  </span>
-                  <input
+                  <label>Filename</label>
+                  <Input
                     value={filename}
                     onChange={(e) => setFilename(e.target.value)}
                   />
@@ -120,7 +134,7 @@ const EditorNavigation = () => {
       <Flex
         css={{
           py: "$3",
-          backgroundColor: "$slate3",
+          backgroundColor: "$mauve3",
           zIndex: 1,
         }}
       >
@@ -131,7 +145,7 @@ const EditorNavigation = () => {
               marginLeft: "auto",
               flexShrink: 0,
               gap: "$0",
-              border: "1px solid $slate10",
+              border: "1px solid $mauve10",
               borderRadius: "$sm",
               zIndex: 9,
               position: "relative",
@@ -185,8 +199,10 @@ const EditorNavigation = () => {
               <DialogContent>
                 <DialogTitle>Editor settings</DialogTitle>
                 <DialogDescription>
-                  <span>You can edit your editor settings here</span>
-                  <input
+                  <label>Tab size</label>
+                  <Input
+                    type="number"
+                    min="1"
                     value={editorSettings.tabSize}
                     onChange={(e) =>
                       setEditorSettings((curr) => ({

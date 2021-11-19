@@ -2,7 +2,6 @@ import { keyframes } from "@stitches/react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 
 import { styled } from "../stitches.config";
-import { blackA, slateDark } from "@radix-ui/colors";
 
 const slideUpAndFade = keyframes({
   "0%": { opacity: 0, transform: "translateY(2px)" },
@@ -26,7 +25,7 @@ const slideLeftAndFade = keyframes({
 
 const StyledContent = styled(DropdownMenuPrimitive.Content, {
   minWidth: 220,
-  backgroundColor: "$slate2",
+  backgroundColor: "$mauve2",
   borderRadius: 6,
   padding: 5,
   boxShadow:
@@ -43,7 +42,7 @@ const StyledContent = styled(DropdownMenuPrimitive.Content, {
     },
   },
   ".dark &": {
-    backgroundColor: "$slate5",
+    backgroundColor: "$mauve5",
     boxShadow:
       "0px 10px 38px -10px rgba(22, 23, 24, 0.85), 0px 10px 20px -15px rgba(22, 23, 24, 0.6)",
   },
@@ -53,7 +52,7 @@ const itemStyles = {
   all: "unset",
   fontSize: 13,
   lineHeight: 1,
-  color: "$slate12",
+  color: "$mauve12",
   borderRadius: 3,
   display: "flex",
   alignItems: "center",
@@ -65,7 +64,7 @@ const itemStyles = {
   gap: "$2",
 
   "&[data-disabled]": {
-    color: "$slate9",
+    color: "$mauve9",
     pointerEvents: "none",
   },
 
@@ -94,12 +93,12 @@ const StyledLabel = styled(DropdownMenuPrimitive.Label, {
   paddingLeft: 25,
   fontSize: 12,
   lineHeight: "25px",
-  color: "$slate11",
+  color: "$mauve11",
 });
 
 const StyledSeparator = styled(DropdownMenuPrimitive.Separator, {
   height: 1,
-  backgroundColor: "$slate7",
+  backgroundColor: "$mauve7",
   margin: 5,
 });
 
@@ -113,7 +112,7 @@ const StyledItemIndicator = styled(DropdownMenuPrimitive.ItemIndicator, {
 });
 
 const StyledArrow = styled(DropdownMenuPrimitive.Arrow, {
-  fill: "$slate2",
+  fill: "$mauve2",
 });
 
 // Exports

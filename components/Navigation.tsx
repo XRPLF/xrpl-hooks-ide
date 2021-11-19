@@ -22,9 +22,9 @@ import {
 import Stack from "./Stack";
 import Logo from "./Logo";
 import Button from "./Button";
+import Flex from "./Flex";
 import Container from "./Container";
 import Box from "./Box";
-import Flex from "./Flex";
 import ThemeChanger from "./ThemeChanger";
 import { useRouter } from "next/router";
 
@@ -37,7 +37,7 @@ const Navigation = () => {
       css={{
         display: "flex",
         height: "60px",
-        borderBottom: "1px solid $slate6",
+        borderBottom: "1px solid $mauve6",
         position: "relative",
         zIndex: 2003,
       }}
@@ -52,42 +52,73 @@ const Navigation = () => {
         <Link href="/" passHref>
           <Box
             as="a"
-            css={{ display: "flex", alignItems: "center", color: "$textColor" }}
+            css={{
+              display: "flex",
+              alignItems: "center",
+              color: "$textColor",
+            }}
           >
             <Logo width="30px" height="30px" />
           </Box>
         </Link>
-        <Stack css={{ ml: "$4", gap: "$3" }}>
-          <Link href="/develop" passHref shallow>
-            <Button
-              as="a"
-              outline={!router.pathname.includes("/develop")}
-              uppercase
-            >
-              Develop
-            </Button>
-          </Link>
-          <Link href="/deploy" passHref shallow>
-            <Button
-              as="a"
-              outline={!router.pathname.includes("/deploy")}
-              uppercase
-            >
-              Deploy
-            </Button>
-          </Link>
-          <Link href="/test" passHref shallow>
-            <Button
-              as="a"
-              outline={!router.pathname.includes("/test")}
-              uppercase
-            >
-              Test
-            </Button>
-          </Link>
-        </Stack>
-        <Stack css={{ color: "text", ml: "auto" }}>
-          <ThemeChanger />
+        <Flex
+          css={{
+            flex: 1,
+            flexWrap: "nowrap",
+            marginLeft: "$3",
+            overflowX: "scroll",
+          }}
+        >
+          <Stack
+            css={{
+              ml: "$4",
+              gap: "$3",
+              flexWrap: "nowrap",
+              alignItems: "center",
+              pr: "$3",
+            }}
+          >
+            <Link href="/develop" passHref shallow>
+              <Button
+                as="a"
+                outline={!router.pathname.includes("/develop")}
+                uppercase
+              >
+                Develop
+              </Button>
+            </Link>
+            <Link href="/deploy" passHref shallow>
+              <Button
+                as="a"
+                outline={!router.pathname.includes("/deploy")}
+                uppercase
+              >
+                Deploy
+              </Button>
+            </Link>
+            <Link href="/test" passHref shallow>
+              <Button
+                as="a"
+                outline={!router.pathname.includes("/test")}
+                uppercase
+              >
+                Test
+              </Button>
+            </Link>
+            <ThemeChanger />
+          </Stack>
+        </Flex>
+        <Stack
+          css={{
+            color: "text",
+            ml: "auto",
+            flexWrap: "nowrap",
+            marginLeft: "$3",
+            "@sm": {
+              marginLeft: "auto",
+            },
+          }}
+        >
           {status === "authenticated" && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -135,12 +166,15 @@ const Navigation = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          {status === "unauthenticated" && (
-            <Button outline onClick={() => signIn("github")}>
-              <GithubLogo size="16px" /> Github Login
+          {status !== "authenticated" && (
+            <Button
+              isLoading={status === "loading"}
+              outline
+              onClick={() => signIn("github")}
+            >
+              <GithubLogo size="16px" /> GitHub Login
             </Button>
           )}
-          {status === "loading" && "loading"}
           {/* <Box
               css={{
                 border: "1px solid",

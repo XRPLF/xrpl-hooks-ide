@@ -12,11 +12,11 @@ const Footer = () => {
       as="footer"
       css={{
         display: "flex",
-        borderTop: "1px solid $slate6",
-        background: "$slate1",
+        borderTop: "1px solid $mauve6",
+        background: "$mauve1",
       }}
     >
-      <Container css={{ py: "$4", flexShrink: 1 }}>
+      <Container css={{ py: "$3", flexShrink: 1 }}>
         <Box
           as="pre"
           css={{
@@ -35,7 +35,7 @@ const Footer = () => {
           }}
         >
           {snap.logs.map((log, index) => (
-            <Box key={log.type + index}>
+            <Box as="span" key={log.type + index}>
               <LogText capitalize variant={log.type}>
                 {log.type}:{" "}
               </LogText>
