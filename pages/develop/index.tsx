@@ -24,16 +24,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-// export const getStaticPaths: GetStaticPaths = async () => {
-//   // ...
-//   return { paths: [], fallback: "blocking" };
-// };
-
-// export const getStaticProps: GetStaticProps = async (context) => {
-//   // ...
-//   return {
-//     props: {},
-//     revalidate: 60,
-//   };
-// };
