@@ -1,89 +1,105 @@
-/** @jsxImportSource theme-ui */
+import React from "react";
 import Link from "next/link";
-import { DownloadSimple, Plus, Share, BookOpen } from "phosphor-react";
 import {
-  Container,
-  Box,
-  Heading,
-  Button,
-  Spinner,
-  useColorMode,
-} from "theme-ui";
+  Gear,
+  GithubLogo,
+  SignOut,
+  User,
+  ArrowSquareOut,
+} from "phosphor-react";
 import { useSnapshot } from "valtio";
-import { Sun, MoonStars } from "phosphor-react";
 import Image from "next/image";
 import { useSession, signIn, signOut } from "next-auth/react";
-import Dropdown from "./DropdownMenu";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuArrow,
+  DropdownMenuSeparator,
+} from "./DropdownMenu";
 
 import Stack from "./Stack";
 import Logo from "./Logo";
-// import Button from "./Button";
-import { state } from "../state";
+import Button from "./Button";
+import Container from "./Container";
+import Box from "./Box";
+import Flex from "./Flex";
+import ThemeChanger from "./ThemeChanger";
+import { useRouter } from "next/router";
 
 const Navigation = () => {
-  const snap = useSnapshot(state);
-  const [mode, setColorMode] = useColorMode();
   const { data: session, status } = useSession();
-  console.log(session);
+  const router = useRouter();
   return (
     <Box
       as="nav"
-      sx={{
+      css={{
         display: "flex",
         height: "60px",
-        bg: "background",
-        // borderBottom: "1px solid",
-        borderColor: "text",
+        borderBottom: "1px solid $slate6",
+        position: "relative",
+        zIndex: 2003,
       }}
     >
-      <Container sx={{ display: "flex", alignItems: "center", py: 2 }}>
+      <Container
+        css={{
+          display: "flex",
+          alignItems: "center",
+          py: "$2",
+        }}
+      >
         <Link href="/" passHref>
-          <Box as="a" sx={{ display: "flex", alignItems: "center" }}>
+          <Box
+            as="a"
+            css={{ display: "flex", alignItems: "center", color: "$textColor" }}
+          >
             <Logo width="30px" height="30px" />
-            <Heading as="h3" sx={{ fontWeight: "bold", ml: 2 }}>
-              XRPL Hooks
-            </Heading>
           </Box>
         </Link>
-        <Box sx={{ ml: 3 }}></Box>
-        <Stack sx={{ ml: 3 }} spacing={2}>
-          {state.loading && "loading"}
-          {snap.files &&
-            snap.files.length > 0 &&
-            snap.files?.map((file, index) => (
-              <Button
-                onClick={() => (state.active = index)}
-                key={file.name}
-                variant={snap.active === index ? "secondary" : "muted"}
-              >
-                {file.name}
-              </Button>
-            ))}
+        <Stack css={{ ml: "$4", gap: "$3" }}>
+          <Link href="/develop" passHref shallow>
+            <Button
+              as="a"
+              outline={!router.pathname.includes("/develop")}
+              uppercase
+            >
+              Develop
+            </Button>
+          </Link>
+          <Link href="/deploy" passHref shallow>
+            <Button
+              as="a"
+              outline={!router.pathname.includes("/deploy")}
+              uppercase
+            >
+              Deploy
+            </Button>
+          </Link>
+          <Link href="/test" passHref shallow>
+            <Button
+              as="a"
+              outline={!router.pathname.includes("/test")}
+              uppercase
+            >
+              Test
+            </Button>
+          </Link>
         </Stack>
-        <Stack sx={{ color: "text", ml: "auto" }}>
-          <Plus sx={{ display: "flex" }} size="20px" />
-          <Share sx={{ display: "flex" }} size="20px" />
-          <DownloadSimple sx={{ display: "flex" }} size="20px" />
-          <Box
-            color="text"
-            onClick={(e) => {
-              setColorMode(mode === "light" ? "dark" : "light");
-            }}
-            sx={{
-              display: "flex",
-              marginLeft: "auto",
-              cursor: "pointer",
-              alignItems: "center",
-              justifyContent: "center",
-              mb: 1,
-            }}
-          >
-            {mode === "dark" ? <Sun size="20px" /> : <MoonStars size="20px" />}
-          </Box>
+        <Stack css={{ color: "text", ml: "auto" }}>
+          <ThemeChanger />
           {status === "authenticated" && (
-            <Dropdown.Root>
-              <Dropdown.Trigger asChild>
-                <Box sx={{ borderRadius: "100%", overflow: "hidden" }}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Box
+                  css={{
+                    borderRadius: "$full",
+                    overflow: "hidden",
+                    width: "30px",
+                    height: "30px",
+                    position: "relative",
+                  }}
+                >
                   <Image
                     src={session?.user?.image || ""}
                     width="30px"
@@ -92,31 +108,48 @@ const Navigation = () => {
                     alt="User avatar"
                   />
                 </Box>
-              </Dropdown.Trigger>
-              <Dropdown.Content>
-                <Dropdown.Item onClick={() => signOut()}>Log out</Dropdown.Item>
-                <Dropdown.Arrow offset={10} />
-              </Dropdown.Content>
-            </Dropdown.Root>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem disabled onClick={() => signOut()}>
+                  <User size="16px" /> {session?.user?.username} (
+                  {session?.user.name})
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() =>
+                    window.open(
+                      `http://gist.github.com/${session?.user.username}`
+                    )
+                  }
+                >
+                  <ArrowSquareOut size="16px" />
+                  Go to your Gist
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Gear size="16px" /> Settings
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => signOut()}>
+                  <SignOut size="16px" /> Log out
+                </DropdownMenuItem>
+                <DropdownMenuArrow offset={10} />
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
           {status === "unauthenticated" && (
-            <Button
-              sx={{ size: "sm", cursor: "pointer" }}
-              onClick={() => signIn("github")}
-            >
-              Github Login
+            <Button outline onClick={() => signIn("github")}>
+              <GithubLogo size="16px" /> Github Login
             </Button>
           )}
-          {status === "loading" && <Spinner size="20px" />}
+          {status === "loading" && "loading"}
           {/* <Box
-              sx={{
+              css={{
                 border: "1px solid",
                 borderRadius: "3px",
                 borderColor: "text",
                 p: 1,
               }}
             >
-              <BookOpen sx={{ display: "flex" }} size="20px" />
+              <BookOpen size="20px" />
             </Box> */}
         </Stack>
       </Container>
