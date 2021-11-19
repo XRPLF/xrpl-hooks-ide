@@ -1,29 +1,49 @@
-import { Box } from "theme-ui";
 import { useSnapshot } from "valtio";
+import Container from "./Container";
+import Box from "./Box";
+
+import LogText from "./LogText";
 import { state } from "../state";
 
 const Footer = () => {
   const snap = useSnapshot(state);
   return (
-    <Box as="footer" sx={{ display: "flex" }}>
-      <Box
-        as="pre"
-        sx={{
-          borderRadius: "6px",
-          backgroundColor: "#242426",
-          display: "flex",
-          width: "100%",
-          height: "160px",
-          fontFamily: "monospace",
-          fontSize: 0,
-          overflowY: "scroll",
-          py: 3,
-          px: 3,
-          m: 3,
-        }}
-      >
-        {snap.logs.map((log, index) => index + 1 + ": " + log + "\n")}
-      </Box>
+    <Box
+      as="footer"
+      css={{
+        display: "flex",
+        borderTop: "1px solid $slate6",
+        background: "$slate1",
+      }}
+    >
+      <Container css={{ py: "$4", flexShrink: 1 }}>
+        <Box
+          as="pre"
+          css={{
+            display: "flex",
+            flexDirection: "column",
+            width: "100%",
+            height: "160px",
+            fontSize: "13px",
+            fontWeight: "$body",
+            fontFamily: "$monospace",
+            overflowY: "scroll",
+            wordWrap: "break-word",
+            py: 3,
+            px: 3,
+            m: 3,
+          }}
+        >
+          {snap.logs.map((log, index) => (
+            <Box key={log.type + index}>
+              <LogText capitalize variant={log.type}>
+                {log.type}:{" "}
+              </LogText>
+              <LogText>{log.message}</LogText>
+            </Box>
+          ))}
+        </Box>
+      </Container>
     </Box>
   );
 };

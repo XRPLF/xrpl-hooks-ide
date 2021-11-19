@@ -1,70 +1,95 @@
-/** @jsxImportSource theme-ui */
-import { useRef } from "react";
-import { useSnapshot } from "valtio";
+import React, { useEffect, useRef } from "react";
+import { useSnapshot, ref } from "valtio";
 import Editor from "@monaco-editor/react";
 import type monaco from "monaco-editor";
-import { useColorMode } from "@theme-ui/color-modes";
-import { Button, Box } from "theme-ui";
-import { ArrowRight } from "phosphor-react";
+import { Play } from "phosphor-react";
+import { useTheme } from "next-themes";
 
-import { state } from "../state";
+import Box from "./Box";
+import Button from "./Button";
 import dark from "../theme/editor/amy.json";
 import light from "../theme/editor/xcode_default.json";
+import { compileCode, saveFile, state } from "../state";
+
+import EditorNavigation from "./EditorNavigation";
+import Spinner from "./Spinner";
 
 const HooksEditor = () => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
-  const [mode, setColorMode] = useColorMode();
   const snap = useSnapshot(state);
+  const { theme } = useTheme();
+  // useEffect(() => {
+  //   if (snap.editorCtx) {
+  //     snap.editorCtx.getModels().forEach((model) => {
+  //       // console.log(model.id,);
+  //       snap.editorCtx?.createModel(model.getValue(), "c", model.uri);
+  //     });
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
+  console.log("reinit");
   return (
-    <Box sx={{ flex: 1, display: "flex", position: "relative" }}>
+    <Box
+      css={{
+        flex: 1,
+        flexShrink: 1,
+        display: "flex",
+        position: "relative",
+        flexDirection: "column",
+        backgroundColor: "$slate3",
+        width: "100%",
+      }}
+    >
+      <EditorNavigation />
       <Editor
-        defaultLanguage={snap.files?.[snap.active]?.language}
+        keepCurrentModel
+        // defaultLanguage={snap.files?.[snap.active]?.language}
         path={snap.files?.[snap.active]?.name}
-        defaultValue={snap.files?.[snap.active]?.content}
+        // defaultValue={snap.files?.[snap.active]?.content}
         beforeMount={(monaco) => {
-          // @ts-expect-error
-          monaco.editor.defineTheme("dark", dark);
-          // @ts-expect-error
-          monaco.editor.defineTheme("light", light);
+          if (!state.editorCtx) {
+            state.editorCtx = ref(monaco.editor);
+            // @ts-expect-error
+            monaco.editor.defineTheme("dark", dark);
+            // @ts-expect-error
+            monaco.editor.defineTheme("light", light);
+          }
         }}
         onMount={(editor, monaco) => {
           editorRef.current = editor;
+          // hook editor to global state
           editor.updateOptions({
             minimap: {
               enabled: false,
             },
+            ...snap.editorSettings,
           });
           editor.addCommand(
             monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
             () => {
-              if (
-                state.files &&
-                state.files.length > 0 &&
-                state.files[snap.active]
-              ) {
-                console.log(
-                  `File ${snap.files[snap.active].name} saved successfully ✅`
-                );
-                state.files[snap.active].content = editor.getValue();
-              }
+              saveFile(editor.getValue());
             }
           );
         }}
-        theme={mode === "dark" ? "dark" : "light"}
-        wrapperProps={{ style: { display: "flex", flex: 1 } }}
+        theme={theme === "dark" ? "dark" : "light"}
       />
       <Button
-        sx={{
+        variant="primary"
+        uppercase
+        onClick={() => compileCode(snap.active)}
+        disabled={snap.compiling}
+        css={{
           position: "absolute",
-          bottom: 1,
-          left: 3,
+          bottom: "$4",
+          left: "$4",
           alignItems: "center",
           display: "flex",
           cursor: "pointer",
         }}
       >
-        Compile{" "}
-        <ArrowRight sx={{ mb: "0px", ml: 2 }} weight="bold" size="20px" />
+        <Play weight="bold" size="16px" />
+        Compile to Wasm
+        {snap.compiling && <Spinner />}
       </Button>
     </Box>
   );
