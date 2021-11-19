@@ -40,17 +40,18 @@ let initialState = {
   }
 }
 
-// if (typeof window !== 'undefined') {
-//   try {
-//     localStorageState = localStorage.getItem('hooksIdeState');
-//   } catch (err) {
-//     console.log(`localStorage state broken`);
-//     localStorage.removeItem('hooksIdeState');
-//   }
-// }
-// if (localStorageState) {
-//   initialState = JSON.parse(localStorageState);
-// }
+// Check if there's a persited state in localStorage
+if (typeof window !== 'undefined') {
+  try {
+    localStorageState = localStorage.getItem('hooksIdeState');
+  } catch (err) {
+    console.log(`localStorage state broken`);
+    localStorage.removeItem('hooksIdeState');
+  }
+}
+if (localStorageState) {
+  initialState = JSON.parse(localStorageState);
+}
 
 // Initialize state
 export const state = proxy<IState>(initialState);
