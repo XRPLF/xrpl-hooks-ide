@@ -1,3 +1,9 @@
+# XRPL Hooks IDE
+
+This is the repository for XRPL Hooks IDE. This project is built with Next.JS
+
+## General
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
