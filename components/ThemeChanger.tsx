@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { Sun, Moon } from "phosphor-react";
 
-import Box from "./Box";
+import Button from "./Button";
 
 const ThemeChanger = () => {
   const { theme, setTheme } = useTheme();
@@ -12,7 +12,8 @@ const ThemeChanger = () => {
   if (!mounted) return null;
 
   return (
-    <Box
+    <Button
+      outline
       onClick={() => {
         setTheme(theme && theme === "light" ? "dark" : "light");
       }}
@@ -25,12 +26,8 @@ const ThemeChanger = () => {
         color: "$muted",
       }}
     >
-      {theme === "dark" ? (
-        <Sun weight="bold" size="16px" />
-      ) : (
-        <Moon weight="bold" size="16px" />
-      )}
-    </Box>
+      {theme === "dark" ? <Sun size="15px" /> : <Moon size="15px" />}
+    </Button>
   );
 };
 
