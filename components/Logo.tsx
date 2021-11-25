@@ -1,5 +1,3 @@
-import { useTheme } from "next-themes";
-
 import { styled } from "../stitches.config";
 
 const SVG = styled("svg", {

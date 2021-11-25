@@ -65,6 +65,14 @@ export const Input = styled("input", {
 
   variants: {
     size: {
+      sm: {
+        height: "$5",
+        fontSize: "$1",
+        lineHeight: "$sizes$4",
+        "&:-webkit-autofill::first-line": {
+          fontSize: "$1",
+        },
+      },
       md: {
         height: "$8",
         fontSize: "$1",

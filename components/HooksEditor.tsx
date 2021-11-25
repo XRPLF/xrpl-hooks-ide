@@ -1,16 +1,16 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { useSnapshot, ref } from "valtio";
 import Editor from "@monaco-editor/react";
 import type monaco from "monaco-editor";
-import { ArrowBendLeftUp, Play } from "phosphor-react";
+import { ArrowBendLeftUp } from "phosphor-react";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/router";
 
 import Box from "./Box";
-import Button from "./Button";
 import Container from "./Container";
 import dark from "../theme/editor/amy.json";
 import light from "../theme/editor/xcode_default.json";
-import { compileCode, saveFile, state } from "../state";
+import { saveFile, state } from "../state";
 
 import EditorNavigation from "./EditorNavigation";
 import Text from "./Text";
@@ -18,6 +18,7 @@ import Text from "./Text";
 const HooksEditor = () => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
   const snap = useSnapshot(state);
+  const router = useRouter();
   const { theme } = useTheme();
   return (
     <Box
@@ -32,10 +33,11 @@ const HooksEditor = () => {
       }}
     >
       <EditorNavigation />
-      {snap.files.length > 0 ? (
+      {snap.files.length > 0 && router.isReady ? (
         <Editor
           keepCurrentModel
           defaultLanguage={snap.files?.[snap.active]?.language}
+          language={snap.files?.[snap.active]?.language}
           path={snap.files?.[snap.active]?.name}
           defaultValue={snap.files?.[snap.active]?.content}
           beforeMount={(monaco) => {
@@ -67,52 +69,35 @@ const HooksEditor = () => {
         />
       ) : (
         <Container>
-          <Box
-            css={{
-              flexDirection: "row",
-              width: "$spaces$wide",
-              gap: "$3",
-              display: "inline-flex",
-            }}
-          >
-            <Box css={{ display: "inline-flex", pl: "35px" }}>
-              <ArrowBendLeftUp size={30} />
-            </Box>
+          {!snap.loading && router.isReady && (
             <Box
-              css={{ pl: "0px", pt: "15px", flex: 1, display: "inline-flex" }}
+              css={{
+                flexDirection: "row",
+                width: "$spaces$wide",
+                gap: "$3",
+                display: "inline-flex",
+              }}
             >
-              <Text
-                css={{
-                  fontSize: "14px",
-                  maxWidth: "220px",
-                  fontFamily: "$monospace",
-                }}
+              <Box css={{ display: "inline-flex", pl: "35px" }}>
+                <ArrowBendLeftUp size={30} />
+              </Box>
+              <Box
+                css={{ pl: "0px", pt: "15px", flex: 1, display: "inline-flex" }}
               >
-                Click the link above to create a your file (until we get the
-                fancy modal, where you can select example files 😊)
-              </Text>
+                <Text
+                  css={{
+                    fontSize: "14px",
+                    maxWidth: "220px",
+                    fontFamily: "$monospace",
+                  }}
+                >
+                  Click the link above to create a your file
+                </Text>
+              </Box>
             </Box>
-          </Box>
+          )}
         </Container>
       )}
-      <Button
-        variant="primary"
-        uppercase
-        disabled={!snap.files.length}
-        isLoading={snap.compiling}
-        onClick={() => compileCode(snap.active)}
-        css={{
-          position: "absolute",
-          bottom: "$4",
-          left: "$4",
-          alignItems: "center",
-          display: "flex",
-          cursor: "pointer",
-        }}
-      >
-        <Play weight="bold" size="16px" />
-        Compile to Wasm
-      </Button>
     </Box>
   );
 };

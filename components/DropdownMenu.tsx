@@ -61,6 +61,8 @@ const itemStyles = {
   position: "relative",
   paddingLeft: "5px",
   userSelect: "none",
+  py: "$0.5",
+  pr: "$2",
   gap: "$2",
 
   "&[data-disabled]": {
@@ -113,6 +115,9 @@ const StyledItemIndicator = styled(DropdownMenuPrimitive.ItemIndicator, {
 
 const StyledArrow = styled(DropdownMenuPrimitive.Arrow, {
   fill: "$mauve2",
+  ".dark &": {
+    fill: "$mauve5",
+  },
 });
 
 // Exports

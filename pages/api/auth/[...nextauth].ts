@@ -1,5 +1,4 @@
 import NextAuth from "next-auth"
-import GithubProvider from "next-auth/providers/github"
 
 export default NextAuth({
   // Configure one or more authentication providers
@@ -42,7 +41,6 @@ export default NextAuth({
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;
-      const user = { ...session.user, username: token.username };
       session['user']['username'] = token.username as string;
       return session
     }

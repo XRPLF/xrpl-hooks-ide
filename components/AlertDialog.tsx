@@ -1,9 +1,7 @@
 import React from "react";
-import * as Stiches from "@stitches/react";
-import { keyframes } from "@stitches/react";
 import { blackA } from "@radix-ui/colors";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { styled } from "../stitches.config";
+import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
+import { styled, keyframes } from "../stitches.config";
 
 const overlayShow = keyframes({
   "0%": { opacity: 0 },
@@ -14,7 +12,8 @@ const contentShow = keyframes({
   "0%": { opacity: 0, transform: "translate(-50%, -48%) scale(.96)" },
   "100%": { opacity: 1, transform: "translate(-50%, -50%) scale(1)" },
 });
-const StyledOverlay = styled(DialogPrimitive.Overlay, {
+
+const StyledOverlay = styled(AlertDialogPrimitive.Overlay, {
   zIndex: 1000,
   backgroundColor: blackA.blackA9,
   position: "fixed",
@@ -27,7 +26,19 @@ const StyledOverlay = styled(DialogPrimitive.Overlay, {
   },
 });
 
-const StyledContent = styled(DialogPrimitive.Content, {
+const Root: React.FC<AlertDialogPrimitive.AlertDialogProps> = ({
+  children,
+  ...rest
+}) => {
+  return (
+    <AlertDialogPrimitive.Root {...rest}>
+      <StyledOverlay />
+      {children}
+    </AlertDialogPrimitive.Root>
+  );
+};
+
+const StyledContent = styled(AlertDialogPrimitive.Content, {
   zIndex: 1000,
   backgroundColor: "$mauve2",
   color: "$mauve12",
@@ -53,33 +64,25 @@ const StyledContent = styled(DialogPrimitive.Content, {
   },
 });
 
-const Content: React.FC<{ css?: Stiches.CSS }> = ({ css, children }) => {
-  return (
-    <div>
-      <StyledOverlay />
-      <StyledContent css={css}>{children}</StyledContent>
-    </div>
-  );
-};
-
-const StyledTitle = styled(DialogPrimitive.Title, {
+const StyledTitle = styled(AlertDialogPrimitive.Title, {
   margin: 0,
-  fontWeight: 500,
   color: "$mauve12",
-  fontSize: 17,
+  fontWeight: 500,
+  fontSize: "$lg",
 });
 
-const StyledDescription = styled(DialogPrimitive.Description, {
-  margin: "10px 0 20px",
+const StyledDescription = styled(AlertDialogPrimitive.Description, {
+  marginBottom: 20,
   color: "$mauve11",
-  fontSize: 15,
   lineHeight: 1.5,
+  fontSize: "$sm",
 });
 
 // Exports
-export const Dialog = styled(DialogPrimitive.Root);
-export const DialogTrigger = DialogPrimitive.Trigger;
-export const DialogContent = Content;
-export const DialogTitle = StyledTitle;
-export const DialogDescription = StyledDescription;
-export const DialogClose = DialogPrimitive.Close;
+export const AlertDialog = Root;
+export const AlertDialogTrigger = AlertDialogPrimitive.Trigger;
+export const AlertDialogContent = StyledContent;
+export const AlertDialogTitle = StyledTitle;
+export const AlertDialogDescription = StyledDescription;
+export const AlertDialogAction = AlertDialogPrimitive.Action;
+export const AlertDialogCancel = AlertDialogPrimitive.Cancel;
