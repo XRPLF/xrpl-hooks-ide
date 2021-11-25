@@ -39,6 +39,12 @@ export const StyledButton = styled("button", {
   },
   variants: {
     size: {
+      xs: {
+        borderRadius: "$sm",
+        height: "$5",
+        px: "$2",
+        fontSize: "$xs",
+      },
       sm: {
         borderRadius: "$sm",
         height: "$7",
