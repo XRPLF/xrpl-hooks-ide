@@ -1,11 +1,9 @@
-import { CSS } from "@stitches/react/types/css-util";
-import { StyledComponent } from "@stitches/react/types/styled-component";
 import React from "react";
 import { styled } from "../stitches.config";
 import Flex from "./Flex";
 import Spinner from "./Spinner";
 
-const Button = styled("button", {
+export const StyledButton = styled("button", {
   // Reset
   all: "unset",
   appereance: "none",
@@ -32,8 +30,8 @@ const Button = styled("button", {
   fontSize: "$2",
   fontWeight: 500,
   fontVariantNumeric: "tabular-nums",
-  backgroundColor: "red",
   cursor: "pointer",
+  width: "max-content",
   "&:disabled": {
     opacity: 0.6,
     pointerEvents: "none",
@@ -77,7 +75,7 @@ const Button = styled("button", {
         },
         "&:focus": {
           boxShadow:
-            "inset 0 0 0 1px $colors$mauve12, 0 0 0 1px $colors$mauve12",
+            "inset 0 0 0 1px $colors$mauve12, inset 0 0 0 2px $colors$mauve12",
         },
         '&[data-radix-popover-trigger][data-state="open"], &[data-radix-dropdown-menu-trigger][data-state="open"]':
           {
@@ -100,7 +98,7 @@ const Button = styled("button", {
           boxShadow: "inset 0 0 0 1px $colors$pink8",
         },
         "&:focus": {
-          boxShadow: "inset 0 0 0 1px $colors$pink8",
+          boxShadow: "inset 0 0 0 2px $colors$pink12",
         },
         '&[data-radix-popover-trigger][data-state="open"], &[data-radix-dropdown-menu-trigger][data-state="open"]':
           {
@@ -117,6 +115,11 @@ const Button = styled("button", {
     uppercase: {
       true: {
         textTransform: "uppercase",
+      },
+    },
+    fullWidth: {
+      true: {
+        width: "100%",
       },
     },
     ghost: {
@@ -182,10 +185,10 @@ const Button = styled("button", {
 });
 
 const CustomButton: React.FC<
-  React.ComponentProps<typeof Button> & { as?: string }
+  React.ComponentProps<typeof StyledButton> & { as?: string }
 > = React.forwardRef(({ children, as = "button", ...rest }, ref) => (
   // @ts-expect-error
-  <Button {...rest} ref={ref} as={as}>
+  <StyledButton {...rest} ref={ref} as={as}>
     <Flex
       as="span"
       css={{ gap: "$2", alignItems: "center" }}
@@ -194,7 +197,7 @@ const CustomButton: React.FC<
       {children}
     </Flex>
     {rest.isLoading && <Spinner css={{ position: "absolute" }} />}
-  </Button>
+  </StyledButton>
 ));
 
 CustomButton.displayName = "CustomButton";
