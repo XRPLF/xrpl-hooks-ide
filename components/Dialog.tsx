@@ -1,7 +1,7 @@
 import React from "react";
 import * as Stiches from "@stitches/react";
 import { keyframes } from "@stitches/react";
-import { violet, blackA, mauve, whiteA } from "@radix-ui/colors";
+import { blackA } from "@radix-ui/colors";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { styled } from "../stitches.config";
 
@@ -23,7 +23,7 @@ const StyledOverlay = styled(DialogPrimitive.Overlay, {
     animation: `${overlayShow} 150ms cubic-bezier(0.16, 1, 0.3, 1)`,
   },
   ".dark &": {
-    backgroundColor: blackA.blackA9,
+    backgroundColor: blackA.blackA11,
   },
 });
 
@@ -49,7 +49,7 @@ const StyledContent = styled(DialogPrimitive.Content, {
   ".dark &": {
     backgroundColor: "$mauve5",
     boxShadow:
-      "0px 10px 38px 0px rgba(22, 23, 24, 0.85), 0px 10px 20px 0px rgba(22, 23, 24, 0.6)",
+      "0px 10px 38px 0px rgba(0, 0, 0, 0.85), 0px 10px 20px 0px rgba(0, 0, 0, 0.6)",
   },
 });
 
@@ -77,7 +77,7 @@ const StyledDescription = styled(DialogPrimitive.Description, {
 });
 
 // Exports
-export const Dialog = DialogPrimitive.Root;
+export const Dialog = styled(DialogPrimitive.Root);
 export const DialogTrigger = DialogPrimitive.Trigger;
 export const DialogContent = Content;
 export const DialogTitle = StyledTitle;
