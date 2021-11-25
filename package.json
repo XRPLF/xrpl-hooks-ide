@@ -12,6 +12,7 @@
     "@monaco-editor/react": "^4.3.1",
     "@octokit/core": "^3.5.1",
     "@radix-ui/colors": "^0.1.7",
+    "@radix-ui/react-alert-dialog": "^0.1.1",
     "@radix-ui/react-dialog": "^0.1.1",
     "@radix-ui/react-dropdown-menu": "^0.1.1",
     "@radix-ui/react-id": "^0.1.1",
