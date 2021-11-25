@@ -4,7 +4,13 @@ const Heading = styled("span", {
   fontFamily: "$heading",
   lineHeight: "$heading",
   fontWeight: "$heading",
-  textTransform: "uppercase",
+  variants: {
+    uppercase: {
+      true: {
+        textTransform: "uppercase",
+      },
+    },
+  },
 });
 
 export default Heading;
