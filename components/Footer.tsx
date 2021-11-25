@@ -34,7 +34,7 @@ const Footer = () => {
             m: 3,
           }}
         >
-          {snap.logs.map((log, index) => (
+          {snap.logs?.map((log, index) => (
             <Box as="span" key={log.type + index}>
               <LogText capitalize variant={log.type}>
                 {log.type}:{" "}
