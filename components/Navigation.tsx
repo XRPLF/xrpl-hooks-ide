@@ -314,6 +314,10 @@ const Navigation = () => {
             flexWrap: "nowrap",
             marginLeft: "$4",
             overflowX: "scroll",
+            "&::-webkit-scrollbar": {
+              height: 0,
+              background: "transparent",
+            },
           }}
         >
           <Stack

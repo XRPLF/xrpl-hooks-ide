@@ -71,7 +71,17 @@ const EditorNavigation = () => {
   }, [session, popup]);
   return (
     <Flex css={{ flexShrink: 0, gap: "$0" }}>
-      <Flex css={{ overflowX: "scroll", py: "$3", flex: 1 }}>
+      <Flex
+        css={{
+          overflowX: "scroll",
+          py: "$3",
+          flex: 1,
+          "&::-webkit-scrollbar": {
+            height: 0,
+            background: "transparent",
+          },
+        }}
+      >
         <Container css={{ flex: 1 }}>
           <Stack
             css={{

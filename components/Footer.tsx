@@ -53,7 +53,7 @@ const Footer = () => {
             fontSize: "13px",
             fontWeight: "$body",
             fontFamily: "$monospace",
-            overflowY: "scroll",
+            overflowY: "auto",
             wordWrap: "break-word",
             py: 3,
           }}
