@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { useSnapshot, ref } from "valtio";
-import Editor from "@monaco-editor/react";
+import Editor, { loader } from "@monaco-editor/react";
 import type monaco from "monaco-editor";
 import { ArrowBendLeftUp } from "phosphor-react";
 import { useTheme } from "next-themes";
@@ -14,6 +14,15 @@ import { saveFile, state } from "../state";
 
 import EditorNavigation from "./EditorNavigation";
 import Text from "./Text";
+import { MonacoServices } from "@codingame/monaco-languageclient";
+import { createLanguageClient, createWebSocket } from "../utils/languageClient";
+import { listen } from "@codingame/monaco-jsonrpc";
+
+loader.config({
+  paths: {
+    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.30.1/min/vs",
+  },
+});
 
 const HooksEditor = () => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
@@ -35,12 +44,44 @@ const HooksEditor = () => {
       <EditorNavigation />
       {snap.files.length > 0 && router.isReady ? (
         <Editor
+          className="hooks-editor"
           keepCurrentModel
           defaultLanguage={snap.files?.[snap.active]?.language}
           language={snap.files?.[snap.active]?.language}
           path={snap.files?.[snap.active]?.name}
           defaultValue={snap.files?.[snap.active]?.content}
           beforeMount={(monaco) => {
+            // @ts-expect-error
+            window.monaco = monaco;
+            monaco.languages.register({
+              id: "c",
+              extensions: [".c", ".h"],
+              aliases: ["C", "c", "H", "h"],
+              mimetypes: ["text/plain"],
+            });
+            MonacoServices.install(monaco);
+            // create the web socket
+            const webSocket = createWebSocket(
+              process.env.NEXT_PUBLIC_LANGUAGE_SERVER_API_ENDPOINT || ""
+            );
+            // listen when the web socket is opened
+            listen({
+              webSocket,
+              onConnection: (connection) => {
+                // create and start the language client
+                const languageClient = createLanguageClient(connection);
+                const disposable = languageClient.start();
+                connection.onClose(() => disposable.dispose());
+                connection.onError((error) => console.log(error));
+              },
+            });
+            // // hook editor to global state
+            // editor.updateOptions({
+            //   minimap: {
+            //     enabled: false,
+            //   },
+            //   ...snap.editorSettings,
+            // });
             if (!state.editorCtx) {
               state.editorCtx = ref(monaco.editor);
               // @ts-expect-error
@@ -51,15 +92,14 @@ const HooksEditor = () => {
           }}
           onMount={(editor, monaco) => {
             editorRef.current = editor;
-            // hook editor to global state
             editor.updateOptions({
-              minimap: {
-                enabled: false,
+              glyphMargin: true,
+              lightbulb: {
+                enabled: true,
               },
-              ...snap.editorSettings,
             });
             editor.addCommand(
-              monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
+              monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
               () => {
                 saveFile(editor.getValue());
               }
