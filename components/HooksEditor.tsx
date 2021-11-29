@@ -48,18 +48,28 @@ const HooksEditor = () => {
           keepCurrentModel
           defaultLanguage={snap.files?.[snap.active]?.language}
           language={snap.files?.[snap.active]?.language}
-          path={snap.files?.[snap.active]?.name}
+          path={`file://tmp/c/${snap.files?.[snap.active]?.name}`}
           defaultValue={snap.files?.[snap.active]?.content}
           beforeMount={(monaco) => {
-            // @ts-expect-error
-            window.monaco = monaco;
+            if (!snap.editorCtx) {
+              snap.files.forEach((file) =>
+                monaco.editor.createModel(
+                  file.content,
+                  file.language,
+                  monaco.Uri.parse(`file://tmp/c/${file.name}`)
+                )
+              );
+            }
+
             monaco.languages.register({
               id: "c",
               extensions: [".c", ".h"],
               aliases: ["C", "c", "H", "h"],
               mimetypes: ["text/plain"],
             });
-            MonacoServices.install(monaco);
+            MonacoServices.install(monaco, { rootUri: "file://tmp/c" });
+
+            // monaco.editor.createModel(value, 'c', monaco.Uri.parse('file:///tmp/c/file.c'))
             // create the web socket
             const webSocket = createWebSocket(
               process.env.NEXT_PUBLIC_LANGUAGE_SERVER_API_ENDPOINT || ""

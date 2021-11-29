@@ -5,7 +5,7 @@ import ReconnectingWebSocket from "reconnecting-websocket";
 
 export function createLanguageClient(connection: MessageConnection): MonacoLanguageClient {
   return new MonacoLanguageClient({
-    name: "Sample Language Client",
+    name: "Clangd Language Client",
     clientOptions: {
       // use a language id as a document selector
       documentSelector: ['c', 'h'],
@@ -13,7 +13,8 @@ export function createLanguageClient(connection: MessageConnection): MonacoLangu
       errorHandler: {
         error: () => ErrorAction.Continue,
         closed: () => CloseAction.Restart
-      }
+      },
+
     },
     // create a language client connection from the JSON RPC connection on demand
     connectionProvider: {
