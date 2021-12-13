@@ -56,7 +56,7 @@ import {
   AlertDialogAction,
 } from "./AlertDialog";
 
-const EditorNavigation = () => {
+const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
   const snap = useSnapshot(state);
   const [createNewAlertOpen, setCreateNewAlertOpen] = useState(false);
   const [editorSettingsOpen, setEditorSettingsOpen] = useState(false);
@@ -69,6 +69,7 @@ const EditorNavigation = () => {
       setPopUp(false);
     }
   }, [session, popup]);
+  const files = snap.files;
   return (
     <Flex css={{ flexShrink: 0, gap: "$0" }}>
       <Flex
@@ -91,100 +92,115 @@ const EditorNavigation = () => {
               marginBottom: "-1px",
             }}
           >
-            {snap.files &&
-              snap.files.length > 0 &&
-              snap.files?.map((file, index) => (
-                <Button
-                  size="sm"
-                  outline={snap.active !== index}
-                  onClick={() => (state.active = index)}
-                  key={file.name + index}
-                  css={{
-                    "&:hover": {
-                      span: {
-                        visibility: "visible",
-                      },
-                    },
-                  }}
-                >
-                  {file.name}
-                  <Box
-                    as="span"
+            {files &&
+              files.length > 0 &&
+              files.map((file, index) => {
+                if (!file.compiledContent && showWat) {
+                  return null;
+                }
+                return (
+                  <Button
+                    size="sm"
+                    outline={
+                      showWat ? snap.activeWat !== index : snap.active !== index
+                    }
+                    onClick={() => (state.active = index)}
+                    key={file.name + index}
                     css={{
-                      display: "flex",
-                      p: "2px",
-                      borderRadius: "$full",
-                      mr: "-4px",
                       "&:hover": {
-                        // boxSizing: "0px 0px 1px",
-                        backgroundColor: "$mauve2",
-                        color: "$mauve12",
+                        span: {
+                          visibility: "visible",
+                        },
                       },
-                    }}
-                    onClick={(ev: React.MouseEvent<HTMLElement>) => {
-                      ev.stopPropagation();
-                      // Remove file from state
-                      state.files.splice(index, 1);
-                      // Change active file state
-                      // If deleted file is behind active tab
-                      // we keep the current state otherwise
-                      // select previous file on the list
-                      state.active =
-                        index > snap.active ? snap.active : snap.active - 1;
                     }}
                   >
-                    <X size="9px" weight="bold" />
-                  </Box>
-                </Button>
-              ))}
+                    {file.name}
+                    {showWat && ".wat"}
+                    {!showWat && (
+                      <Box
+                        as="span"
+                        css={{
+                          display: "flex",
+                          p: "2px",
+                          borderRadius: "$full",
+                          mr: "-4px",
+                          "&:hover": {
+                            // boxSizing: "0px 0px 1px",
+                            backgroundColor: "$mauve2",
+                            color: "$mauve12",
+                          },
+                        }}
+                        onClick={(ev: React.MouseEvent<HTMLElement>) => {
+                          ev.stopPropagation();
+                          // Remove file from state
+                          state.files.splice(index, 1);
+                          // Change active file state
+                          // If deleted file is behind active tab
+                          // we keep the current state otherwise
+                          // select previous file on the list
+                          state.active =
+                            index > snap.active ? snap.active : snap.active - 1;
+                        }}
+                      >
+                        <X size="9px" weight="bold" />
+                      </Box>
+                    )}
+                  </Button>
+                );
+              })}
+            {!showWat && (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button
+                    ghost
+                    size="sm"
+                    css={{ alignItems: "center", px: "$2", mr: "$3" }}
+                  >
+                    <Plus size="16px" />{" "}
+                    {snap.files.length === 0 && "Add new file"}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogTitle>Create new file</DialogTitle>
+                  <DialogDescription>
+                    <label>Filename</label>
+                    <Input
+                      value={filename}
+                      onChange={(e) => setFilename(e.target.value)}
+                    />
+                  </DialogDescription>
 
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  ghost
-                  size="sm"
-                  css={{ alignItems: "center", px: "$2", mr: "$3" }}
-                >
-                  <Plus size="16px" />{" "}
-                  {snap.files.length === 0 && "Add new file"}
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogTitle>Create new file</DialogTitle>
-                <DialogDescription>
-                  <label>Filename</label>
-                  <Input
-                    value={filename}
-                    onChange={(e) => setFilename(e.target.value)}
-                  />
-                </DialogDescription>
-
-                <Flex
-                  css={{ marginTop: 25, justifyContent: "flex-end", gap: "$3" }}
-                >
+                  <Flex
+                    css={{
+                      marginTop: 25,
+                      justifyContent: "flex-end",
+                      gap: "$3",
+                    }}
+                  >
+                    <DialogClose asChild>
+                      <Button outline>Cancel</Button>
+                    </DialogClose>
+                    <DialogClose asChild>
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          createNewFile(filename);
+                          // reset
+                          setFilename("");
+                        }}
+                      >
+                        Create file
+                      </Button>
+                    </DialogClose>
+                  </Flex>
                   <DialogClose asChild>
-                    <Button outline>Cancel</Button>
+                    <Box css={{ position: "absolute", top: "$3", right: "$3" }}>
+                      <X size="20px" />
+                    </Box>
                   </DialogClose>
-                  <DialogClose asChild>
-                    <Button
-                      variant="primary"
-                      onClick={() => {
-                        createNewFile(filename);
-                        // reset
-                        setFilename("");
-                      }}
-                    >
-                      Create file
-                    </Button>
-                  </DialogClose>
-                </Flex>
-                <DialogClose asChild>
-                  <Box css={{ position: "absolute", top: "$3", right: "$3" }}>
-                    <X size="20px" />
-                  </Box>
-                </DialogClose>
-              </DialogContent>
-            </Dialog>
+                </DialogContent>
+              </Dialog>
+            )}
           </Stack>
         </Container>
       </Flex>
