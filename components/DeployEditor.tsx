@@ -10,7 +10,7 @@ import Box from "./Box";
 import Container from "./Container";
 import dark from "../theme/editor/amy.json";
 import light from "../theme/editor/xcode_default.json";
-import { state } from "../state";
+import state from "../state";
 
 import EditorNavigation from "./EditorNavigation";
 import Text from "./Text";

@@ -6,7 +6,8 @@ import useStayScrolled from "react-stay-scrolled";
 import Container from "./Container";
 import Box from "./Box";
 import LogText from "./LogText";
-import { compileCode, state } from "../state";
+import { compileCode } from "../state/actions";
+import state from "../state";
 import Button from "./Button";
 import Heading from "./Heading";
 

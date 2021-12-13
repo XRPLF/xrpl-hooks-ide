@@ -10,7 +10,8 @@ import { IdProvider } from "@radix-ui/react-id";
 
 import { darkTheme, css } from "../stitches.config";
 import Navigation from "../components/Navigation";
-import { fetchFiles, state } from "../state";
+import { fetchFiles } from "../state/actions";
+import state from "../state";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const router = useRouter();

@@ -12,7 +12,7 @@ import Flex from "./Flex";
 import Container from "./Container";
 import Box from "./Box";
 import ThemeChanger from "./ThemeChanger";
-import { state } from "../state";
+import state from "../state";
 import Heading from "./Heading";
 import Text from "./Text";
 import Spinner from "./Spinner";

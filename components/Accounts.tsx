@@ -1,6 +1,7 @@
 import toast from "react-hot-toast";
 import Button from "./Button";
-import { addFaucetAccount, deployHook, importAccount, state } from "../state";
+import { addFaucetAccount, deployHook, importAccount } from "../state/actions";
+import state from "../state";
 import Box from "./Box";
 import Container from "./Container";
 import Heading from "./Heading";

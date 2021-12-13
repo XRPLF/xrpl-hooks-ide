@@ -2,7 +2,7 @@ import React from "react";
 import dynamic from "next/dynamic";
 import Flex from "../../components/Flex";
 import { useSnapshot } from "valtio";
-import { state } from "../../state";
+import state from "../../state";
 
 const DeployEditor = dynamic(() => import("../../components/DeployEditor"), {
   ssr: false,

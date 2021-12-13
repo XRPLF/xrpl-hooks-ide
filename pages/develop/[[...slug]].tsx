@@ -4,7 +4,8 @@ import Hotkeys from "react-hot-keys";
 import { Play } from "phosphor-react";
 
 import type { NextPage } from "next";
-import { compileCode, state } from "../../state";
+import { compileCode } from "../../state/actions";
+import state from "../../state";
 import Button from "../../components/Button";
 import Box from "../../components/Box";
 

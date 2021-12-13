@@ -28,10 +28,10 @@ import { useSnapshot } from "valtio";
 
 import {
   createNewFile,
-  state,
   syncToGist,
   updateEditorSettings,
-} from "../state";
+} from "../state/actions";
+import state from "../state";
 import Box from "./Box";
 import Button from "./Button";
 import Container from "./Container";
