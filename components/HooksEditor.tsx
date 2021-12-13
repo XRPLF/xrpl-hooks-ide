@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useSnapshot, ref } from "valtio";
 import Editor, { loader } from "@monaco-editor/react";
 import type monaco from "monaco-editor";
@@ -17,6 +17,7 @@ import Text from "./Text";
 import { MonacoServices } from "@codingame/monaco-languageclient";
 import { createLanguageClient, createWebSocket } from "../utils/languageClient";
 import { listen } from "@codingame/monaco-jsonrpc";
+import ReconnectingWebSocket from "reconnecting-websocket";
 
 loader.config({
   paths: {
@@ -26,9 +27,15 @@ loader.config({
 
 const HooksEditor = () => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
+  const subscriptionRef = useRef<ReconnectingWebSocket | null>(null);
   const snap = useSnapshot(state);
   const router = useRouter();
   const { theme } = useTheme();
+  useEffect(() => {
+    return () => {
+      subscriptionRef?.current?.close();
+    };
+  }, []);
   return (
     <Box
       css={{
@@ -61,30 +68,39 @@ const HooksEditor = () => {
               );
             }
 
-            monaco.languages.register({
-              id: "c",
-              extensions: [".c", ".h"],
-              aliases: ["C", "c", "H", "h"],
-              mimetypes: ["text/plain"],
-            });
-            MonacoServices.install(monaco, { rootUri: "file://tmp/c" });
-
             // monaco.editor.createModel(value, 'c', monaco.Uri.parse('file:///tmp/c/file.c'))
             // create the web socket
-            const webSocket = createWebSocket(
-              process.env.NEXT_PUBLIC_LANGUAGE_SERVER_API_ENDPOINT || ""
-            );
-            // listen when the web socket is opened
-            listen({
-              webSocket,
-              onConnection: (connection) => {
-                // create and start the language client
-                const languageClient = createLanguageClient(connection);
-                const disposable = languageClient.start();
-                connection.onClose(() => disposable.dispose());
-                connection.onError((error) => console.log(error));
-              },
-            });
+            if (!subscriptionRef.current) {
+              monaco.languages.register({
+                id: "c",
+                extensions: [".c", ".h"],
+                aliases: ["C", "c", "H", "h"],
+                mimetypes: ["text/plain"],
+              });
+              MonacoServices.install(monaco);
+              const webSocket = createWebSocket(
+                process.env.NEXT_PUBLIC_LANGUAGE_SERVER_API_ENDPOINT || ""
+              );
+              subscriptionRef.current = webSocket;
+              // listen when the web socket is opened
+              listen({
+                webSocket: webSocket as WebSocket,
+                onConnection: (connection) => {
+                  // create and start the language client
+                  const languageClient = createLanguageClient(connection);
+                  const disposable = languageClient.start();
+                  connection.onClose(() => {
+                    try {
+                      // disposable.stop();
+                      disposable.dispose();
+                    } catch (err) {
+                      console.log("err", err);
+                    }
+                  });
+                },
+              });
+            }
+
             // // hook editor to global state
             // editor.updateOptions({
             //   minimap: {
@@ -111,7 +127,7 @@ const HooksEditor = () => {
             editor.addCommand(
               monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
               () => {
-                saveFile(editor.getValue());
+                saveFile();
               }
             );
           }}
