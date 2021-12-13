@@ -4,7 +4,9 @@ import state from '../index';
 
 const octokit = new Octokit();
 
-// Fetch content from Githug Gists
+/* Fetches Gist files from Githug Gists based on
+ * gistId and stores the content in global state
+ */
 export const fetchFiles = (gistId: string) => {
   state.loading = true;
   if (gistId && !state.files.length) {

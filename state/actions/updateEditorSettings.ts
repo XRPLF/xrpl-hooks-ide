@@ -1,5 +1,7 @@
 import state, { IState } from '../index';
 
+// Updates editor settings and stores them
+// in global state
 export const updateEditorSettings = (
   editorSettings: IState["editorSettings"]
 ) => {

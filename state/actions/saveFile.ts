@@ -1,6 +1,7 @@
 import toast from "react-hot-toast";
 import state from '../index';
 
+// Saves the current editor content to global state
 export const saveFile = (showToast: boolean = true) => {
   const editorModels = state.editorCtx?.getModels();
   const currentModel = editorModels?.find((editorModel) => {

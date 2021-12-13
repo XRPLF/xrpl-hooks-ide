@@ -6,15 +6,24 @@ import { saveFile } from "./saveFile";
 import { decodeBinary } from "../../utils/decodeBinary";
 import { ref } from "valtio";
 
+/* compileCode sends the code of the active file to compile endpoint
+ * If all goes well you will get base64 encoded wasm file back with
+ * some extra logging information if we can provide it. This function 
+ * also decodes the returned wasm and creates human readable WAT file
+ * out of it and store both in global state.
+ */
 export const compileCode = async (activeId: number) => {
+  // Save the file to global state
   saveFile(false);
   if (!process.env.NEXT_PUBLIC_COMPILE_API_ENDPOINT) {
     throw Error("Missing env!");
   }
+  // Bail out if we're already compiling
   if (state.compiling) {
     // if compiling is ongoing return
     return;
   }
+  // Set loading state to true
   state.compiling = true;
   try {
     const res = await fetch(process.env.NEXT_PUBLIC_COMPILE_API_ENDPOINT, {
@@ -54,9 +63,11 @@ export const compileCode = async (activeId: number) => {
       link: Router.asPath.replace("develop", "deploy"),
       linkText: "Go to deploy",
     });
+    // Decode base64 encoded wasm that is coming back from the endpoint
     const bufferData = await decodeBinary(json.output);
     state.files[state.active].compiledContent = ref(bufferData);
-
+    // Import wabt from and create human readable version of wasm file and
+    // put it into state
     import("wabt").then((wabt) => {
       const ww = wabt.default();
       const myModule = ww.readWasm(new Uint8Array(bufferData), {

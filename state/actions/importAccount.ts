@@ -4,6 +4,7 @@ import { derive } from "xrpl-accountlib";
 import state from '../index';
 import { names } from './addFaucetAccount';
 
+// Adds test account to global state with secret key
 export const importAccount = (secret: string) => {
   if (!secret) {
     return toast.error("You need to add secret!");

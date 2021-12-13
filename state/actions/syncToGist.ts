@@ -7,6 +7,7 @@ import state from '../index';
 
 const octokit = new Octokit();
 
+// Syncs the current files from the state to GitHub Gists.
 export const syncToGist = async (
   session?: Session | null,
   createNewGist?: boolean
@@ -30,6 +31,10 @@ export const syncToGist = async (
     session?.user.username === state.gistOwner &&
     !createNewGist
   ) {
+    // You can only remove files from Gist by updating file with empty contents
+    // So we need to fetch existing files and compare those to local state
+    // and then send empty content if we don't have matching files anymore
+    // on local state
     const currentFilesRes = await octokit.request("GET /gists/{gist_id}", {
       gist_id: state.gistId,
     });

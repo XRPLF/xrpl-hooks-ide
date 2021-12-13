@@ -25,6 +25,11 @@ function arrayBufferToHex(arrayBuffer?: ArrayBuffer | null) {
 
   return result;
 }
+
+/* deployHook function turns the wasm binary into
+ * hex string, signs the transaction and deploys it to
+ * Hooks testnet.
+ */
 export const deployHook = async (account: IAccount & { name?: string }) => {
   if (
     !state.files ||
