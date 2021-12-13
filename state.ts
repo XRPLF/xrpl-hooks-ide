@@ -5,6 +5,8 @@ import type monaco from 'monaco-editor';
 import toast from 'react-hot-toast';
 import Router from 'next/router';
 import type { Session } from 'next-auth';
+import { createZip } from './utils/zip';
+import { guessZipFileName } from './utils/helpers';
 
 const octokit = new Octokit();
 
@@ -182,7 +184,9 @@ export const updateEditorSettings = (editorSettings: IState['editorSettings']) =
 
 export const saveFile = (value: string) => {
   const editorModels = state.editorCtx?.getModels();
-  const currentModel = editorModels?.find(editorModel => editorModel.uri.path === `/${state.files[state.active].name}`);
+  const currentModel = editorModels?.find(
+    editorModel => editorModel.uri.path === `/${state.files[state.active].name}`
+  );
   if (state.files.length > 0) {
     state.files[state.active].content = currentModel?.getValue() || '';
   }
@@ -243,6 +247,16 @@ export const compileCode = async (activeId: number) => {
     state.compiling = false;
   }
 }
+
+
+export const downloadAsZip = async () => {
+  // TODO do something about loading state
+  const files = state.files.map(({ name, content }) => ({ name, content }));
+  const zipped = await createZip(files);
+  const zipFileName = guessZipFileName(files);
+  zipped.saveFile(zipFileName);
+};
+
 
 if (process.env.NODE_ENV !== 'production') {
   devtools(state, 'Files State');
