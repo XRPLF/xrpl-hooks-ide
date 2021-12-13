@@ -17,13 +17,11 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const slug = router.query?.slug;
   const gistId = (Array.isArray(slug) && slug[0]) ?? null;
   useEffect(() => {
-    if (router.pathname.includes("/develop")) {
-      if (gistId && router.isReady) {
-        fetchFiles(gistId);
-      } else {
-        if (!gistId && router.isReady) {
-          state.mainModalOpen = true;
-        }
+    if (gistId && router.isReady) {
+      fetchFiles(gistId);
+    } else {
+      if (!gistId && router.isReady && !router.pathname.includes("/sign-in")) {
+        state.mainModalOpen = true;
       }
     }
   }, [gistId, router.isReady, router.pathname]);
@@ -52,6 +50,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
                   backgroundColor: "$mauve1",
                   color: "$mauve10",
                   fontSize: "$sm",
+                  zIndex: 9999,
                   ".dark &": {
                     backgroundColor: "$mauve4",
                     color: "$mauve12",
