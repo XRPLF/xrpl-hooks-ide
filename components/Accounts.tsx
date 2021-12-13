@@ -1,17 +1,18 @@
 import toast from "react-hot-toast";
+import { useSnapshot } from "valtio";
+import { ArrowSquareOut, Copy, Wallet, X } from "phosphor-react";
+import React, { useEffect, useState } from "react";
+import Dinero from "dinero.js";
+
 import Button from "./Button";
 import { addFaucetAccount, deployHook, importAccount } from "../state/actions";
 import state from "../state";
 import Box from "./Box";
 import Container from "./Container";
 import Heading from "./Heading";
-import { ArrowSquareOut, Copy, Wallet, X } from "phosphor-react";
 import Stack from "./Stack";
 import Text from "./Text";
 import Flex from "./Flex";
-import { useSnapshot } from "valtio";
-import React, { useEffect, useState } from "react";
-import Dinero from "dinero.js";
 import {
   Dialog,
   DialogContent,

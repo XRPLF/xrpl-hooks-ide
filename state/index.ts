@@ -2,7 +2,6 @@ import { proxy, ref, subscribe } from "valtio";
 import { devtools } from 'valtio/utils'
 import type monaco from "monaco-editor";
 import { XrplClient } from "xrpl-client";
-import { addFaucetAccount } from "./actions/addFaucetAccount";
 
 export interface IFile {
   name: string;
@@ -115,17 +114,6 @@ client.on("online", () => {
 client.on("offline", () => {
   state.clientStatus = "offline";
 });
-
-
-// fetch initial faucets
-(async function fetchFaucets() {
-  if (state.accounts.length < 2) {
-    await addFaucetAccount();
-    setTimeout(() => {
-      addFaucetAccount();
-    }, 10000);
-  }
-})();
 
 if (process.env.NODE_ENV !== "production") {
   devtools(state, "Files State");
