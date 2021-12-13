@@ -364,14 +364,28 @@ const Accounts = () => {
               >
                 <Text>{account.name} </Text>
                 <Text css={{ color: "$mauve9" }}>
-                  {account.address} ({account.xrp}) ({account.sequence})
+                  {account.address} (
+                  {Dinero({
+                    amount: Number(account?.xrp || "0"),
+                    precision: 6,
+                  })
+                    .toUnit()
+                    .toLocaleString(undefined, {
+                      style: "currency",
+                      currency: "XRP",
+                      currencyDisplay: "name",
+                    })}
+                  )
                 </Text>
                 <Button
                   css={{ ml: "auto" }}
                   size="xs"
                   uppercase
                   isLoading={account.isLoading}
-                  disabled={account.isLoading}
+                  disabled={
+                    account.isLoading ||
+                    !snap.files.filter((file) => file.compiledWatContent).length
+                  }
                   variant="secondary"
                   onClick={(e) => {
                     e.stopPropagation();
