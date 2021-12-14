@@ -6,6 +6,7 @@ import Spinner from "./Spinner";
 export const StyledButton = styled("button", {
   // Reset
   all: "unset",
+  position: "relative",
   appereance: "none",
   fontFamily: "$body",
   alignItems: "center",
@@ -112,7 +113,31 @@ export const StyledButton = styled("button", {
             boxShadow: "inset 0 0 0 1px $colors$pink8",
           },
       },
+      secondary: {
+        backgroundColor: `$purple9`,
+        boxShadow: "inset 0 0 0 1px $colors$purple9",
+        color: "$white",
+        "@hover": {
+          "&:hover": {
+            backgroundColor: "$purple10",
+            boxShadow: "inset 0 0 0 1px $colors$purple11",
+          },
+        },
+        "&:active": {
+          backgroundColor: "$purple8",
+          boxShadow: "inset 0 0 0 1px $colors$purple8",
+        },
+        "&:focus": {
+          boxShadow: "inset 0 0 0 2px $colors$purple12",
+        },
+        '&[data-radix-popover-trigger][data-state="open"], &[data-radix-dropdown-menu-trigger][data-state="open"]':
+          {
+            backgroundColor: "$mauve4",
+            boxShadow: "inset 0 0 0 1px $colors$purple8",
+          },
+      },
     },
+
     outline: {
       true: {
         backgroundColor: "transparent",
@@ -174,6 +199,18 @@ export const StyledButton = styled("button", {
     {
       outline: true,
       variant: "primary",
+      css: {
+        background: "transparent",
+        color: "$mauve12",
+        "&:hover": {
+          color: "$mauve12",
+          background: "$mauve5",
+        },
+      },
+    },
+    {
+      outline: true,
+      variant: "secondary",
       css: {
         background: "transparent",
         color: "$mauve12",
