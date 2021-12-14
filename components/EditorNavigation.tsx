@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Plus,
   Share,
@@ -26,12 +26,7 @@ import NewWindow from "react-new-window";
 import { signOut, useSession } from "next-auth/react";
 import { useSnapshot } from "valtio";
 
-import {
-  createNewFile,
-  state,
-  syncToGist,
-  updateEditorSettings,
-} from "../state";
+import { createNewFile, state, syncToGist, updateEditorSettings } from "../state";
 import Box from "./Box";
 import Button from "./Button";
 import Container from "./Container";
@@ -60,6 +55,7 @@ const EditorNavigation = () => {
   const snap = useSnapshot(state);
   const [createNewAlertOpen, setCreateNewAlertOpen] = useState(false);
   const [editorSettingsOpen, setEditorSettingsOpen] = useState(false);
+  const [isNewfileDialogOpen, setIsNewfileDialogOpen] = useState(false);
   const [filename, setFilename] = useState("");
   const { data: session, status } = useSession();
   const [popup, setPopUp] = useState(false);
@@ -69,6 +65,13 @@ const EditorNavigation = () => {
       setPopUp(false);
     }
   }, [session, popup]);
+
+  const handleConfirm = useCallback(() => {
+    setIsNewfileDialogOpen(false);
+    createNewFile(filename);
+    setFilename("");
+  }, [filename, setIsNewfileDialogOpen, setFilename])
+
   return (
     <Flex css={{ flexShrink: 0, gap: "$0" }}>
       <Flex
@@ -138,7 +141,7 @@ const EditorNavigation = () => {
                 </Button>
               ))}
 
-            <Dialog>
+            <Dialog open={isNewfileDialogOpen} onOpenChange={setIsNewfileDialogOpen}>
               <DialogTrigger asChild>
                 <Button
                   ghost
@@ -155,7 +158,12 @@ const EditorNavigation = () => {
                   <label>Filename</label>
                   <Input
                     value={filename}
-                    onChange={(e) => setFilename(e.target.value)}
+                    onKeyPress={e => {
+                      if (e.key === "Enter") {
+                        handleConfirm()
+                      }
+                    }}
+                    onChange={e => setFilename(e.target.value)}
                   />
                 </DialogDescription>
 
@@ -168,11 +176,7 @@ const EditorNavigation = () => {
                   <DialogClose asChild>
                     <Button
                       variant="primary"
-                      onClick={() => {
-                        createNewFile(filename);
-                        // reset
-                        setFilename("");
-                      }}
+                      onClick={handleConfirm}
                     >
                       Create file
                     </Button>
