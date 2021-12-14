@@ -41,6 +41,7 @@ import {
 import Flex from "./Flex";
 import Stack from "./Stack";
 import Input from "./Input";
+import Text from "./Text";
 import toast from "react-hot-toast";
 import {
   AlertDialog,
@@ -50,12 +51,22 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "./AlertDialog";
+import { styled } from "../stitches.config";
+
+const DEFAULT_EXTENSION = ".c";
+
+const ErrorText = styled(Text, {
+  color: "$red9",
+  mt: "$1",
+  display: "block",
+});
 
 const EditorNavigation = () => {
   const snap = useSnapshot(state);
   const [createNewAlertOpen, setCreateNewAlertOpen] = useState(false);
   const [editorSettingsOpen, setEditorSettingsOpen] = useState(false);
   const [isNewfileDialogOpen, setIsNewfileDialogOpen] = useState(false);
+  const [newfileError, setNewfileError] = useState<string | null>(null);
   const [filename, setFilename] = useState("");
   const { data: session, status } = useSession();
   const [popup, setPopUp] = useState(false);
@@ -66,11 +77,34 @@ const EditorNavigation = () => {
     }
   }, [session, popup]);
 
+  // when filename changes, reset error
+  useEffect(() => {
+    setNewfileError(null);
+  }, [filename, setNewfileError]);
+
+  const validateFilename = useCallback(
+    (filename: string): { error: string | null } => {
+      if (snap.files.find(file => file.name === filename)) {
+        return { error: "Filename already exists." };
+      }
+      // More checks in future
+      return { error: null };
+    },
+    [snap.files]
+  );
   const handleConfirm = useCallback(() => {
+    // add default extension in case omitted
+    let _filename = filename.includes(".") ? filename : filename + DEFAULT_EXTENSION
+    const chk = validateFilename(_filename);
+    if (chk.error) {
+      setNewfileError(`Error: ${chk.error}`);
+      return;
+    }
+
     setIsNewfileDialogOpen(false);
-    createNewFile(filename);
+    createNewFile(_filename);
     setFilename("");
-  }, [filename, setIsNewfileDialogOpen, setFilename])
+  }, [filename, setIsNewfileDialogOpen, setFilename, validateFilename]);
 
   return (
     <Flex css={{ flexShrink: 0, gap: "$0" }}>
@@ -132,8 +166,7 @@ const EditorNavigation = () => {
                       // If deleted file is behind active tab
                       // we keep the current state otherwise
                       // select previous file on the list
-                      state.active =
-                        index > snap.active ? snap.active : snap.active - 1;
+                      state.active = index > snap.active ? snap.active : snap.active - 1;
                     }}
                   >
                     <X size="9px" weight="bold" />
@@ -143,13 +176,8 @@ const EditorNavigation = () => {
 
             <Dialog open={isNewfileDialogOpen} onOpenChange={setIsNewfileDialogOpen}>
               <DialogTrigger asChild>
-                <Button
-                  ghost
-                  size="sm"
-                  css={{ alignItems: "center", px: "$2", mr: "$3" }}
-                >
-                  <Plus size="16px" />{" "}
-                  {snap.files.length === 0 && "Add new file"}
+                <Button ghost size="sm" css={{ alignItems: "center", px: "$2", mr: "$3" }}>
+                  <Plus size="16px" /> {snap.files.length === 0 && "Add new file"}
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -160,27 +188,21 @@ const EditorNavigation = () => {
                     value={filename}
                     onKeyPress={e => {
                       if (e.key === "Enter") {
-                        handleConfirm()
+                        handleConfirm();
                       }
                     }}
                     onChange={e => setFilename(e.target.value)}
                   />
+                  <ErrorText>{newfileError}</ErrorText>
                 </DialogDescription>
 
-                <Flex
-                  css={{ marginTop: 25, justifyContent: "flex-end", gap: "$3" }}
-                >
+                <Flex css={{ marginTop: 25, justifyContent: "flex-end", gap: "$3" }}>
                   <DialogClose asChild>
                     <Button outline>Cancel</Button>
                   </DialogClose>
-                  <DialogClose asChild>
-                    <Button
-                      variant="primary"
-                      onClick={handleConfirm}
-                    >
-                      Create file
-                    </Button>
-                  </DialogClose>
+                  <Button variant="primary" onClick={handleConfirm}>
+                    Create file
+                  </Button>
                 </Flex>
                 <DialogClose asChild>
                   <Box css={{ position: "absolute", top: "$3", right: "$3" }}>
@@ -199,9 +221,7 @@ const EditorNavigation = () => {
           zIndex: 1,
         }}
       >
-        <Container
-          css={{ width: "unset", display: "flex", alignItems: "center" }}
-        >
+        <Container css={{ width: "unset", display: "flex", alignItems: "center" }}>
           {status === "authenticated" ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -234,15 +254,10 @@ const EditorNavigation = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem disabled onClick={() => signOut()}>
-                  <User size="16px" /> {session?.user?.username} (
-                  {session?.user.name})
+                  <User size="16px" /> {session?.user?.username} ({session?.user.name})
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() =>
-                    window.open(
-                      `http://gist.github.com/${session?.user.username}`
-                    )
-                  }
+                  onClick={() => window.open(`http://gist.github.com/${session?.user.username}`)}
                 >
                   <ArrowSquareOut size="16px" />
                   Go to your Gist
@@ -256,12 +271,7 @@ const EditorNavigation = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button
-              outline
-              size="sm"
-              css={{ mr: "$3" }}
-              onClick={() => setPopUp(true)}
-            >
+            <Button outline size="sm" css={{ mr: "$3" }} onClick={() => setPopUp(true)}>
               <GithubLogo size="16px" /> Login
             </Button>
           )}
@@ -308,9 +318,7 @@ const EditorNavigation = () => {
               size="sm"
               css={{ alignItems: "center" }}
               onClick={() => {
-                navigator.clipboard.writeText(
-                  `${window.location.origin}/develop/${snap.gistId}`
-                );
+                navigator.clipboard.writeText(`${window.location.origin}/develop/${snap.gistId}`);
                 toast.success("Copied share link to clipboard!");
               }}
             >
@@ -355,9 +363,7 @@ const EditorNavigation = () => {
                   Copy share link to clipboard
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  disabled={
-                    session?.user.username !== snap.gistOwner || !snap.gistId
-                  }
+                  disabled={session?.user.username !== snap.gistOwner || !snap.gistId}
                   onClick={() => {
                     syncToGist(session);
                   }}
@@ -383,21 +389,15 @@ const EditorNavigation = () => {
             </DropdownMenu>
           </Stack>
 
-          {popup && !session ? (
-            <NewWindow center="parent" url="/sign-in" />
-          ) : null}
+          {popup && !session ? <NewWindow center="parent" url="/sign-in" /> : null}
         </Container>
       </Flex>
-      <AlertDialog
-        open={createNewAlertOpen}
-        onOpenChange={(value) => setCreateNewAlertOpen(value)}
-      >
+      <AlertDialog open={createNewAlertOpen} onOpenChange={value => setCreateNewAlertOpen(value)}>
         <AlertDialogContent>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action will create new <strong>public</strong> Github Gist from
-            your current saved files. You can delete gist anytime from your
-            GitHub Gists page.
+            This action will create new <strong>public</strong> Github Gist from your current saved
+            files. You can delete gist anytime from your GitHub Gists page.
           </AlertDialogDescription>
           <Flex css={{ justifyContent: "flex-end", gap: "$3" }}>
             <AlertDialogCancel asChild>
@@ -431,8 +431,8 @@ const EditorNavigation = () => {
               type="number"
               min="1"
               value={editorSettings.tabSize}
-              onChange={(e) =>
-                setEditorSettings((curr) => ({
+              onChange={e =>
+                setEditorSettings(curr => ({
                   ...curr,
                   tabSize: Number(e.target.value),
                 }))
@@ -442,18 +442,12 @@ const EditorNavigation = () => {
 
           <Flex css={{ marginTop: 25, justifyContent: "flex-end", gap: "$3" }}>
             <DialogClose asChild>
-              <Button
-                outline
-                onClick={() => updateEditorSettings(editorSettings)}
-              >
+              <Button outline onClick={() => updateEditorSettings(editorSettings)}>
                 Cancel
               </Button>
             </DialogClose>
             <DialogClose asChild>
-              <Button
-                variant="primary"
-                onClick={() => updateEditorSettings(editorSettings)}
-              >
+              <Button variant="primary" onClick={() => updateEditorSettings(editorSettings)}>
                 Save changes
               </Button>
             </DialogClose>
