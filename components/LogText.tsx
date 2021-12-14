@@ -15,6 +15,9 @@ const Text = styled("span", {
       error: {
         color: "$red11",
       },
+      success: {
+        color: "$green11",
+      },
     },
     capitalize: {
       true: {

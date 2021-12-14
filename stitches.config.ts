@@ -11,6 +11,7 @@ import {
   mauve,
   pink,
   yellow,
+  purple,
   grayDark,
   blueDark,
   redDark,
@@ -20,6 +21,7 @@ import {
   mauveDark,
   pinkDark,
   yellowDark,
+  purpleDark,
 } from '@radix-ui/colors';
 
 export const {
@@ -43,6 +45,7 @@ export const {
       ...mauve,
       ...pink,
       ...yellow,
+      ...purple,
       background: "$gray1",
       text: "$gray12",
       primary: "$plum",
@@ -52,10 +55,10 @@ export const {
     fonts: {
       body: 'Work Sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
       heading: 'Work Sans, sans-serif',
-      monospace: 'Roboto, monospace',
+      monospace: 'Roboto Mono, monospace',
     },
     fontSizes: {
-      xs: "0.75rem",
+      xs: "0.6875rem",
       sm: "0.875rem",
       md: "1rem",
       lg: "1.125rem",
@@ -298,7 +301,8 @@ export const darkTheme = createTheme('dark', {
     ...slateDark,
     ...mauveDark,
     ...pinkDark,
-    ...yellowDark
+    ...yellowDark,
+    ...purpleDark,
   },
 });
 
@@ -312,4 +316,8 @@ export const globalStyles = globalCss({
     '-webkit-font-smoothing': 'antialiased',
     '-moz-osx-font-smoothing': 'grayscale'
   },
+  'a': {
+    color: 'inherit',
+    textDecoration: 'none'
+  }
 });

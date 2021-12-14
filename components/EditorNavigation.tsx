@@ -26,7 +26,8 @@ import NewWindow from "react-new-window";
 import { signOut, useSession } from "next-auth/react";
 import { useSnapshot } from "valtio";
 
-import { createNewFile, state, syncToGist, updateEditorSettings } from "../state";
+import { createNewFile, syncToGist, updateEditorSettings } from "../state/actions";
+import state from "../state";
 import Box from "./Box";
 import Button from "./Button";
 import Container from "./Container";
@@ -61,7 +62,7 @@ const ErrorText = styled(Text, {
   display: "block",
 });
 
-const EditorNavigation = () => {
+const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
   const snap = useSnapshot(state);
   const [createNewAlertOpen, setCreateNewAlertOpen] = useState(false);
   const [editorSettingsOpen, setEditorSettingsOpen] = useState(false);
@@ -94,7 +95,7 @@ const EditorNavigation = () => {
   );
   const handleConfirm = useCallback(() => {
     // add default extension in case omitted
-    let _filename = filename.includes(".") ? filename : filename + DEFAULT_EXTENSION
+    let _filename = filename.includes(".") ? filename : filename + DEFAULT_EXTENSION;
     const chk = validateFilename(_filename);
     if (chk.error) {
       setNewfileError(`Error: ${chk.error}`);
@@ -106,6 +107,7 @@ const EditorNavigation = () => {
     setFilename("");
   }, [filename, setIsNewfileDialogOpen, setFilename, validateFilename]);
 
+  const files = snap.files;
   return (
     <Flex css={{ flexShrink: 0, gap: "$0" }}>
       <Flex
@@ -128,89 +130,107 @@ const EditorNavigation = () => {
               marginBottom: "-1px",
             }}
           >
-            {snap.files &&
-              snap.files.length > 0 &&
-              snap.files?.map((file, index) => (
-                <Button
-                  size="sm"
-                  outline={snap.active !== index}
-                  onClick={() => (state.active = index)}
-                  key={file.name + index}
-                  css={{
-                    "&:hover": {
-                      span: {
-                        visibility: "visible",
-                      },
-                    },
-                  }}
-                >
-                  {file.name}
-                  <Box
-                    as="span"
+            {files &&
+              files.length > 0 &&
+              files.map((file, index) => {
+                if (!file.compiledContent && showWat) {
+                  return null;
+                }
+                return (
+                  <Button
+                    size="sm"
+                    outline={showWat ? snap.activeWat !== index : snap.active !== index}
+                    onClick={() => (state.active = index)}
+                    key={file.name + index}
                     css={{
-                      display: "flex",
-                      p: "2px",
-                      borderRadius: "$full",
-                      mr: "-4px",
                       "&:hover": {
-                        // boxSizing: "0px 0px 1px",
-                        backgroundColor: "$mauve2",
-                        color: "$mauve12",
+                        span: {
+                          visibility: "visible",
+                        },
                       },
-                    }}
-                    onClick={(ev: React.MouseEvent<HTMLElement>) => {
-                      ev.stopPropagation();
-                      // Remove file from state
-                      state.files.splice(index, 1);
-                      // Change active file state
-                      // If deleted file is behind active tab
-                      // we keep the current state otherwise
-                      // select previous file on the list
-                      state.active = index > snap.active ? snap.active : snap.active - 1;
                     }}
                   >
-                    <X size="9px" weight="bold" />
-                  </Box>
-                </Button>
-              ))}
-
-            <Dialog open={isNewfileDialogOpen} onOpenChange={setIsNewfileDialogOpen}>
-              <DialogTrigger asChild>
-                <Button ghost size="sm" css={{ alignItems: "center", px: "$2", mr: "$3" }}>
-                  <Plus size="16px" /> {snap.files.length === 0 && "Add new file"}
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogTitle>Create new file</DialogTitle>
-                <DialogDescription>
-                  <label>Filename</label>
-                  <Input
-                    value={filename}
-                    onKeyPress={e => {
-                      if (e.key === "Enter") {
-                        handleConfirm();
-                      }
-                    }}
-                    onChange={e => setFilename(e.target.value)}
-                  />
-                  <ErrorText>{newfileError}</ErrorText>
-                </DialogDescription>
-
-                <Flex css={{ marginTop: 25, justifyContent: "flex-end", gap: "$3" }}>
-                  <DialogClose asChild>
-                    <Button outline>Cancel</Button>
-                  </DialogClose>
-                  <Button variant="primary" onClick={handleConfirm}>
-                    Create file
+                    {file.name}
+                    {showWat && ".wat"}
+                    {!showWat && (
+                      <Box
+                        as="span"
+                        css={{
+                          display: "flex",
+                          p: "2px",
+                          borderRadius: "$full",
+                          mr: "-4px",
+                          "&:hover": {
+                            // boxSizing: "0px 0px 1px",
+                            backgroundColor: "$mauve2",
+                            color: "$mauve12",
+                          },
+                        }}
+                        onClick={(ev: React.MouseEvent<HTMLElement>) => {
+                          ev.stopPropagation();
+                          // Remove file from state
+                          state.files.splice(index, 1);
+                          // Change active file state
+                          // If deleted file is behind active tab
+                          // we keep the current state otherwise
+                          // select previous file on the list
+                          state.active = index > snap.active ? snap.active : snap.active - 1;
+                        }}
+                      >
+                        <X size="9px" weight="bold" />
+                      </Box>
+                    )}
                   </Button>
-                </Flex>
-                <DialogClose asChild>
-                  <Box css={{ position: "absolute", top: "$3", right: "$3" }}>
-                    <X size="20px" />
-                  </Box>
-                </DialogClose>
-              </DialogContent>
-            </Dialog>
+                );
+              })}
+            {!showWat && (
+              <Dialog open={isNewfileDialogOpen} onOpenChange={setIsNewfileDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button ghost size="sm" css={{ alignItems: "center", px: "$2", mr: "$3" }}>
+                    <Plus size="16px" /> {snap.files.length === 0 && "Add new file"}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogTitle>Create new file</DialogTitle>
+                  <DialogDescription>
+                    <label>Filename</label>
+                    <Input
+                      value={filename}
+                      onChange={e => setFilename(e.target.value)}
+                      onKeyPress={e => {
+                        if (e.key === "Enter") {
+                          handleConfirm();
+                        }
+                      }}
+                    />
+                    <ErrorText>{newfileError}</ErrorText>
+                  </DialogDescription>
+
+                  <Flex
+                    css={{
+                      marginTop: 25,
+                      justifyContent: "flex-end",
+                      gap: "$3",
+                    }}
+                  >
+                    <DialogClose asChild>
+                      <Button outline>Cancel</Button>
+                    </DialogClose>
+                    <Button
+                      variant="primary"
+                      onClick={handleConfirm}
+                    >
+                      Create file
+                    </Button>
+                  </Flex>
+                  <DialogClose asChild>
+                    <Box css={{ position: "absolute", top: "$3", right: "$3" }}>
+                      <X size="20px" />
+                    </Box>
+                  </DialogClose>
+                </DialogContent>
+              </Dialog>
+            )}
           </Stack>
         </Container>
       </Flex>
