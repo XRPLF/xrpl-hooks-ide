@@ -70,7 +70,7 @@ const StyledTitle = styled(DialogPrimitive.Title, {
 });
 
 const StyledDescription = styled(DialogPrimitive.Description, {
-  margin: "10px 0 20px",
+  margin: "10px 0 10px",
   color: "$mauve11",
   fontSize: 15,
   lineHeight: 1.5,

@@ -1,16 +1,25 @@
-import React from "react";
+import React, { useRef, useLayoutEffect } from "react";
 import { useSnapshot } from "valtio";
+import { Play, Prohibit } from "phosphor-react";
+import useStayScrolled from "react-stay-scrolled";
+
 import Container from "./Container";
 import Box from "./Box";
-
 import LogText from "./LogText";
-import { compileCode, state } from "../state";
-import { Play, Prohibit } from "phosphor-react";
+import { compileCode } from "../state/actions";
+import state from "../state";
 import Button from "./Button";
 import Heading from "./Heading";
 
 const Footer = () => {
   const snap = useSnapshot(state);
+  const logRef = useRef<HTMLPreElement>(null);
+  const { stayScrolled /*, scrollBottom*/ } = useStayScrolled(logRef);
+
+  useLayoutEffect(() => {
+    stayScrolled();
+  }, [snap.logs, stayScrolled]);
+
   return (
     <Box
       as="footer"
@@ -45,6 +54,7 @@ const Footer = () => {
         </Button>
         <Box
           as="pre"
+          ref={logRef}
           css={{
             display: "flex",
             flexDirection: "column",

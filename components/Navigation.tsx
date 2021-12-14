@@ -12,7 +12,7 @@ import Flex from "./Flex";
 import Container from "./Container";
 import Box from "./Box";
 import ThemeChanger from "./ThemeChanger";
-import { state } from "../state";
+import state from "../state";
 import Heading from "./Heading";
 import Text from "./Text";
 import Spinner from "./Spinner";
@@ -97,217 +97,223 @@ const Navigation = () => {
               </>
             )}
           </Flex>
-          <ButtonGroup css={{ marginLeft: "auto" }}>
-            <Dialog
-              open={snap.mainModalOpen}
-              onOpenChange={(open) => (state.mainModalOpen = open)}
-            >
-              <DialogTrigger asChild>
-                <Button outline>
-                  <FolderOpen size="15px" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent
-                css={{
-                  maxWidth: "100%",
-                  width: "80vw",
-                  height: "80%",
-                  backgroundColor: "$mauve1 !important",
-                  overflowY: "auto",
-                  p: 0,
-                }}
+          {router.isReady && (
+            <ButtonGroup css={{ marginLeft: "auto" }}>
+              <Dialog
+                open={snap.mainModalOpen}
+                onOpenChange={(open) => (state.mainModalOpen = open)}
               >
-                <Flex
+                <DialogTrigger asChild>
+                  <Button outline>
+                    <FolderOpen size="15px" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent
                   css={{
-                    flexDirection: "column",
-                    flex: 1,
-                    height: "auto",
-                    "@md": {
-                      flexDirection: "row",
-                      height: "100%",
-                    },
+                    maxWidth: "100%",
+                    width: "80vw",
+                    height: "80%",
+                    backgroundColor: "$mauve1 !important",
+                    overflowY: "auto",
+                    p: 0,
                   }}
                 >
                   <Flex
                     css={{
-                      borderBottom: "1px solid $colors$mauve5",
-                      width: "100%",
                       flexDirection: "column",
-                      p: "$7",
-                      height: "100%",
+                      flex: 1,
+                      height: "auto",
                       "@md": {
-                        width: "30%",
-                        borderBottom: "0px",
-                        borderRight: "1px solid $colors$mauve5",
+                        flexDirection: "row",
+                        height: "100%",
                       },
                     }}
                   >
-                    <DialogTitle
+                    <Flex
                       css={{
-                        textTransform: "uppercase",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "$3",
-                        fontSize: "$xl",
+                        borderBottom: "1px solid $colors$mauve5",
+                        width: "100%",
+                        flexDirection: "column",
+                        p: "$7",
+                        height: "100%",
+                        "@md": {
+                          width: "30%",
+                          borderBottom: "0px",
+                          borderRight: "1px solid $colors$mauve5",
+                        },
                       }}
                     >
-                      <Logo width="30px" height="30px" /> XRPL Hooks Editor
-                    </DialogTitle>
-                    <DialogDescription as="div">
-                      <Text
+                      <DialogTitle
                         css={{
+                          textTransform: "uppercase",
                           display: "inline-flex",
-                          color: "inherit",
-                          my: "$5",
-                          mb: "$7",
+                          alignItems: "center",
+                          gap: "$3",
+                          fontSize: "$xl",
                         }}
                       >
-                        Hooks add smart contract functionality to the XRP
-                        Ledger.
-                      </Text>
-                      <Flex
-                        css={{ flexDirection: "column", gap: "$2", mt: "$2" }}
-                      >
+                        <Logo width="30px" height="30px" /> XRPL Hooks Editor
+                      </DialogTitle>
+                      <DialogDescription as="div">
                         <Text
                           css={{
                             display: "inline-flex",
-                            alignItems: "center",
-                            gap: "$3",
-                            color: "$green9",
-                            "&:hover": {
-                              color: "$green11 !important",
-                            },
-                            "&:focus": {
-                              outline: 0,
-                            },
+                            color: "inherit",
+                            my: "$5",
+                            mb: "$7",
                           }}
-                          as="a"
-                          rel="noreferrer noopener"
-                          target="_blank"
-                          href="https://github.com/XRPL-Labs/xrpld-hooks"
                         >
-                          <ArrowUpRight size="15px" /> Developing Hooks
+                          Hooks add smart contract functionality to the XRP
+                          Ledger.
                         </Text>
+                        <Flex
+                          css={{ flexDirection: "column", gap: "$2", mt: "$2" }}
+                        >
+                          <Text
+                            css={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "$3",
+                              color: "$green9",
+                              "&:hover": {
+                                color: "$green11 !important",
+                              },
+                              "&:focus": {
+                                outline: 0,
+                              },
+                            }}
+                            as="a"
+                            rel="noreferrer noopener"
+                            target="_blank"
+                            href="https://github.com/XRPL-Labs/xrpld-hooks"
+                          >
+                            <ArrowUpRight size="15px" /> Developing Hooks
+                          </Text>
 
-                        <Text
-                          css={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "$3",
-                            color: "$green9",
-                            "&:hover": {
-                              color: "$green11 !important",
-                            },
-                            "&:focus": {
-                              outline: 0,
-                            },
-                          }}
-                          as="a"
-                          rel="noreferrer noopener"
-                          target="_blank"
-                          href="https://xrpl-hooks.readme.io/docs"
-                        >
-                          <ArrowUpRight size="15px" /> Hooks documentation
-                        </Text>
-                        <Text
-                          css={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "$3",
-                            color: "$green9",
-                            "&:hover": {
-                              color: "$green11 !important",
-                            },
-                            "&:focus": {
-                              outline: 0,
-                            },
-                          }}
-                          as="a"
-                          rel="noreferrer noopener"
-                          target="_blank"
-                          href="https://xrpl.org/docs.html"
-                        >
-                          <ArrowUpRight size="15px" /> XRPL documentation
-                        </Text>
-                      </Flex>
-                    </DialogDescription>
-                  </Flex>
+                          <Text
+                            css={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "$3",
+                              color: "$green9",
+                              "&:hover": {
+                                color: "$green11 !important",
+                              },
+                              "&:focus": {
+                                outline: 0,
+                              },
+                            }}
+                            as="a"
+                            rel="noreferrer noopener"
+                            target="_blank"
+                            href="https://xrpl-hooks.readme.io/docs"
+                          >
+                            <ArrowUpRight size="15px" /> Hooks documentation
+                          </Text>
+                          <Text
+                            css={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "$3",
+                              color: "$green9",
+                              "&:hover": {
+                                color: "$green11 !important",
+                              },
+                              "&:focus": {
+                                outline: 0,
+                              },
+                            }}
+                            as="a"
+                            rel="noreferrer noopener"
+                            target="_blank"
+                            href="https://xrpl.org/docs.html"
+                          >
+                            <ArrowUpRight size="15px" /> XRPL documentation
+                          </Text>
+                        </Flex>
+                      </DialogDescription>
+                    </Flex>
 
-                  <Flex
-                    css={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr",
-                      gridTemplateRows: "max-content",
-                      flex: 1,
-                      p: "$7",
-                      gap: "$3",
-                      alignItems: "flex-start",
-                      flexWrap: "wrap",
-                      backgroundImage: `url('/pattern.svg'), url('/pattern-2.svg')`,
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "bottom left, top right",
-                      "@md": {
-                        gridTemplateColumns: "1fr 1fr 1fr",
+                    <Flex
+                      css={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr",
                         gridTemplateRows: "max-content",
-                      },
-                    }}
-                  >
-                    <PanelBox
-                      as="a"
-                      href="/develop/be088224fb37c0075e84491da0e602c1"
+                        flex: 1,
+                        p: "$7",
+                        gap: "$3",
+                        alignItems: "flex-start",
+                        flexWrap: "wrap",
+                        backgroundImage: `url('/pattern.svg'), url('/pattern-2.svg')`,
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "bottom left, top right",
+                        "@md": {
+                          gridTemplateColumns: "1fr 1fr 1fr",
+                          gridTemplateRows: "max-content",
+                        },
+                      }}
                     >
-                      <Heading>Starter</Heading>
-                      <Text>Just an empty starter with essential imports</Text>
-                    </PanelBox>
-                    <PanelBox
-                      as="a"
-                      href="/develop/be088224fb37c0075e84491da0e602c1"
-                    >
-                      <Heading>Firewall</Heading>
-                      <Text>
-                        This Hook essentially checks a blacklist of accounts
-                      </Text>
-                    </PanelBox>
-                    <PanelBox
-                      as="a"
-                      href="/develop/be088224fb37c0075e84491da0e602c1"
-                    >
-                      <Heading>Accept</Heading>
-                      <Text>
-                        This hook just accepts any transaction coming through it
-                      </Text>
-                    </PanelBox>
-                    <PanelBox
-                      as="a"
-                      href="/develop/be088224fb37c0075e84491da0e602c1"
-                    >
-                      <Heading>Accept</Heading>
-                      <Text>
-                        This hook just accepts any transaction coming through it
-                      </Text>
-                    </PanelBox>
+                      <PanelBox
+                        as="a"
+                        href="/develop/be088224fb37c0075e84491da0e602c1"
+                      >
+                        <Heading>Starter</Heading>
+                        <Text>
+                          Just an empty starter with essential imports
+                        </Text>
+                      </PanelBox>
+                      <PanelBox
+                        as="a"
+                        href="/develop/be088224fb37c0075e84491da0e602c1"
+                      >
+                        <Heading>Firewall</Heading>
+                        <Text>
+                          This Hook essentially checks a blacklist of accounts
+                        </Text>
+                      </PanelBox>
+                      <PanelBox
+                        as="a"
+                        href="/develop/be088224fb37c0075e84491da0e602c1"
+                      >
+                        <Heading>Accept</Heading>
+                        <Text>
+                          This hook just accepts any transaction coming through
+                          it
+                        </Text>
+                      </PanelBox>
+                      <PanelBox
+                        as="a"
+                        href="/develop/be088224fb37c0075e84491da0e602c1"
+                      >
+                        <Heading>Accept</Heading>
+                        <Text>
+                          This hook just accepts any transaction coming through
+                          it
+                        </Text>
+                      </PanelBox>
+                    </Flex>
                   </Flex>
-                </Flex>
-                <DialogClose asChild>
-                  <Box
-                    css={{
-                      position: "absolute",
-                      top: "$1",
-                      right: "$1",
-                      cursor: "pointer",
-                      background: "$mauve1",
-                      display: "flex",
-                      borderRadius: "$full",
-                      p: "$1",
-                    }}
-                  >
-                    <X size="20px" />
-                  </Box>
-                </DialogClose>
-              </DialogContent>
-            </Dialog>
-            <ThemeChanger />
-          </ButtonGroup>
+                  <DialogClose asChild>
+                    <Box
+                      css={{
+                        position: "absolute",
+                        top: "$1",
+                        right: "$1",
+                        cursor: "pointer",
+                        background: "$mauve1",
+                        display: "flex",
+                        borderRadius: "$full",
+                        p: "$1",
+                      }}
+                    >
+                      <X size="20px" />
+                    </Box>
+                  </DialogClose>
+                </DialogContent>
+              </Dialog>
+              <ThemeChanger />
+            </ButtonGroup>
+          )}
         </Flex>
         <Flex
           css={{
