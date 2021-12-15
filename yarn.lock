@@ -4642,10 +4642,10 @@ xrpl-accountlib@^1.2.3:
     xrpl-secret-numbers "^0.3.3"
     xrpl-sign-keypairs "^2.0.0"
 
-xrpl-client@^1.9.2:
-  version "1.9.2"
-  resolved "https://registry.yarnpkg.com/xrpl-client/-/xrpl-client-1.9.2.tgz#c018510b050e678e09b8640533a57c50d4e586e9"
-  integrity sha512-foFrFqfYxpkj8La9k1G9ZJEbVOHJpvIIt0koNaw/3nlTUUnbyTENtr112CnHEh+z2JMqJxBB9JpmZavGDhMlKg==
+xrpl-client@^1.9.3:
+  version "1.9.3"
+  resolved "https://registry.yarnpkg.com/xrpl-client/-/xrpl-client-1.9.3.tgz#1f2c17f7677d271a854e74d6035d6334cacf1629"
+  integrity sha512-TouyBeXuDXZWvO+4HrlvfrVtoXXyi9ny4+vpZoMCd2EbljsdFFTU6ujAqu81BvujkathKMTHiB81cR1bTL8ypw==
   dependencies:
     debug "^4.1.1"
     websocket "^1.0.34"
