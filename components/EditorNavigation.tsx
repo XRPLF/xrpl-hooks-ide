@@ -330,7 +330,7 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
               },
             }}
           >
-            <Button onClick={downloadAsZip} outline size="sm" css={{ alignItems: "center" }}>
+            <Button disabled={state.zipLoading} onClick={downloadAsZip} outline size="sm" css={{ alignItems: "center" }}>
               <DownloadSimple size="16px" />
             </Button>
             <Button
@@ -368,7 +368,7 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={downloadAsZip}>
+                <DropdownMenuItem disabled={state.zipLoading} onClick={downloadAsZip}>
                   <DownloadSimple size="16px" /> Download as ZIP
                 </DropdownMenuItem>
                 <DropdownMenuItem

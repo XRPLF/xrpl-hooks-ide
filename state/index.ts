@@ -45,6 +45,7 @@ export interface IState {
   activeWat: number;
   loading: boolean;
   gistLoading: boolean;
+  zipLoading: boolean;
   compiling: boolean;
   logs: ILog[];
   deployLogs: ILog[];
@@ -59,7 +60,7 @@ export interface IState {
 }
 
 // let localStorageState: null | string = null;
-let initialState = {
+let initialState: IState = {
   files: [],
   active: 0,
   activeWat: 0,
@@ -72,6 +73,7 @@ let initialState = {
   gistOwner: undefined,
   gistName: undefined,
   gistLoading: false,
+  zipLoading: false,
   editorSettings: {
     tabSize: 2,
   },
