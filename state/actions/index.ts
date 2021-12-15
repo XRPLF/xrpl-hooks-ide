@@ -7,6 +7,7 @@ import { importAccount } from "./importAccount";
 import { saveFile } from "./saveFile";
 import { syncToGist } from "./syncToGist";
 import { updateEditorSettings } from "./updateEditorSettings";
+import { downloadAsZip } from "./downloadAsZip";
 
 export {
   addFaucetAccount,
@@ -17,5 +18,6 @@ export {
   importAccount,
   saveFile,
   syncToGist,
-  updateEditorSettings
+  updateEditorSettings,
+  downloadAsZip
 };

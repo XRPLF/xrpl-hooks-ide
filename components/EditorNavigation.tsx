@@ -26,7 +26,7 @@ import NewWindow from "react-new-window";
 import { signOut, useSession } from "next-auth/react";
 import { useSnapshot } from "valtio";
 
-import { createNewFile, syncToGist, updateEditorSettings } from "../state/actions";
+import { createNewFile, syncToGist, updateEditorSettings, downloadAsZip } from "../state/actions";
 import state from "../state";
 import Box from "./Box";
 import Button from "./Button";
@@ -330,7 +330,7 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
               },
             }}
           >
-            <Button outline size="sm" css={{ alignItems: "center" }}>
+            <Button isLoading={snap.zipLoading} onClick={downloadAsZip} outline size="sm" css={{ alignItems: "center" }}>
               <DownloadSimple size="16px" />
             </Button>
             <Button
@@ -368,7 +368,7 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem>
+                <DropdownMenuItem disabled={snap.zipLoading} onClick={downloadAsZip}>
                   <DownloadSimple size="16px" /> Download as ZIP
                 </DropdownMenuItem>
                 <DropdownMenuItem
