@@ -1,7 +1,7 @@
 import { Octokit } from "@octokit/core";
 import Router from "next/router";
 import state from '../index';
-import { templates } from '../../utils/templates';
+import { templateFileIds } from '../constants';
 
 
 const octokit = new Octokit();
@@ -20,11 +20,11 @@ export const fetchFiles = (gistId: string) => {
     octokit
       .request("GET /gists/{gist_id}", { gist_id: gistId })
       .then(res => {
-        if (!Object.values(templates).includes(gistId)) {
+        if (!Object.values(templateFileIds).includes(gistId)) {
           return res
         }
         // in case of templates, fetch header file(s) and append to res
-        return octokit.request("GET /gists/{gist_id}", { gist_id: templates.headers }).then(({ data: { files: headerFiles } }) => {
+        return octokit.request("GET /gists/{gist_id}", { gist_id: templateFileIds.headers }).then(({ data: { files: headerFiles } }) => {
           const files = { ...res.data.files, ...headerFiles }
           res.data.files = files
           return res

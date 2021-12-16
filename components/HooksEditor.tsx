@@ -11,6 +11,7 @@ import Container from "./Container";
 import dark from "../theme/editor/amy.json";
 import light from "../theme/editor/xcode_default.json";
 import { saveFile } from "../state/actions";
+import { apiHeaderFiles } from "../state/constants";
 import state from "../state";
 
 import EditorNavigation from "./EditorNavigation";
@@ -26,12 +27,27 @@ loader.config({
   },
 });
 
+const validateWritability = (editor: monaco.editor.IStandaloneCodeEditor) => {
+  const currPath = editor.getModel()?.uri.path;
+  console.log(currPath)
+  if (apiHeaderFiles.find(h => currPath?.endsWith(h))) {
+    editor.updateOptions({ readOnly: true });
+  } else {
+    editor.updateOptions({ readOnly: false });
+  }
+};
+
 const HooksEditor = () => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
   const subscriptionRef = useRef<ReconnectingWebSocket | null>(null);
   const snap = useSnapshot(state);
   const router = useRouter();
   const { theme } = useTheme();
+
+  useEffect(() => {
+    if (editorRef.current) validateWritability(editorRef.current);
+  }, [snap.active]);
+
   useEffect(() => {
     return () => {
       subscriptionRef?.current?.close();
@@ -58,9 +74,9 @@ const HooksEditor = () => {
           language={snap.files?.[snap.active]?.language}
           path={`file://tmp/c/${snap.files?.[snap.active]?.name}`}
           defaultValue={snap.files?.[snap.active]?.content}
-          beforeMount={(monaco) => {
+          beforeMount={monaco => {
             if (!snap.editorCtx) {
-              snap.files.forEach((file) =>
+              snap.files.forEach(file =>
                 monaco.editor.createModel(
                   file.content,
                   file.language,
@@ -86,7 +102,7 @@ const HooksEditor = () => {
               // listen when the web socket is opened
               listen({
                 webSocket: webSocket as WebSocket,
-                onConnection: (connection) => {
+                onConnection: connection => {
                   // create and start the language client
                   const languageClient = createLanguageClient(connection);
                   const disposable = languageClient.start();
@@ -125,12 +141,10 @@ const HooksEditor = () => {
                 enabled: true,
               },
             });
-            editor.addCommand(
-              monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
-              () => {
-                saveFile();
-              }
-            );
+            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+              saveFile();
+            });
+            validateWritability(editor)
           }}
           theme={theme === "dark" ? "dark" : "light"}
         />
@@ -148,9 +162,7 @@ const HooksEditor = () => {
               <Box css={{ display: "inline-flex", pl: "35px" }}>
                 <ArrowBendLeftUp size={30} />
               </Box>
-              <Box
-                css={{ pl: "0px", pt: "15px", flex: 1, display: "inline-flex" }}
-              >
+              <Box css={{ pl: "0px", pt: "15px", flex: 1, display: "inline-flex" }}>
                 <Text
                   css={{
                     fontSize: "14px",
