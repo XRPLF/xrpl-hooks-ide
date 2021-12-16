@@ -27,6 +27,7 @@ import {
   DialogTrigger,
 } from "./Dialog";
 import PanelBox from "./PanelBox";
+import { templates } from '../utils/templates';
 
 const Navigation = () => {
   const router = useRouter();
@@ -243,27 +244,27 @@ const Navigation = () => {
                         },
                       }}
                     >
-                      <PanelBox as="a" href="/develop/1d14e51e2e02dc0a508cb0733767a914">
+                      <PanelBox as="a" href={`/develop/${templates.starter}`}>
                         <Heading>Starter</Heading>
                         <Text>Just an empty starter with essential imports</Text>
                       </PanelBox>
-                      <PanelBox as="a" href="/develop/bcd6d0c0fcbe52545ddb802481ff9d26">
+                      <PanelBox as="a" href={`/develop/${templates.starter}`}>
                         <Heading>Firewall</Heading>
                         <Text>This Hook essentially checks a blacklist of accounts</Text>
                       </PanelBox>
-                      <PanelBox as="a" href="/develop/1d14e51e2e02dc0a508cb0733767a914">
+                      <PanelBox as="a" href={`/develop/${templates.accept}`}>
                         <Heading>Accept</Heading>
                         <Text>This hook just accepts any transaction coming through it</Text>
                       </PanelBox>
-                      <PanelBox as="a" href="/develop/a789c75f591eeab7932fd702ed8cf9ea">
+                      <PanelBox as="a" href={`/develop/${templates.notary}`}>
                         <Heading>Notary</Heading>
                         <Text>Collecting signatures for multi-sign transactions</Text>
                       </PanelBox>
-                      <PanelBox as="a" href="/develop/43925143fa19735d8c6505c34d3a6a47">
+                      <PanelBox as="a" href={`/develop/${templates.carbon}`}>
                         <Heading>Carbon</Heading>
                         <Text>Send a percentage of sum to an address</Text>
                       </PanelBox>
-                      <PanelBox as="a" href="/develop/ceaf352e2a65741341033ab7ef05c448">
+                      <PanelBox as="a" href={`/develop/${templates.peggy}`}>
                         <Heading>Peggy</Heading>
                         <Text>An oracle based stabe coin hook</Text>
                       </PanelBox>

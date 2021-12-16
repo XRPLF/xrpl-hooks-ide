@@ -1,10 +1,10 @@
 import { Octokit } from "@octokit/core";
 import Router from "next/router";
 import state from '../index';
+import { templates } from '../../utils/templates';
+
 
 const octokit = new Octokit();
-
-const HEADER_GIST_ID = '9b448e8a55fab11ef5d1274cb59f9cf3'
 
 /* Fetches Gist files from Githug Gists based on
  * gistId and stores the content in global state
@@ -20,8 +20,11 @@ export const fetchFiles = (gistId: string) => {
     octokit
       .request("GET /gists/{gist_id}", { gist_id: gistId })
       .then(res => {
-        // fetch header file(s) and append to res
-        return octokit.request("GET /gists/{gist_id}", { gist_id: HEADER_GIST_ID }).then(({ data: { files: headerFiles } }) => {
+        if (!Object.values(templates).includes(gistId)) {
+          return res
+        }
+        // in case of templates, fetch header file(s) and append to res
+        return octokit.request("GET /gists/{gist_id}", { gist_id: templates.headers }).then(({ data: { files: headerFiles } }) => {
           const files = { ...res.data.files, ...headerFiles }
           res.data.files = files
           return res
