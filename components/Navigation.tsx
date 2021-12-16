@@ -82,12 +82,8 @@ const Navigation = () => {
               <Spinner />
             ) : (
               <>
-                <Heading css={{ lineHeight: 1 }}>
-                  {snap.files?.[0]?.name || "XRPL Hooks"}
-                </Heading>
-                <Text
-                  css={{ fontSize: "$xs", color: "$mauve10", lineHeight: 1 }}
-                >
+                <Heading css={{ lineHeight: 1 }}>{snap.files?.[0]?.name || "XRPL Hooks"}</Heading>
+                <Text css={{ fontSize: "$xs", color: "$mauve10", lineHeight: 1 }}>
                   {snap.files.length > 0 ? "Gist: " : "Playground"}
                   <Text css={{ color: "$mauve12" }}>
                     {snap.files.length > 0 &&
@@ -99,10 +95,7 @@ const Navigation = () => {
           </Flex>
           {router.isReady && (
             <ButtonGroup css={{ marginLeft: "auto" }}>
-              <Dialog
-                open={snap.mainModalOpen}
-                onOpenChange={(open) => (state.mainModalOpen = open)}
-              >
+              <Dialog open={snap.mainModalOpen} onOpenChange={open => (state.mainModalOpen = open)}>
                 <DialogTrigger asChild>
                   <Button outline>
                     <FolderOpen size="15px" />
@@ -163,12 +156,9 @@ const Navigation = () => {
                             mb: "$7",
                           }}
                         >
-                          Hooks add smart contract functionality to the XRP
-                          Ledger.
+                          Hooks add smart contract functionality to the XRP Ledger.
                         </Text>
-                        <Flex
-                          css={{ flexDirection: "column", gap: "$2", mt: "$2" }}
-                        >
+                        <Flex css={{ flexDirection: "column", gap: "$2", mt: "$2" }}>
                           <Text
                             css={{
                               display: "inline-flex",
@@ -253,43 +243,29 @@ const Navigation = () => {
                         },
                       }}
                     >
-                      <PanelBox
-                        as="a"
-                        href="/develop/be088224fb37c0075e84491da0e602c1"
-                      >
+                      <PanelBox as="a" href="/develop/1d14e51e2e02dc0a508cb0733767a914">
                         <Heading>Starter</Heading>
-                        <Text>
-                          Just an empty starter with essential imports
-                        </Text>
+                        <Text>Just an empty starter with essential imports</Text>
                       </PanelBox>
-                      <PanelBox
-                        as="a"
-                        href="/develop/be088224fb37c0075e84491da0e602c1"
-                      >
+                      <PanelBox as="a" href="/develop/bcd6d0c0fcbe52545ddb802481ff9d26">
                         <Heading>Firewall</Heading>
-                        <Text>
-                          This Hook essentially checks a blacklist of accounts
-                        </Text>
+                        <Text>This Hook essentially checks a blacklist of accounts</Text>
                       </PanelBox>
-                      <PanelBox
-                        as="a"
-                        href="/develop/be088224fb37c0075e84491da0e602c1"
-                      >
+                      <PanelBox as="a" href="/develop/1d14e51e2e02dc0a508cb0733767a914">
                         <Heading>Accept</Heading>
-                        <Text>
-                          This hook just accepts any transaction coming through
-                          it
-                        </Text>
+                        <Text>This hook just accepts any transaction coming through it</Text>
                       </PanelBox>
-                      <PanelBox
-                        as="a"
-                        href="/develop/be088224fb37c0075e84491da0e602c1"
-                      >
-                        <Heading>Accept</Heading>
-                        <Text>
-                          This hook just accepts any transaction coming through
-                          it
-                        </Text>
+                      <PanelBox as="a" href="/develop/a789c75f591eeab7932fd702ed8cf9ea">
+                        <Heading>Notary</Heading>
+                        <Text>Collecting signatures for multi-sign transactions</Text>
+                      </PanelBox>
+                      <PanelBox as="a" href="/develop/43925143fa19735d8c6505c34d3a6a47">
+                        <Heading>Carbon</Heading>
+                        <Text>Send a percentage of sum to an address</Text>
+                      </PanelBox>
+                      <PanelBox as="a" href="/develop/ceaf352e2a65741341033ab7ef05c448">
+                        <Heading>Peggy</Heading>
+                        <Text>An oracle based stabe coin hook</Text>
                       </PanelBox>
                     </Flex>
                   </Flex>
@@ -336,42 +312,18 @@ const Navigation = () => {
             }}
           >
             <ButtonGroup>
-              <Link
-                href={gistId ? `/develop/${gistId}` : "/develop"}
-                passHref
-                shallow
-              >
-                <Button
-                  as="a"
-                  outline={!router.pathname.includes("/develop")}
-                  uppercase
-                >
+              <Link href={gistId ? `/develop/${gistId}` : "/develop"} passHref shallow>
+                <Button as="a" outline={!router.pathname.includes("/develop")} uppercase>
                   Develop
                 </Button>
               </Link>
-              <Link
-                href={gistId ? `/deploy/${gistId}` : "/deploy"}
-                passHref
-                shallow
-              >
-                <Button
-                  as="a"
-                  outline={!router.pathname.includes("/deploy")}
-                  uppercase
-                >
+              <Link href={gistId ? `/deploy/${gistId}` : "/deploy"} passHref shallow>
+                <Button as="a" outline={!router.pathname.includes("/deploy")} uppercase>
                   Deploy
                 </Button>
               </Link>
-              <Link
-                href={gistId ? `/test/${gistId}` : "/test"}
-                passHref
-                shallow
-              >
-                <Button
-                  as="a"
-                  outline={!router.pathname.includes("/test")}
-                  uppercase
-                >
+              <Link href={gistId ? `/test/${gistId}` : "/test"} passHref shallow>
+                <Button as="a" outline={!router.pathname.includes("/test")} uppercase>
                   Test
                 </Button>
               </Link>
