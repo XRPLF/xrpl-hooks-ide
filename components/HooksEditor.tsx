@@ -56,7 +56,7 @@ const HooksEditor = () => {
           keepCurrentModel
           defaultLanguage={snap.files?.[snap.active]?.language}
           language={snap.files?.[snap.active]?.language}
-          path={`file://tmp/c/${snap.files?.[snap.active]?.name}`}
+          path={`file:///work/c/${snap.files?.[snap.active]?.name}`}
           defaultValue={snap.files?.[snap.active]?.content}
           beforeMount={(monaco) => {
             if (!snap.editorCtx) {
@@ -64,12 +64,11 @@ const HooksEditor = () => {
                 monaco.editor.createModel(
                   file.content,
                   file.language,
-                  monaco.Uri.parse(`file://tmp/c/${file.name}`)
+                  monaco.Uri.parse(`file:///work/c/${file.name}`)
                 )
               );
             }
 
-            // monaco.editor.createModel(value, 'c', monaco.Uri.parse('file:///tmp/c/file.c'))
             // create the web socket
             if (!subscriptionRef.current) {
               monaco.languages.register({
