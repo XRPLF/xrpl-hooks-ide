@@ -29,7 +29,6 @@ loader.config({
 
 const validateWritability = (editor: monaco.editor.IStandaloneCodeEditor) => {
   const currPath = editor.getModel()?.uri.path;
-  console.log(currPath)
   if (apiHeaderFiles.find(h => currPath?.endsWith(h))) {
     editor.updateOptions({ readOnly: true });
   } else {
