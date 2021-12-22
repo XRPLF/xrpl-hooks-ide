@@ -62,7 +62,9 @@ export interface IState {
 // let localStorageState: null | string = null;
 let initialState: IState = {
   files: [],
+  // active file index on the Develop page editor
   active: 0,
+  // Active file index on the Deploy page editor
   activeWat: 0,
   loading: false,
   compiling: false,
