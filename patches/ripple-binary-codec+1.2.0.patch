@@ -1,5 +1,5 @@
 diff --git a/node_modules/ripple-binary-codec/dist/enums/definitions.json b/node_modules/ripple-binary-codec/dist/enums/definitions.json
-index 2333c42..99557cb 100644
+index 2333c42..b8f8eab 100644
 --- a/node_modules/ripple-binary-codec/dist/enums/definitions.json
 +++ b/node_modules/ripple-binary-codec/dist/enums/definitions.json
 @@ -1,3 +1,4 @@
@@ -7,17 +7,18 @@ index 2333c42..99557cb 100644
  {
    "TYPES": {
      "Validation": 10003,
-@@ -40,8 +41,7 @@
+@@ -40,9 +41,7 @@
      "Check": 67,
      "Nickname": 110,
      "Contract": 99,
 -    "NFTokenPage": 80,
 -    "NFTokenOffer": 55,
-+    "GeneratorMap": 103,
-     "NegativeUNL": 78
+-    "NegativeUNL": 78
++    "GeneratorMap": 103
    },
    "FIELDS": [
-@@ -95,16 +95,6 @@
+     [
+@@ -95,16 +94,6 @@
          "type": "UInt16"
        }
      ],
@@ -34,7 +35,7 @@ index 2333c42..99557cb 100644
      [
        "Flags",
        {
-@@ -455,6 +445,16 @@
+@@ -455,6 +444,16 @@
          "type": "UInt32"
        }
      ],
@@ -51,7 +52,7 @@ index 2333c42..99557cb 100644
      [
        "IndexNext",
        {
-@@ -635,16 +635,6 @@
+@@ -635,16 +634,6 @@
          "type": "Hash256"
        }
      ],
@@ -68,7 +69,7 @@ index 2333c42..99557cb 100644
      [
        "BookDirectory",
        {
-@@ -916,7 +906,7 @@
+@@ -916,7 +905,7 @@
        }
      ],
      [
@@ -77,7 +78,44 @@ index 2333c42..99557cb 100644
        {
          "nth": 5,
          "isVLEncoded": true,
-@@ -1156,7 +1146,7 @@
+@@ -1045,36 +1034,6 @@
+         "type": "Blob"
+       }
+     ],
+-    [
+-      "UNLModifyValidator",
+-      {
+-        "nth": 19,
+-        "isVLEncoded": true,
+-        "isSerialized": true,
+-        "isSigningField": true,
+-        "type": "Blob"
+-      }
+-    ],
+-    [
+-      "ValidatorToDisable",
+-      {
+-        "nth": 20,
+-        "isVLEncoded": true,
+-        "isSerialized": true,
+-        "isSigningField": true,
+-        "type": "Blob"
+-      }
+-    ],
+-    [
+-      "ValidatorToReEnable",
+-      {
+-        "nth": 21,
+-        "isVLEncoded": true,
+-        "isSerialized": true,
+-        "isSigningField": true,
+-        "type": "Blob"
+-      }
+-    ],
+     [
+       "Account",
+       {
+@@ -1156,7 +1115,7 @@
        }
      ],
      [
@@ -86,7 +124,7 @@ index 2333c42..99557cb 100644
        {
          "nth": 9,
          "isVLEncoded": true,
-@@ -1276,9 +1266,9 @@
+@@ -1276,9 +1235,9 @@
        }
      ],
      [
@@ -98,7 +136,7 @@ index 2333c42..99557cb 100644
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
-@@ -1286,9 +1276,9 @@
+@@ -1286,9 +1245,9 @@
        }
      ],
      [
@@ -110,7 +148,7 @@ index 2333c42..99557cb 100644
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
-@@ -1296,9 +1286,9 @@
+@@ -1296,9 +1255,9 @@
        }
      ],
      [
@@ -122,7 +160,7 @@ index 2333c42..99557cb 100644
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
-@@ -1306,9 +1296,9 @@
+@@ -1306,9 +1265,9 @@
        }
      ],
      [
@@ -134,7 +172,7 @@ index 2333c42..99557cb 100644
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
-@@ -1395,16 +1385,6 @@
+@@ -1395,16 +1354,6 @@
          "type": "STArray"
        }
      ],
@@ -151,7 +189,24 @@ index 2333c42..99557cb 100644
      [
        "Majorities",
        {
-@@ -1535,16 +1515,6 @@
+@@ -1415,16 +1364,6 @@
+         "type": "STArray"
+       }
+     ],
+-    [
+-      "DisabledValidators",
+-      {
+-        "nth": 17,
+-        "isVLEncoded": false,
+-        "isSerialized": true,
+-        "isSigningField": true,
+-        "type": "STArray"
+-      }
+-    ],
+     [
+       "CloseResolution",
+       {
+@@ -1535,16 +1474,6 @@
          "type": "Vector256"
        }
      ],
@@ -168,129 +223,96 @@ index 2333c42..99557cb 100644
      [
        "Transaction",
        {
-@@ -1616,9 +1586,9 @@
+@@ -1596,7 +1525,7 @@
+       }
+     ],
+     [
+-      "TicketCount",
++      "HookStateCount",
+       {
+         "nth": 40,
+         "isVLEncoded": false,
+@@ -1606,7 +1535,7 @@
+       }
+     ],
+     [
+-      "TicketSequence",
++      "HookReserveCount",
+       {
+         "nth": 41,
+         "isVLEncoded": false,
+@@ -1616,7 +1545,7 @@
        }
      ],
      [
 -      "TokenTaxon",
-+      "HookStateCount",
++      "HookDataMaxSize",
        {
--        "nth": 42,
-+        "nth": 40,
+         "nth": 42,
          "isVLEncoded": false,
-         "isSerialized": true,
-         "isSigningField": true,
-@@ -1626,9 +1596,9 @@
+@@ -1626,23 +1555,23 @@
        }
      ],
      [
 -      "MintedTokens",
-+      "HookReserveCount",
-       {
--        "nth": 43,
-+        "nth": 41,
-         "isVLEncoded": false,
-         "isSerialized": true,
-         "isSigningField": true,
-@@ -1636,9 +1606,9 @@
-       }
-     ],
-     [
--      "BurnedTokens",
-+      "HookDataMaxSize",
-       {
--        "nth": 44,
-+        "nth": 42,
-         "isVLEncoded": false,
-         "isSerialized": true,
-         "isSigningField": true,
-@@ -1646,29 +1616,29 @@
-       }
-     ],
-     [
--      "Channel",
 +      "HookOn",
        {
--        "nth": 22,
+-        "nth": 43,
 +        "nth": 16,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
--        "type": "Hash256"
+-        "type": "UInt32"
 +        "type": "UInt64"
        }
      ],
      [
--      "ConsensusHash",
+-      "BurnedTokens",
 +      "EmitBurden",
        {
--        "nth": 23,
+-        "nth": 44,
 +        "nth": 12,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
--        "type": "Hash256"
+-        "type": "UInt32"
 +        "type": "UInt64"
        }
      ],
      [
--      "CheckID",
-+      "Channel",
-       {
--        "nth": 24,
-+        "nth": 22,
-         "isVLEncoded": false,
-         "isSerialized": true,
-         "isSigningField": true,
-@@ -1676,9 +1646,9 @@
-       }
-     ],
-     [
--      "ValidatedHash",
-+      "ConsensusHash",
-       {
--        "nth": 25,
-+        "nth": 23,
-         "isVLEncoded": false,
-         "isSerialized": true,
-         "isSigningField": true,
-@@ -1686,9 +1656,9 @@
+@@ -1686,29 +1615,9 @@
        }
      ],
      [
 -      "PreviousPageMin",
-+      "CheckID",
-       {
--        "nth": 26,
-+        "nth": 24,
-         "isVLEncoded": false,
-         "isSerialized": true,
-         "isSigningField": true,
-@@ -1696,9 +1666,9 @@
-       }
-     ],
-     [
--      "NextPageMin",
-+      "ValidatedHash",
-       {
--        "nth": 27,
-+        "nth": 25,
-         "isVLEncoded": false,
-         "isSerialized": true,
-         "isSigningField": true,
-@@ -1706,9 +1676,9 @@
-       }
-     ],
-     [
--      "BuyOffer",
 +      "EmitParentTxnID",
        {
+-        "nth": 26,
+-        "isVLEncoded": false,
+-        "isSerialized": true,
+-        "isSigningField": true,
+-        "type": "Hash256"
+-      }
+-    ],
+-    [
+-      "NextPageMin",
+-      {
+-        "nth": 27,
+-        "isVLEncoded": false,
+-        "isSerialized": true,
+-        "isSigningField": true,
+-        "type": "Hash256"
+-      }
+-    ],
+-    [
+-      "BuyOffer",
+-      {
 -        "nth": 28,
 +        "nth": 10,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
-@@ -1716,9 +1686,9 @@
+@@ -1716,9 +1625,9 @@
        }
      ],
      [
@@ -302,7 +324,24 @@ index 2333c42..99557cb 100644
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
-@@ -1754,36 +1724,6 @@
+@@ -1735,16 +1644,6 @@
+         "type": "UInt8"
+       }
+     ],
+-    [
+-      "UNLModifyDisabling",
+-      {
+-        "nth": 17,
+-        "isVLEncoded": false,
+-        "isSerialized": true,
+-        "isSigningField": true,
+-        "type": "UInt8"
+-      }
+-    ],
+     [
+       "DestinationNode",
+       {
+@@ -1754,36 +1653,6 @@
          "isSigningField": true,
          "type": "UInt64"
        }
@@ -339,7 +378,7 @@ index 2333c42..99557cb 100644
      ]
    ],
    "TRANSACTION_RESULTS": {
-@@ -1908,18 +1848,7 @@
+@@ -1908,18 +1777,7 @@
      "tecDUPLICATE": 149,
      "tecKILLED": 150,
      "tecHAS_OBLIGATIONS": 151,
@@ -359,7 +398,7 @@ index 2333c42..99557cb 100644
    },
    "TRANSACTION_TYPES": {
      "Invalid": -1,
-@@ -1946,11 +1875,10 @@
+@@ -1946,13 +1804,11 @@
      "DepositPreauth": 19,
      "TrustSet": 20,
      "AccountDelete": 21,
@@ -373,5 +412,8 @@ index 2333c42..99557cb 100644
 +    "Batch": 24,
 +
      "EnableAmendment": 100,
-     "SetFee": 101,
-     "UNLModify": 102
+-    "SetFee": 101,
+-    "UNLModify": 102
++    "SetFee": 101
+   }
+ }
