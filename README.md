@@ -46,11 +46,11 @@ GITHUB_ID="client-id-here"
 
 Login should now work through your own Github OAuth app.
 
-## Styling && Theming
+## Styling and Theming
 
 This project uses Stitches (https://stitches.dev) for theming and styling the components. You should be quite familiar with the API if you have used for example styled-components earlier. Stitches should provide better performance, near zero runtime.
 
-For components we try to use Radix-UI (https://www.radix-ui.com/) as much as possible. It may not provide all the necessary components so you're free to use other components/libraries if those makes sense. For colors we're using https://Radix-UI Colors (https://radix-ui.com/colors).
+For components we try to use Radix-UI (https://www.radix-ui.com/) as much as possible. It may not provide all the necessary components so you're free to use other components/libraries if those makes sense. For colors we're using Radix-UI Colors (https://radix-ui.com/colors).
 
 Theme file can be found under `./stitches.config.ts` file. When you're creating new components remeber to import `styled` from that file and not `@stitches` directly. That way it will provide the correct theme for you automatically.
 
