@@ -26,6 +26,75 @@ You can start editing the page by modifying `pages/index.tsx`. The page auto-upd
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
+## Github Login
+
+If you want to use your Github app to provide login, here's the guide to do that.
+
+- First go to https://github.com/settings/profile -> Developer Settings -> OAuth Apps
+- Click "New OAuth App" button
+- Give application some name eg. Xrpl Hooks Development
+- Give some homepage url eg. localhost:3000
+- Give some optional description (these values will show up on the popup when you login)
+- Authorization callback URL should be http://localhost:3000/api/auth/callback (if you're creating the app for local development)
+- Click register application
+- Then a page should open up where you can get client id and client secret values. Copy paste those to .env.local to use them:
+
+```
+GITHUB_SECRET="client-secret-here"
+GITHUB_ID="client-id-here"
+```
+
+Login should now work through your own Github OAuth app.
+
+## Styling && Theming
+
+This project uses Stitches (https://stitches.dev) for theming and styling the components. You should be quite familiar with the API if you have used for example styled-components earlier. Stitches should provide better performance, near zero runtime.
+
+For components we try to use Radix-UI (https://www.radix-ui.com/) as much as possible. It may not provide all the necessary components so you're free to use other components/libraries if those makes sense. For colors we're using https://Radix-UI Colors (https://radix-ui.com/colors).
+
+Theme file can be found under `./stitches.config.ts` file. When you're creating new components remeber to import `styled` from that file and not `@stitches` directly. That way it will provide the correct theme for you automatically.
+
+Example:
+
+```tsx
+// Use our stitches.config instead of @stitches/react
+import { styled } from "../stitches.config";
+
+const Box = styled("div", {
+  boxSizing: "border-box",
+});
+
+export default Box;
+```
+
+Custom components can be found from `./components` folder.
+
+## Monaco Editor
+
+Project is relying on Monaco editor heavily. Instead of using Monaco editor directly we're using `@monaco-editor/react` which provides little helpers to use Monaco editor.
+
+On the Develop page we're using following loader for Monaco editor:
+
+```js
+loader.config({
+  paths: {
+    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.30.1/min/vs",
+  },
+});
+```
+
+By default `@monaco-editor/react` was using 0.29.? version of Monaco editor. @codingame/monaco-languageclient library (connects to clangd language server) was using API methods that were introduced in Monaco Editor 0.30 so that's why we're loading certain version of it.
+
+Monaco Languageclient related stuff is found from `./utils/languageClient.ts`. Basically we're connecting the editor to clangd language server which lives on separate backend. That project can be found from https://github.com/eqlabs/xrpl-hooks-compiler/. If you need access to that project ask permissions from @vbar (Vaclav Barta) on GitHub.
+
+## Global state management
+
+Global state management is handled with library called Valtio (https://github.com/pmndrs/valtio). Initial state can be found from `./state/index.ts` file. All the actions which updates the state is found under `./state/actions/` folder.
+
+## Special notes
+
+Since we are dealing with greenfield tech and one of the dependencies (ripple-binary-codec) doesn't yet support signing `SetHook` transactions we had to monkey patch the library with patch-package (https://www.npmjs.com/package/patch-package). We modified the definitions.json file of the ripple-binary-codec library and then ran `yarn patch-package ripple-binary-codec` which created `patches/ripple-binary-codec+1.2.0.patch` file to this project. This file contains the modifications to `ripple-binary-codec` library. package.json contains postinstall hook which runs patch-package, and it will add the patch on the file mentioned earlier. This happens automatically after running patch package.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
@@ -34,9 +103,3 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
