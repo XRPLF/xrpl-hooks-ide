@@ -1,4 +1,4 @@
-import Router from "next/router";
+
 import toast from "react-hot-toast";
 import state, { FaucetAccountRes } from '../index';
 
@@ -36,7 +36,6 @@ export const addFaucetAccount = async (showToast: boolean = false) => {
 
 
     const toastId = showToast ? toast.loading("Creating account") : "";
-    console.log(Router)
     const res = await fetch(`${window.location.origin}/api/faucet`, {
       method: "POST",
     });
