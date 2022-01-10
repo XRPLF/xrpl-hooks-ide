@@ -40,6 +40,7 @@
     "react-hot-keys": "^2.7.1",
     "react-hot-toast": "^2.1.1",
     "react-new-window": "^0.2.1",
+    "react-query": "^3.34.7",
     "react-select": "^5.2.1",
     "react-stay-scrolled": "^7.4.0",
     "reconnecting-websocket": "^4.4.0",

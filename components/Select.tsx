@@ -13,7 +13,7 @@ const Select: FC<Props> = props => {
     // primary: pink.pink9,
     primary: isDark ? grayDark.gray4 : gray.gray4,
     secondary: isDark ? grayDark.gray8 : gray.gray8,
-    background: isDark ? "rgb(10, 10, 10)" : "rgb(245, 245, 245)",
+    background: isDark ? "rgb(10, 10, 10)" : "rgb(244, 244, 244)",
     searchText: isDark ? grayDark.gray12 : gray.gray12,
     placeholder: isDark ? grayDark.gray11 : gray.gray11,
   };

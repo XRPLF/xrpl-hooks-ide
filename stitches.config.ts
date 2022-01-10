@@ -51,7 +51,7 @@ export const {
       primary: "$plum",
       white: "white",
       black: "black",
-      'deep': 'rgb(248, 248, 248)'
+      'deep': 'rgb(244, 244, 244)'
     },
     fonts: {
       body: 'Work Sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
