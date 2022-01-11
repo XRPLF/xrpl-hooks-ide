@@ -117,6 +117,15 @@ const Transaction = () => {
     txIsDisabled,
   ]);
 
+  const resetState = useCallback(() => {
+    setSelectedAccount(null);
+    setSelectedDestAccount(null);
+    setSelectedTransaction(null);
+    setTxFields({});
+    setTxIsDisabled(false);
+    setTxIsLoading(false);
+  }, []);
+
   const usualFields = ["TransactionType", "Amount", "Account", "Destination"];
   const otherFields = Object.keys(txFields).filter(k => !usualFields.includes(k)) as OtherFields;
   return (
@@ -229,7 +238,7 @@ const Transaction = () => {
       >
         <Button outline>VIEW AS JSON</Button>
         <Flex row>
-          <Button outline css={{ mr: "$3" }}>
+          <Button onClick={resetState} outline css={{ mr: "$3" }}>
             RESET
           </Button>
           <Button
