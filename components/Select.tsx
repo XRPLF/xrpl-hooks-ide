@@ -21,6 +21,7 @@ const Select: FC<Props> = props => {
   colors.selected = colors.secondary;
   return (
     <SelectInput
+      menuPosition="fixed"
       theme={theme => ({
         ...theme,
         spacing: {

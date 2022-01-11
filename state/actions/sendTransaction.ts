@@ -17,18 +17,18 @@ export const sendTransaction = async (account: IAccount, txOptions: TransactionO
     const { Fee = "1000", ...opts } = txOptions
     const tx: TransactionOptions = {
         Account: account.address,
-        Sequence: account.sequence, // auto-fillable
-        Fee,  // auto-fillable
+        Sequence: account.sequence, // TODO auto-fillable
+        Fee,  // TODO auto-fillable
         ...opts
     };
-    const signedAccount = derive.familySeed(account.secret);
-    const { signedTransaction } = sign(tx, signedAccount);
+    console.log({ tx });
     try {
+        const signedAccount = derive.familySeed(account.secret);
+        const { signedTransaction } = sign(tx, signedAccount);
         const response = await state.client.send({
             command: "submit",
             tx_blob: signedTransaction,
         });
-        console.log(response)
         if (response.engine_result === "tesSUCCESS") {
             state.transactionLogs.push({
                 type: 'success',
@@ -44,7 +44,7 @@ export const sendTransaction = async (account: IAccount, txOptions: TransactionO
         console.log(err);
         state.transactionLogs.push({
             type: "error",
-            message: "Something went wrong!",
+            message: "Something went wrong, try again later.",
         });
     }
 };

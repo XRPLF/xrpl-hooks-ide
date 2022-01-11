@@ -1,12 +1,11 @@
 import { Container, Flex, Box, Tabs, Tab, Input, Select, Text, Button } from "../../components";
 import { Play } from "phosphor-react";
 import dynamic from "next/dynamic";
-import { getTransactionTypes } from "../../utils/getTransactionTypes";
-import { useQuery } from "react-query";
 import { useSnapshot } from "valtio";
 import state from "../../state";
 import { sendTransaction } from "../../state/actions";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import transactionsData from "../../content/transactions.json";
 
 const LogBox = dynamic(() => import("../../components/LogBox"), {
   ssr: false,
@@ -16,22 +15,16 @@ const Accounts = dynamic(() => import("../../components/Accounts"), {
 });
 
 // type SelectOption<T> = { value: T, label: string };
+type TxFields = Omit<typeof transactionsData[0], "Account" | "Sequence" | "TransactionType">;
+type OtherFields = (keyof Omit<TxFields, "Destination">)[];
 
 const Transaction = () => {
   const snap = useSnapshot(state);
-  const {
-    data: typesData,
-    isLoading: typesDataLoading,
-    isError: typesDataError,
-  } = useQuery("transactionTypes", getTransactionTypes);
 
-  const transactionsOptions =
-    typesData
-      ?.map(tt => ({
-        value: tt.transactionType,
-        label: tt.transactionType,
-      }))
-      .filter(opt => Boolean(opt.value)) || [];
+  const transactionsOptions = transactionsData.map(tx => ({
+    value: tx.TransactionType,
+    label: tx.TransactionType,
+  }));
   const [selectedTransaction, setSelectedTransaction] = useState<
     typeof transactionsOptions[0] | null
   >(null);
@@ -52,34 +45,84 @@ const Transaction = () => {
     typeof destAccountOptions[0] | null
   >(null);
 
-  const [txOptions, setTxOptions] = useState({
-    Amount: "0",
-  });
-  const [txIsLoading, setTxIsLoading] = useState(false)
-  // const [txIsError, setTxIsError] = useState<string | null>(null)
+  const [txIsLoading, setTxIsLoading] = useState(false);
+  const [txIsDisabled, setTxIsDisabled] = useState(false);
+  const [txFields, setTxFields] = useState<TxFields>({});
+
+  useEffect(() => {
+    const transactionType = selectedTransaction?.value;
+    const account = snap.accounts.find(acc => acc.address === selectedAccount?.value);
+    if (!account || !transactionType || txIsLoading) {
+      setTxIsDisabled(true);
+    } else {
+      setTxIsDisabled(false);
+    }
+  }, [txIsLoading, selectedTransaction, selectedAccount, snap.accounts]);
+
+  useEffect(() => {
+    let _txFields: TxFields | undefined = transactionsData.find(
+      tx => tx.TransactionType === selectedTransaction?.value
+    );
+    if (!_txFields) return setTxFields({});
+    _txFields = { ..._txFields } as TxFields;
+
+    setSelectedDestAccount(null);
+    // @ts-ignore
+    delete _txFields.TransactionType;
+    // @ts-ignore
+    delete _txFields.Account;
+    // @ts-ignore
+    delete _txFields.Sequence;
+    setTxFields(_txFields);
+  }, [selectedTransaction, setSelectedDestAccount]);
+
   const submitTest = useCallback(async () => {
     const account = snap.accounts.find(acc => acc.address === selectedAccount?.value);
     const TransactionType = selectedTransaction?.value;
-    if (!account || !TransactionType || txIsLoading) return;
+    if (!account || !TransactionType || txIsDisabled) return;
 
-    setTxIsLoading(true)
+    setTxIsLoading(true);
     // setTxIsError(null)
-    const { Amount, ...opts } = txOptions
+    let options = { ...txFields };
+
+    options.Destination = selectedDestAccount?.value;
+    (Object.keys(options) as (keyof TxFields)[]).forEach(field => {
+      let _value = options[field];
+      // convert currency
+      if (typeof _value === "object" && _value.type === "currency") {
+        if (+_value.value) {
+          options[field] = (+_value.value * 1000000 + "") as any;
+        } else {
+          options[field] = undefined; // 👇 💀
+        }
+      }
+      // delete unneccesary fields
+      if (!options[field]) {
+        delete options[field];
+      }
+    });
     await sendTransaction(account, {
       TransactionType,
-      Destination: selectedDestAccount?.value,
-      Amount: +Amount ? +Amount * 1000000 + "" : undefined, // convert xrp to ...
-      ...opts,
+      ...options,
     });
 
-    setTxIsLoading(false)
+    setTxIsLoading(false);
     // TODO catch error for UI to show
-  }, [selectedAccount, selectedDestAccount, selectedTransaction, snap.accounts, txOptions, txIsLoading]);
+  }, [
+    selectedAccount,
+    selectedDestAccount,
+    selectedTransaction,
+    snap.accounts,
+    txFields,
+    txIsDisabled,
+  ]);
 
+  const usualFields = ["TransactionType", "Amount", "Account", "Destination"];
+  const otherFields = Object.keys(txFields).filter(k => !usualFields.includes(k)) as OtherFields;
   return (
-    <>
-      <Container css={{ p: "$3 0", fontSize: "$sm" }}>
-        <Flex column fluid>
+    <Box css={{ position: "relative", height: "calc(100% - 28px)" }}>
+      <Container css={{ p: "$3 0", fontSize: "$sm", height: "calc(100% - 28px)" }}>
+        <Flex column fluid css={{ height: "100%", overflowY: "auto" }}>
           <Flex row fluid css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}>
             <Text muted css={{ mr: "$3" }}>
               Transaction type:{" "}
@@ -87,8 +130,6 @@ const Transaction = () => {
             <Select
               instanceId="transactionsType"
               placeholder="Select transaction type"
-              isLoading={typesDataLoading}
-              isDisabled={typesDataError}
               options={transactionsOptions}
               hideSelectedOptions
               css={{ width: "70%" }}
@@ -98,7 +139,7 @@ const Transaction = () => {
           </Flex>
           <Flex row fluid css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}>
             <Text muted css={{ mr: "$3" }}>
-              From account:{" "}
+              Account:{" "}
             </Text>
             <Select
               instanceId="from-account"
@@ -109,46 +150,100 @@ const Transaction = () => {
               onChange={acc => setSelectedAccount(acc as any)}
             />
           </Flex>
-          <Flex row fluid css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}>
-            <Text muted css={{ mr: "$3" }}>
-              Amount (XRP):{" "}
-            </Text>
-            <Input
-              value={txOptions.Amount}
-              onChange={e => setTxOptions({ ...txOptions, Amount: e.target.value })}
-              variant="deep"
-              css={{ width: "70%", flex: "inherit", height: "$9" }}
-            />
-          </Flex>
-          <Flex row fluid css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}>
-            <Text muted css={{ mr: "$3" }}>
-              To account:{" "}
-            </Text>
-            <Select
-              instanceId="to-account"
-              placeholder="Select the destination account"
-              css={{ width: "70%" }}
-              options={destAccountOptions}
-              value={selectedDestAccount}
-              isClearable
-              onChange={acc => setSelectedDestAccount(acc as any)}
-            />
-          </Flex>
+          {txFields.Amount !== undefined && (
+            <Flex row fluid css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}>
+              <Text muted css={{ mr: "$3" }}>
+                Amount (XRP):{" "}
+              </Text>
+              <Input
+                value={txFields.Amount.value}
+                onChange={e =>
+                  setTxFields({
+                    ...txFields,
+                    Amount: { type: "currency", value: e.target.value },
+                  })
+                }
+                variant="deep"
+                css={{ width: "70%", flex: "inherit", height: "$9" }}
+              />
+            </Flex>
+          )}
+          {txFields.Destination !== undefined && (
+            <Flex row fluid css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}>
+              <Text muted css={{ mr: "$3" }}>
+                Destination account:{" "}
+              </Text>
+              <Select
+                instanceId="to-account"
+                placeholder="Select the destination account"
+                css={{ width: "70%" }}
+                options={destAccountOptions}
+                value={selectedDestAccount}
+                isClearable
+                onChange={acc => setSelectedDestAccount(acc as any)}
+              />
+            </Flex>
+          )}
+          {otherFields.map(field => {
+            let _value = txFields[field];
+            let value = typeof _value === "object" ? _value.value : _value;
+            let isCurrency = typeof _value === "object" && _value.type === "currency";
+            return (
+              <Flex
+                key={field}
+                row
+                fluid
+                css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}
+              >
+                <Text muted css={{ mr: "$3" }}>
+                  {field + (isCurrency ? " (XRP)" : "")}:{" "}
+                </Text>
+                <Input
+                  value={value?.toString()} // TODO handle list maybe
+                  onChange={e =>
+                    setTxFields({
+                      ...txFields,
+                      [field]:
+                        typeof _value === "object"
+                          ? { ..._value, value: e.target.value }
+                          : e.target.value,
+                    })
+                  }
+                  variant="deep"
+                  css={{ width: "70%", flex: "inherit", height: "$9" }}
+                />
+              </Flex>
+            );
+          })}
         </Flex>
       </Container>
-      <Flex row css={{ justifyContent: "space-between" }}>
+      <Flex
+        row
+        css={{
+          justifyContent: "space-between",
+          position: "absolute",
+          left: 0,
+          bottom: 0,
+          width: "100%",
+        }}
+      >
         <Button outline>VIEW AS JSON</Button>
         <Flex row>
           <Button outline css={{ mr: "$3" }}>
             RESET
           </Button>
-          <Button variant="primary" onClick={submitTest} isLoading={txIsLoading}>
+          <Button
+            variant="primary"
+            onClick={submitTest}
+            isLoading={txIsLoading}
+            disabled={txIsDisabled}
+          >
             <Play weight="bold" size="16px" />
             RUN TEST
           </Button>
         </Flex>
       </Flex>
-    </>
+    </Box>
   );
 };
 
@@ -161,7 +256,7 @@ const Test = () => {
         fluid
         css={{ justifyContent: "center", mb: "$2", height: "40vh", minHeight: "300px", p: "$3 $2" }}
       >
-        <Box css={{ width: "60%", px: "$2", maxWidth: "800px" }}>
+        <Box css={{ width: "60%", px: "$2", maxWidth: "800px", height: "100%", overflow: "auto" }}>
           <Tabs>
             {/* TODO Dynamic tabs */}
             <Tab header="test1.json">
