@@ -172,7 +172,7 @@
     "Fee": "12",
     "SignerQuorum": 3,
     "SignerEntries": {
-      "type": "list",
+      "type": "json",
       "value": [
         {
           "SignerEntry": {

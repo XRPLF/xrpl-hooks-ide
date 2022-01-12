@@ -41,10 +41,10 @@ export const sendTransaction = async (account: IAccount, txOptions: TransactionO
             });
         }
     } catch (err) {
-        console.log(err);
+        console.error(err);
         state.transactionLogs.push({
             type: "error",
-            message: "Something went wrong, try again later.",
+            message: err instanceof Error ? `Error: ${err.message}` : 'Something went wrong, try again later',
         });
     }
 };

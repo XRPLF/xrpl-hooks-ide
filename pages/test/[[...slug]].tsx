@@ -83,31 +83,52 @@ const Transaction = () => {
 
     setTxIsLoading(true);
     // setTxIsError(null)
-    let options = { ...txFields };
+    try {
+      let options = { ...txFields };
 
-    options.Destination = selectedDestAccount?.value;
-    (Object.keys(options) as (keyof TxFields)[]).forEach(field => {
-      let _value = options[field];
-      // convert currency
-      if (typeof _value === "object" && _value.type === "currency") {
-        if (+_value.value) {
-          options[field] = (+_value.value * 1000000 + "") as any;
-        } else {
-          options[field] = undefined; // 👇 💀
+      options.Destination = selectedDestAccount?.value;
+      (Object.keys(options) as (keyof TxFields)[]).forEach(field => {
+        let _value = options[field];
+        // convert currency
+        if (typeof _value === "object" && _value.type === "currency") {
+          if (+_value.value) {
+            options[field] = (+_value.value * 1000000 + "") as any;
+          } else {
+            options[field] = undefined; // 👇 💀
+          }
         }
-      }
-      // delete unneccesary fields
-      if (!options[field]) {
-        delete options[field];
-      }
-    });
-    await sendTransaction(account, {
-      TransactionType,
-      ...options,
-    });
+        // handle type: `json`
+        if (typeof _value === "object" && _value.type === "json") {
+          if (typeof _value.value === "object") {
+            options[field] = _value.value as any;
+          } else {
+            try {
+              options[field] = JSON.parse(_value.value);
+            } catch (error) {
+              const message = `Input error for json field '${field}': ${
+                error instanceof Error ? error.message : ""
+              }`;
+              throw Error(message);
+            }
+          }
+        }
 
+        // delete unneccesary fields
+        if (!options[field]) {
+          delete options[field];
+        }
+      });
+      await sendTransaction(account, {
+        TransactionType,
+        ...options,
+      });
+    } catch (error) {
+      console.error(error);
+      if (error instanceof Error) {
+        state.transactionLogs.push({ type: "error", message: error.message });
+      }
+    }
     setTxIsLoading(false);
-    // TODO catch error for UI to show
   }, [
     selectedAccount,
     selectedDestAccount,
@@ -196,6 +217,7 @@ const Transaction = () => {
           {otherFields.map(field => {
             let _value = txFields[field];
             let value = typeof _value === "object" ? _value.value : _value;
+            value = typeof value === "object" ? JSON.stringify(value) : value?.toLocaleString();
             let isCurrency = typeof _value === "object" && _value.type === "currency";
             return (
               <Flex
@@ -208,7 +230,7 @@ const Transaction = () => {
                   {field + (isCurrency ? " (XRP)" : "")}:{" "}
                 </Text>
                 <Input
-                  value={value?.toString()} // TODO handle list maybe
+                  value={value}
                   onChange={e =>
                     setTxFields({
                       ...txFields,
