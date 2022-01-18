@@ -86,6 +86,10 @@
     "TokenID": "000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65"
   },
   {
+    "TransactionType": "NFTokenAcceptOffer",
+    "Fee": "10"
+  },
+  {
     "TransactionType": "NFTokenCancelOffer",
     "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
     "TokenIDs": "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007"
