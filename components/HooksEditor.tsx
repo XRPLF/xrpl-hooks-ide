@@ -71,7 +71,7 @@ const HooksEditor = () => {
           keepCurrentModel
           defaultLanguage={snap.files?.[snap.active]?.language}
           language={snap.files?.[snap.active]?.language}
-          path={`file://work/c/${snap.files?.[snap.active]?.name}`}
+          path={`file:///work/c/${snap.files?.[snap.active]?.name}`}
           defaultValue={snap.files?.[snap.active]?.content}
           beforeMount={monaco => {
             if (!snap.editorCtx) {
@@ -79,7 +79,7 @@ const HooksEditor = () => {
                 monaco.editor.createModel(
                   file.content,
                   file.language,
-                  monaco.Uri.parse(`file://work/c/${file.name}`)
+                  monaco.Uri.parse(`file:///work/c/${file.name}`)
                 )
               );
             }
