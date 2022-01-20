@@ -4,7 +4,7 @@ import state from '../index';
 // Saves the current editor content to global state
 export const saveFile = (showToast: boolean = true) => {
   const editorModels = state.editorCtx?.getModels();
-  const sought = state.files[state.active].name;
+  const sought = '/' + state.files[state.active].name;
   const currentModel = editorModels?.find((editorModel) => {
     return editorModel.uri.path.endsWith(sought);
   });
