@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useSnapshot } from "valtio";
 import state from "../../state";
 import { sendTransaction } from "../../state/actions";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, FC } from "react";
 import transactionsData from "../../content/transactions.json";
 
 const LogBox = dynamic(() => import("../../components/LogBox"), {
@@ -18,7 +18,7 @@ const Accounts = dynamic(() => import("../../components/Accounts"), {
 type TxFields = Omit<typeof transactionsData[0], "Account" | "Sequence" | "TransactionType">;
 type OtherFields = (keyof Omit<TxFields, "Destination">)[];
 
-const Transaction = () => {
+const Transaction: FC = props => {
   const snap = useSnapshot(state);
 
   const transactionsOptions = transactionsData.map(tx => ({
@@ -150,7 +150,7 @@ const Transaction = () => {
   const usualFields = ["TransactionType", "Amount", "Account", "Destination"];
   const otherFields = Object.keys(txFields).filter(k => !usualFields.includes(k)) as OtherFields;
   return (
-    <Box css={{ position: "relative", height: "calc(100% - 28px)" }}>
+    <Box css={{ position: "relative", height: "calc(100% - 28px)" }} {...props}>
       <Container css={{ p: "$3 0", fontSize: "$sm", height: "calc(100% - 28px)" }}>
         <Flex column fluid css={{ height: "100%", overflowY: "auto" }}>
           <Flex row fluid css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}>
@@ -280,6 +280,7 @@ const Transaction = () => {
 
 const Test = () => {
   const snap = useSnapshot(state);
+  const [tabHeaders, setTabHeaders] = useState<string[]>(["test1.json"]);
   return (
     <Container css={{ py: "$3", px: 0 }}>
       <Flex
@@ -288,14 +289,17 @@ const Test = () => {
         css={{ justifyContent: "center", mb: "$2", height: "40vh", minHeight: "300px", p: "$3 $2" }}
       >
         <Box css={{ width: "60%", px: "$2", maxWidth: "800px", height: "100%", overflow: "auto" }}>
-          <Tabs>
-            {/* TODO Dynamic tabs */}
-            <Tab header="test1.json">
-              <Transaction />
-            </Tab>
-            <Tab header="test2.json">
-              <Transaction />
-            </Tab>
+          <Tabs
+            keepAllAlive
+            defaultExtension=".json"
+            onCreateNewTab={name => setTabHeaders(tabHeaders.concat(name))}
+            onCloseTab={index => setTabHeaders(tabHeaders.filter((_, idx) => idx !== index))}
+          >
+            {tabHeaders.map(header => (
+              <Tab key={header} header={header}>
+                <Transaction />
+              </Tab>
+            ))}
           </Tabs>
         </Box>
         <Box css={{ width: "40%", mx: "$2", height: "100%", maxWidth: "750px" }}>
