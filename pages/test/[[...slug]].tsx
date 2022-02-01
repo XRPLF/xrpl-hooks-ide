@@ -7,6 +7,10 @@ import { sendTransaction } from "../../state/actions";
 import { useCallback, useEffect, useState } from "react";
 import transactionsData from "../../content/transactions.json";
 
+const DebugStream = dynamic(() => import("../../components/DebugStream"), {
+  ssr: false,
+});
+
 const LogBox = dynamic(() => import("../../components/LogBox"), {
   ssr: false,
 });
@@ -306,13 +310,13 @@ const Test = () => {
       <Flex row fluid css={{ borderBottom: "1px solid $mauve8" }}>
         <Box css={{ width: "50%", borderRight: "1px solid $mauve8" }}>
           <LogBox
-            title="From Log"
+            title="Development Log"
             logs={snap.transactionLogs}
             clearLog={() => (state.transactionLogs = [])}
           />
         </Box>
         <Box css={{ width: "50%" }}>
-          <LogBox title="To Log" logs={[]} clearLog={() => {}} />
+          <DebugStream />
         </Box>
       </Flex>
     </Container>

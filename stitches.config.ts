@@ -1,6 +1,7 @@
 // stitches.config.ts
 import type Stitches from '@stitches/react';
 import { createStitches } from '@stitches/react';
+
 import {
   gray,
   blue,
@@ -47,6 +48,7 @@ export const {
       ...yellow,
       ...purple,
       background: "$gray1",
+      backgroundAlt: "$gray4",
       text: "$gray12",
       primary: "$plum",
       white: "white",
@@ -304,7 +306,8 @@ export const darkTheme = createTheme('dark', {
     ...pinkDark,
     ...yellowDark,
     ...purpleDark,
-    deep: 'rgb(10, 10, 10)'
+    deep: 'rgb(10, 10, 10)',
+    // backgroundA: transparentize(0.1, grayDark.gray1),
   },
 });
 
