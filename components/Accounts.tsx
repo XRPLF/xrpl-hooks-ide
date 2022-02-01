@@ -350,7 +350,7 @@ const Accounts: FC<AccountProps> = props => {
                 borderBottom: props.card ? "1px solid $mauve6" : undefined,
                 "@hover": {
                   "&:hover": {
-                    background: "$mauve3",
+                    background: "$backgroundAlt",
                   },
                 },
               }}

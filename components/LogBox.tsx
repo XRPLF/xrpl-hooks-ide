@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect } from "react";
+import React, { useRef, useLayoutEffect, ReactNode } from "react";
 import { Notepad, Prohibit } from "phosphor-react";
 import useStayScrolled from "react-stay-scrolled";
 import NextLink from "next/link";
@@ -17,9 +17,11 @@ interface ILogBox {
   title: string;
   clearLog?: () => void;
   logs: ILog[];
+  renderNav?: () => ReactNode;
+  enhanced?: boolean;
 }
 
-const LogBox: React.FC<ILogBox> = ({ title, clearLog, logs, children }) => {
+const LogBox: React.FC<ILogBox> = ({ title, clearLog, logs, children, renderNav, enhanced }) => {
   const logRef = useRef<HTMLPreElement>(null);
   const { stayScrolled /*, scrollBottom*/ } = useStayScrolled(logRef);
 
@@ -39,7 +41,7 @@ const LogBox: React.FC<ILogBox> = ({ title, clearLog, logs, children }) => {
       }}
     >
       <Container css={{ px: 0, flexShrink: 1 }}>
-        <Flex css={{ py: "$3" }}>
+        <Flex css={{ py: "$3", alignItems: "center", fontSize: "$sm", fontWeight: 300 }}>
           <Heading
             as="h3"
             css={{
@@ -56,6 +58,7 @@ const LogBox: React.FC<ILogBox> = ({ title, clearLog, logs, children }) => {
           >
             <Notepad size="15px" /> <Text css={{ lineHeight: 1 }}>{title}</Text>
           </Heading>
+          {renderNav?.()}
           <Flex css={{ ml: "auto", gap: "$3", marginRight: "$3" }}>
             {clearLog && (
               <Button ghost size="xs" onClick={clearLog}>
@@ -84,10 +87,18 @@ const LogBox: React.FC<ILogBox> = ({ title, clearLog, logs, children }) => {
           }}
         >
           {logs?.map((log, index) => (
-            <Box as="span" key={log.type + index}>
-              {/* <LogText capitalize variant={log.type}>
-                {log.type}:{" "}
-              </LogText> */}
+            <Box
+              as="span"
+              key={log.type + index}
+              css={{
+                "@hover": {
+                  "&:hover": {
+                    backgroundColor: enhanced ? "$backgroundAlt" : undefined,
+                  },
+                },
+                p: "$2 $1",
+              }}
+            >
               <LogText variant={log.type}>
                 {log.message}{" "}
                 {log.link && (
