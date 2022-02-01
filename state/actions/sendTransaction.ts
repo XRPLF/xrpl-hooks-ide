@@ -10,8 +10,11 @@ interface TransactionOptions {
     Destination?: string
     [index: string]: any
 }
+interface OtherOptions {
+    logPrefix?: string
+}
 
-export const sendTransaction = async (account: IAccount, txOptions: TransactionOptions) => {
+export const sendTransaction = async (account: IAccount, txOptions: TransactionOptions, options?: OtherOptions) => {
     if (!state.client) throw Error('XRPL client not initalized')
 
     const { Fee = "1000", ...opts } = txOptions
@@ -21,7 +24,7 @@ export const sendTransaction = async (account: IAccount, txOptions: TransactionO
         Fee,  // TODO auto-fillable
         ...opts
     };
-    console.log({ tx });
+    const { logPrefix = '' } = options || {}
     try {
         const signedAccount = derive.familySeed(account.secret);
         const { signedTransaction } = sign(tx, signedAccount);
@@ -32,19 +35,19 @@ export const sendTransaction = async (account: IAccount, txOptions: TransactionO
         if (response.engine_result === "tesSUCCESS") {
             state.transactionLogs.push({
                 type: 'success',
-                message: `Transaction success [${response.engine_result}]: ${response.engine_result_message}`
+                message: `${logPrefix}[${response.engine_result}] ${response.engine_result_message}`
             })
         } else {
             state.transactionLogs.push({
                 type: "error",
-                message: `[${response.error || response.engine_result}] ${response.error_exception || response.engine_result_message}`,
+                message: `${logPrefix}[${response.error || response.engine_result}] ${response.error_exception || response.engine_result_message}`,
             });
         }
     } catch (err) {
         console.error(err);
         state.transactionLogs.push({
             type: "error",
-            message: err instanceof Error ? `Error: ${err.message}` : 'Something went wrong, try again later',
+            message: err instanceof Error ? `${logPrefix}Error: ${err.message}` : `${logPrefix}Something went wrong, try again later`,
         });
     }
 };

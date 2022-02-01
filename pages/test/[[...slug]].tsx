@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useSnapshot } from "valtio";
 import state from "../../state";
 import { sendTransaction } from "../../state/actions";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, FC } from "react";
 import transactionsData from "../../content/transactions.json";
 
 const DebugStream = dynamic(() => import("../../components/DebugStream"), {
@@ -22,7 +22,11 @@ const Accounts = dynamic(() => import("../../components/Accounts"), {
 type TxFields = Omit<typeof transactionsData[0], "Account" | "Sequence" | "TransactionType">;
 type OtherFields = (keyof Omit<TxFields, "Destination">)[];
 
-const Transaction = () => {
+interface Props {
+  header?: string;
+}
+
+const Transaction: FC<Props> = ({ header, ...props }) => {
   const snap = useSnapshot(state);
 
   const transactionsOptions = transactionsData.map(tx => ({
@@ -122,10 +126,15 @@ const Transaction = () => {
           delete options[field];
         }
       });
-      await sendTransaction(account, {
-        TransactionType,
-        ...options,
-      });
+      const logPrefix = header ? `${header.split(".")[0]}: ` : undefined;
+      await sendTransaction(
+        account,
+        {
+          TransactionType,
+          ...options,
+        },
+        { logPrefix }
+      );
     } catch (error) {
       console.error(error);
       if (error instanceof Error) {
@@ -134,9 +143,10 @@ const Transaction = () => {
     }
     setTxIsLoading(false);
   }, [
-    selectedAccount,
-    selectedDestAccount,
-    selectedTransaction,
+    header,
+    selectedAccount?.value,
+    selectedDestAccount?.value,
+    selectedTransaction?.value,
     snap.accounts,
     txFields,
     txIsDisabled,
@@ -154,7 +164,7 @@ const Transaction = () => {
   const usualFields = ["TransactionType", "Amount", "Account", "Destination"];
   const otherFields = Object.keys(txFields).filter(k => !usualFields.includes(k)) as OtherFields;
   return (
-    <Box css={{ position: "relative", height: "calc(100% - 28px)" }}>
+    <Box css={{ position: "relative", height: "calc(100% - 28px)" }} {...props}>
       <Container css={{ p: "$3 0", fontSize: "$sm", height: "calc(100% - 28px)" }}>
         <Flex column fluid css={{ height: "100%", overflowY: "auto" }}>
           <Flex row fluid css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}>
@@ -284,21 +294,30 @@ const Transaction = () => {
 
 const Test = () => {
   const snap = useSnapshot(state);
+  const [tabHeaders, setTabHeaders] = useState<string[]>(["test1.json"]);
   return (
     <Container css={{ py: "$3", px: 0 }}>
-      <Flex row fluid css={{ justifyContent: 'center', mb: "$2", height: '40vh', minHeight: '300px', p: '$3 $2' }}>
+      <Flex
+        row
+        fluid
+        css={{ justifyContent: "center", mb: "$2", height: "40vh", minHeight: "300px", p: "$3 $2" }}
+      >
         <Box css={{ width: "55%", px: "$2" }}>
-          <Tabs>
-            {/* TODO Dynamic tabs */}
-            <Tab header="test1.json">
-              <Transaction />
-            </Tab>
-            <Tab header="test2.json">
-              <Transaction />
-            </Tab>
+          <Tabs
+            keepAllAlive
+            forceDefaultExtension
+            defaultExtension=".json"
+            onCreateNewTab={name => setTabHeaders(tabHeaders.concat(name))}
+            onCloseTab={index => setTabHeaders(tabHeaders.filter((_, idx) => idx !== index))}
+          >
+            {tabHeaders.map(header => (
+              <Tab key={header} header={header}>
+                <Transaction header={header} />
+              </Tab>
+            ))}
           </Tabs>
         </Box>
-        <Box css={{ width: "45%", mx: "$2", height: '100%' }}>
+        <Box css={{ width: "45%", mx: "$2", height: "100%" }}>
           <Accounts card hideDeployBtn showHookStats />
         </Box>
       </Flex>
