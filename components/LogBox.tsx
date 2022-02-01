@@ -96,7 +96,7 @@ const LogBox: React.FC<ILogBox> = ({ title, clearLog, logs, children, renderNav,
                     backgroundColor: enhanced ? "$backgroundAlt" : undefined,
                   },
                 },
-                p: "$2 $1",
+                p: enhanced ? "$2 $1" : undefined,
               }}
             >
               <LogText variant={log.type}>
