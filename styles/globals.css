@@ -15,16 +15,21 @@ body,
 .gutter {
   position: relative;
   background: transparent;
+  transition: border-color 0.3s;
 }
 .gutter-vertical {
   margin-top: -10px;
+  border-bottom: 1px solid transparent;
 }
 .gutter-horizontal {
   margin-left: -10px;
+  border-right: 1px solid transparent;
 }
 .gutter-vertical:hover {
   cursor: row-resize;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 }
 .gutter-horizontal:hover {
   cursor: col-resize;
+  border-right: 1px solid rgba(255, 255, 255, 0.5);
 }

@@ -36,11 +36,13 @@ const AccountDialog = ({
 }) => {
   const snap = useSnapshot(state);
   const [showSecret, setShowSecret] = useState(false);
-  const activeAccount = snap.accounts.find(account => account.address === activeAccountAddress);
+  const activeAccount = snap.accounts.find(
+    (account) => account.address === activeAccountAddress
+  );
   return (
     <Dialog
       open={Boolean(activeAccountAddress)}
-      onOpenChange={open => {
+      onOpenChange={(open) => {
         setShowSecret(false);
         !open && setActiveAccountAddress(null);
       }}
@@ -135,7 +137,7 @@ const AccountDialog = ({
                     }}
                     ghost
                     size="xs"
-                    onClick={() => setShowSecret(curr => !curr)}
+                    onClick={() => setShowSecret((curr) => !curr)}
                   >
                     {showSecret ? "Hide" : "Show"}
                   </Button>
@@ -181,7 +183,11 @@ const AccountDialog = ({
                   target="_blank"
                   rel="noreferrer noopener"
                 >
-                  <Button size="sm" ghost css={{ color: "$green11 !important", mt: "$3" }}>
+                  <Button
+                    size="sm"
+                    ghost
+                    css={{ color: "$green11 !important", mt: "$3" }}
+                  >
                     <ArrowSquareOut size="15px" />
                   </Button>
                 </a>
@@ -197,8 +203,10 @@ const AccountDialog = ({
                 >
                   {activeAccount && activeAccount?.hooks?.length > 0
                     ? activeAccount?.hooks
-                        .map(i => {
-                          return `${i?.substring(0, 6)}...${i?.substring(i.length - 4)}`;
+                        .map((i) => {
+                          return `${i?.substring(0, 6)}...${i?.substring(
+                            i.length - 4
+                          )}`;
                         })
                         .join(", ")
                     : "–"}
@@ -223,13 +231,15 @@ interface AccountProps {
   showHookStats?: boolean;
 }
 
-const Accounts: FC<AccountProps> = props => {
+const Accounts: FC<AccountProps> = (props) => {
   const snap = useSnapshot(state);
-  const [activeAccountAddress, setActiveAccountAddress] = useState<string | null>(null);
+  const [activeAccountAddress, setActiveAccountAddress] = useState<
+    string | null
+  >(null);
   useEffect(() => {
     const fetchAccInfo = async () => {
       if (snap.clientStatus === "online") {
-        const requests = snap.accounts.map(acc =>
+        const requests = snap.accounts.map((acc) =>
           snap.client?.send({
             id: acc.address,
             command: "account_info",
@@ -241,13 +251,15 @@ const Accounts: FC<AccountProps> = props => {
           const address = res?.account_data?.Account as string;
           const balance = res?.account_data?.Balance as string;
           const sequence = res?.account_data?.Sequence as number;
-          const accountToUpdate = state.accounts.find(acc => acc.address === address);
+          const accountToUpdate = state.accounts.find(
+            (acc) => acc.address === address
+          );
           if (accountToUpdate) {
             accountToUpdate.xrp = balance;
             accountToUpdate.sequence = sequence;
           }
         });
-        const objectRequests = snap.accounts.map(acc => {
+        const objectRequests = snap.accounts.map((acc) => {
           return snap.client?.send({
             id: `${acc.address}-hooks`,
             command: "account_objects",
@@ -257,7 +269,9 @@ const Accounts: FC<AccountProps> = props => {
         const objectResponses = await Promise.all(objectRequests);
         objectResponses.forEach((res: any) => {
           const address = res?.account as string;
-          const accountToUpdate = state.accounts.find(acc => acc.address === address);
+          const accountToUpdate = state.accounts.find(
+            (acc) => acc.address === address
+          );
           if (accountToUpdate) {
             accountToUpdate.hooks = res.account_objects
               .filter((ac: any) => ac?.LedgerEntryType === "Hook")
@@ -291,14 +305,17 @@ const Accounts: FC<AccountProps> = props => {
         position: "relative",
         flex: "1",
         height: "100%",
-        borderRight: "1px solid $mauve6",
-        borderLeft: "1px solid $mauve6",
-        borderBottom: "1px solid $mauve6",
+        border: "1px solid $mauve6",
         borderRadius: props.card ? "$md" : undefined,
       }}
     >
       <Container css={{ p: 0, flexShrink: 1, height: "100%" }}>
-        <Flex css={{ py: "$3", borderBottom: props.card ? "1px solid $mauve6" : undefined }}>
+        <Flex
+          css={{
+            py: "$3",
+            borderBottom: props.card ? "1px solid $mauve6" : undefined,
+          }}
+        >
           <Heading
             as="h3"
             css={{
@@ -336,7 +353,7 @@ const Accounts: FC<AccountProps> = props => {
             overflowY: "auto",
           }}
         >
-          {snap.accounts.map(account => (
+          {snap.accounts.map((account) => (
             <Flex
               column
               key={account.address + account.name}
@@ -361,7 +378,12 @@ const Accounts: FC<AccountProps> = props => {
               >
                 <Box>
                   <Text>{account.name} </Text>
-                  <Text css={{ color: "$mauve9" }}>
+                  <Text
+                    css={{
+                      color: "$mauve9",
+                      wordBreak: "break-word",
+                    }}
+                  >
                     {account.address} (
                     {Dinero({
                       amount: Number(account?.xrp || "0"),
@@ -384,10 +406,11 @@ const Accounts: FC<AccountProps> = props => {
                     isLoading={account.isLoading}
                     disabled={
                       account.isLoading ||
-                      !snap.files.filter(file => file.compiledWatContent).length
+                      !snap.files.filter((file) => file.compiledWatContent)
+                        .length
                     }
                     variant="secondary"
-                    onClick={e => {
+                    onClick={(e) => {
                       e.stopPropagation();
                       deployHook(account);
                     }}
@@ -430,7 +453,7 @@ const ImportAccountDialog = () => {
             name="secret"
             type="password"
             value={value}
-            onChange={e => setValue(e.target.value)}
+            onChange={(e) => setValue(e.target.value)}
           />
         </DialogDescription>
 

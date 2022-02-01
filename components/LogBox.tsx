@@ -21,7 +21,14 @@ interface ILogBox {
   enhanced?: boolean;
 }
 
-const LogBox: React.FC<ILogBox> = ({ title, clearLog, logs, children, renderNav, enhanced }) => {
+const LogBox: React.FC<ILogBox> = ({
+  title,
+  clearLog,
+  logs,
+  children,
+  renderNav,
+  enhanced,
+}) => {
   const logRef = useRef<HTMLPreElement>(null);
   const { stayScrolled /*, scrollBottom*/ } = useStayScrolled(logRef);
 
@@ -41,7 +48,14 @@ const LogBox: React.FC<ILogBox> = ({ title, clearLog, logs, children, renderNav,
       }}
     >
       <Container css={{ px: 0, flexShrink: 1 }}>
-        <Flex css={{ py: "$3", alignItems: "center", fontSize: "$sm", fontWeight: 300 }}>
+        <Flex
+          css={{
+            py: "$3",
+            alignItems: "center",
+            fontSize: "$sm",
+            fontWeight: 300,
+          }}
+        >
           <Heading
             as="h3"
             css={{
@@ -76,7 +90,6 @@ const LogBox: React.FC<ILogBox> = ({ title, clearLog, logs, children, renderNav,
             display: "flex",
             flexDirection: "column",
             width: "100%",
-            height: "160px",
             fontSize: "13px",
             fontWeight: "$body",
             fontFamily: "$monospace",

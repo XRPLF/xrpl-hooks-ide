@@ -25,7 +25,8 @@ const Home: NextPage = () => {
     <Split
       direction="vertical"
       sizes={[70, 30]}
-      style={{ height: "calc(90vh - 60px)" }}
+      minSize={[100, 100]}
+      style={{ height: "calc(100vh - 60px)" }}
     >
       <main style={{ display: "flex", flex: 1, position: "relative" }}>
         <HooksEditor />

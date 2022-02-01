@@ -30,6 +30,7 @@ const Deploy = () => {
       <Split
         direction="horizontal"
         sizes={[50, 50]}
+        minSize={[320, 160]}
         style={{
           display: "flex",
           flexDirection: "row",
