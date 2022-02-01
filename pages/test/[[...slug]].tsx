@@ -18,7 +18,11 @@ const Accounts = dynamic(() => import("../../components/Accounts"), {
 type TxFields = Omit<typeof transactionsData[0], "Account" | "Sequence" | "TransactionType">;
 type OtherFields = (keyof Omit<TxFields, "Destination">)[];
 
-const Transaction: FC = props => {
+interface Props {
+  header?: string;
+}
+
+const Transaction: FC<Props> = ({ header, ...props }) => {
   const snap = useSnapshot(state);
 
   const transactionsOptions = transactionsData.map(tx => ({
@@ -118,10 +122,15 @@ const Transaction: FC = props => {
           delete options[field];
         }
       });
-      await sendTransaction(account, {
-        TransactionType,
-        ...options,
-      });
+      const logPrefix = header ? `${header.split(".")[0]}: ` : undefined;
+      await sendTransaction(
+        account,
+        {
+          TransactionType,
+          ...options,
+        },
+        { logPrefix }
+      );
     } catch (error) {
       console.error(error);
       if (error instanceof Error) {
@@ -130,9 +139,10 @@ const Transaction: FC = props => {
     }
     setTxIsLoading(false);
   }, [
-    selectedAccount,
-    selectedDestAccount,
-    selectedTransaction,
+    header,
+    selectedAccount?.value,
+    selectedDestAccount?.value,
+    selectedTransaction?.value,
     snap.accounts,
     txFields,
     txIsDisabled,
@@ -291,13 +301,14 @@ const Test = () => {
         <Box css={{ width: "60%", px: "$2", maxWidth: "800px", height: "100%", overflow: "auto" }}>
           <Tabs
             keepAllAlive
+            forceDefaultExtension
             defaultExtension=".json"
             onCreateNewTab={name => setTabHeaders(tabHeaders.concat(name))}
             onCloseTab={index => setTabHeaders(tabHeaders.filter((_, idx) => idx !== index))}
           >
             {tabHeaders.map(header => (
               <Tab key={header} header={header}>
-                <Transaction />
+                <Transaction header={header} />
               </Tab>
             ))}
           </Tabs>

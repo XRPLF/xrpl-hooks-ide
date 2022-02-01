@@ -31,6 +31,7 @@ interface Props {
   children: ReactElement<TabProps>[];
   keepAllAlive?: boolean;
   defaultExtension?: string;
+  forceDefaultExtension?: boolean;
   onCreateNewTab?: (name: string) => any;
   onCloseTab?: (index: number, header?: string) => any;
 }
@@ -46,6 +47,7 @@ export const Tabs = ({
   onCreateNewTab,
   onCloseTab,
   defaultExtension = "",
+  forceDefaultExtension,
 }: Props) => {
   const [active, setActive] = useState(activeIndex || 0);
   const tabs: TabProps[] = children.map(elem => elem.props);
@@ -83,6 +85,10 @@ export const Tabs = ({
   const handleCreateTab = useCallback(() => {
     // add default extension in case omitted
     let _tabname = tabname.includes(".") ? tabname : tabname + defaultExtension;
+    if (forceDefaultExtension && !_tabname.endsWith(defaultExtension)) {
+      _tabname = _tabname + defaultExtension;
+    }
+
     const chk = validateTabname(_tabname);
     if (chk.error) {
       setNewtabError(`Error: ${chk.error}`);
