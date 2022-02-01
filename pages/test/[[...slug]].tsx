@@ -282,12 +282,8 @@ const Test = () => {
   const snap = useSnapshot(state);
   return (
     <Container css={{ py: "$3", px: 0 }}>
-      <Flex
-        row
-        fluid
-        css={{ justifyContent: "center", mb: "$2", height: "40vh", minHeight: "300px", p: "$3 $2" }}
-      >
-        <Box css={{ width: "60%", px: "$2", maxWidth: "800px", height: "100%", overflow: "auto" }}>
+      <Flex row fluid css={{ justifyContent: 'center', mb: "$2", height: '40vh', minHeight: '300px', p: '$3 $2' }}>
+        <Box css={{ width: "55%", px: "$2" }}>
           <Tabs>
             {/* TODO Dynamic tabs */}
             <Tab header="test1.json">
@@ -298,7 +294,7 @@ const Test = () => {
             </Tab>
           </Tabs>
         </Box>
-        <Box css={{ width: "40%", mx: "$2", height: "100%", maxWidth: "750px" }}>
+        <Box css={{ width: "45%", mx: "$2", height: '100%' }}>
           <Accounts card hideDeployBtn showHookStats />
         </Box>
       </Flex>

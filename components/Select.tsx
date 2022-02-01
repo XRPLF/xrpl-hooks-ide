@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { gray, grayDark } from "@radix-ui/colors";
+import { mauve, mauveDark } from "@radix-ui/colors";
 import { useTheme } from "next-themes";
 import { styled } from '../stitches.config';
 import dynamic from 'next/dynamic';
@@ -11,11 +11,11 @@ const Select: FC<Props> = props => {
   const isDark = theme === "dark";
   const colors: any = {
     // primary: pink.pink9,
-    primary: isDark ? grayDark.gray4 : gray.gray4,
-    secondary: isDark ? grayDark.gray8 : gray.gray8,
-    background: isDark ? "rgb(10, 10, 10)" : "rgb(244, 244, 244)",
-    searchText: isDark ? grayDark.gray12 : gray.gray12,
-    placeholder: isDark ? grayDark.gray11 : gray.gray11,
+    primary: isDark ? mauveDark.mauve4 : mauve.mauve4,
+    secondary: isDark ? mauveDark.mauve8 : mauve.mauve8,
+    background: isDark ? "rgb(10, 10, 10)" : "rgb(245, 245, 245)",
+    searchText: isDark ? mauveDark.mauve12 : mauve.mauve12,
+    placeholder: isDark ? mauveDark.mauve11 : mauve.mauve11,
   };
   colors.outline = colors.background;
   colors.selected = colors.secondary;
