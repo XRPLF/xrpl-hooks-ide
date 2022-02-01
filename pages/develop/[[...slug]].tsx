@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import { useSnapshot } from "valtio";
 import Hotkeys from "react-hot-keys";
 import { Play } from "phosphor-react";
+import Split from "react-split";
 
 import type { NextPage } from "next";
 import { compileCode } from "../../state/actions";
@@ -19,8 +20,13 @@ const LogBox = dynamic(() => import("../../components/LogBox"), {
 
 const Home: NextPage = () => {
   const snap = useSnapshot(state);
+
   return (
-    <>
+    <Split
+      direction="vertical"
+      sizes={[70, 30]}
+      style={{ height: "calc(90vh - 60px)" }}
+    >
       <main style={{ display: "flex", flex: 1, position: "relative" }}>
         <HooksEditor />
         {snap.files[snap.active]?.name?.split(".")?.[1].toLowerCase() ===
@@ -65,7 +71,7 @@ const Home: NextPage = () => {
           logs={snap.logs}
         />
       </Box>
-    </>
+    </Split>
   );
 };
 

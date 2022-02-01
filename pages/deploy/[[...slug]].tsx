@@ -1,8 +1,8 @@
 import React from "react";
 import dynamic from "next/dynamic";
-import { Flex, Box } from "../../components";
 import { useSnapshot } from "valtio";
 import state from "../../state";
+import Split from "react-split";
 
 const DeployEditor = dynamic(() => import("../../components/DeployEditor"), {
   ssr: false,
@@ -19,23 +19,36 @@ const LogBox = dynamic(() => import("../../components/LogBox"), {
 const Deploy = () => {
   const snap = useSnapshot(state);
   return (
-    <>
-      <main style={{ display: "flex", flex: 1, height: 'calc(100vh - 30vh - 60px)' }}>
+    <Split
+      direction="vertical"
+      sizes={[40, 60]}
+      style={{ height: "calc(100vh - 60px)" }}
+    >
+      <main style={{ display: "flex", flex: 1, position: "relative" }}>
         <DeployEditor />
       </main>
-      <Flex css={{ flexDirection: "row", width: "100%", minHeight: '225px', height: '30vh' }}>
-        <Box css={{ width: "100%" }}>
+      <Split
+        direction="horizontal"
+        sizes={[50, 50]}
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          width: "100%",
+          height: "100%",
+        }}
+      >
+        <div style={{ alignItems: "stretch", display: "flex" }}>
           <Accounts />
-        </Box>
-        <Box css={{ width: "100%" }}>
+        </div>
+        <div>
           <LogBox
             title="Deploy Log"
             logs={snap.deployLogs}
             clearLog={() => (state.deployLogs = [])}
           />
-        </Box>
-      </Flex>
-    </>
+        </div>
+      </Split>
+    </Split>
   );
 };
 

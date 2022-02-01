@@ -11,3 +11,20 @@ body,
 * {
   box-sizing: border-box;
 }
+
+.gutter {
+  position: relative;
+  background: transparent;
+}
+.gutter-vertical {
+  margin-top: -10px;
+}
+.gutter-horizontal {
+  margin-left: -10px;
+}
+.gutter-vertical:hover {
+  cursor: row-resize;
+}
+.gutter-horizontal:hover {
+  cursor: col-resize;
+}
