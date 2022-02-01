@@ -117,6 +117,8 @@ export const Tabs = ({
             flex: 1,
             flexWrap: "nowrap",
             marginBottom: "-1px",
+            width: "100%",
+            overflow: "auto",
           }}
         >
           {tabs.map((tab, idx) => (
