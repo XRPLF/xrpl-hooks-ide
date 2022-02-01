@@ -17,6 +17,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const router = useRouter();
   const slug = router.query?.slug;
   const gistId = (Array.isArray(slug) && slug[0]) ?? null;
+
   useEffect(() => {
     if (gistId && router.isReady) {
       fetchFiles(gistId);

@@ -8,6 +8,7 @@ import { saveFile } from "./saveFile";
 import { syncToGist } from "./syncToGist";
 import { updateEditorSettings } from "./updateEditorSettings";
 import { downloadAsZip } from "./downloadAsZip";
+import { sendTransaction } from "./sendTransaction";
 
 export {
   addFaucetAccount,
@@ -19,5 +20,6 @@ export {
   saveFile,
   syncToGist,
   updateEditorSettings,
-  downloadAsZip
+  downloadAsZip,
+  sendTransaction
 };

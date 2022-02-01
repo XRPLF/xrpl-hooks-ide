@@ -50,7 +50,8 @@ export const {
       text: "$gray12",
       primary: "$plum",
       white: "white",
-      black: "black"
+      black: "black",
+      'deep': 'rgb(244, 244, 244)'
     },
     fonts: {
       body: 'Work Sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
@@ -303,6 +304,7 @@ export const darkTheme = createTheme('dark', {
     ...pinkDark,
     ...yellowDark,
     ...purpleDark,
+    deep: 'rgb(10, 10, 10)'
   },
 });
 
