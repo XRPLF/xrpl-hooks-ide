@@ -50,6 +50,7 @@ export interface IState {
   logs: ILog[];
   deployLogs: ILog[];
   transactionLogs: ILog[];
+  debugLogs: ILog[];
   editorCtx?: typeof monaco.editor;
   editorSettings: {
     tabSize: number;
@@ -72,6 +73,7 @@ let initialState: IState = {
   logs: [],
   deployLogs: [],
   transactionLogs: [],
+  debugLogs: [],
   editorCtx: undefined,
   gistId: undefined,
   gistOwner: undefined,

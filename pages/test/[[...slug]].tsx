@@ -7,6 +7,10 @@ import { sendTransaction } from "../../state/actions";
 import { useCallback, useEffect, useState, FC } from "react";
 import transactionsData from "../../content/transactions.json";
 
+const DebugStream = dynamic(() => import("../../components/DebugStream"), {
+  ssr: false,
+});
+
 const LogBox = dynamic(() => import("../../components/LogBox"), {
   ssr: false,
 });
@@ -298,7 +302,7 @@ const Test = () => {
         fluid
         css={{ justifyContent: "center", mb: "$2", height: "40vh", minHeight: "300px", p: "$3 $2" }}
       >
-        <Box css={{ width: "60%", px: "$2", maxWidth: "800px", height: "100%", overflow: "auto" }}>
+        <Box css={{ width: "55%", px: "$2" }}>
           <Tabs
             keepAllAlive
             forceDefaultExtension
@@ -313,7 +317,7 @@ const Test = () => {
             ))}
           </Tabs>
         </Box>
-        <Box css={{ width: "40%", mx: "$2", height: "100%", maxWidth: "750px" }}>
+        <Box css={{ width: "45%", mx: "$2", height: "100%" }}>
           <Accounts card hideDeployBtn showHookStats />
         </Box>
       </Flex>
@@ -321,13 +325,13 @@ const Test = () => {
       <Flex row fluid css={{ borderBottom: "1px solid $mauve8" }}>
         <Box css={{ width: "50%", borderRight: "1px solid $mauve8" }}>
           <LogBox
-            title="From Log"
+            title="Development Log"
             logs={snap.transactionLogs}
             clearLog={() => (state.transactionLogs = [])}
           />
         </Box>
         <Box css={{ width: "50%" }}>
-          <LogBox title="To Log" logs={[]} clearLog={() => {}} />
+          <DebugStream />
         </Box>
       </Flex>
     </Container>
