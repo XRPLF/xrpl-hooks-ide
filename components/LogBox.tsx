@@ -56,7 +56,7 @@ const LogBox: React.FC<ILogBox> = ({
       >
         <Flex
           css={{
-            py: "$3",
+            height: "48px",
             alignItems: "center",
             fontSize: "$sm",
             fontWeight: 300,
@@ -97,7 +97,7 @@ const LogBox: React.FC<ILogBox> = ({
             display: "flex",
             flexDirection: "column",
             width: "100%",
-            height: "100%",
+            height: "calc(100% - 48px)", // 100% minus the logbox header height
             overflowY: "auto",
             fontSize: "13px",
             fontWeight: "$body",
