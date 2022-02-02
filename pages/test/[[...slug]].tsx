@@ -357,6 +357,7 @@ const Test = () => {
         direction="vertical"
         sizes={[50, 50]}
         gutterSize={4}
+        gutterAlign="center"
         style={{ height: "calc(100vh - 60px)" }}
       >
         <Flex
@@ -411,6 +412,7 @@ const Test = () => {
             sizes={[50, 50]}
             minSize={[320, 160]}
             gutterSize={4}
+            gutterAlign="center"
             style={{
               display: "flex",
               flexDirection: "row",
