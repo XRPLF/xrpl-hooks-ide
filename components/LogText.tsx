@@ -4,7 +4,7 @@ const Text = styled("span", {
   fontFamily: "$monospace",
   lineHeight: "$body",
   color: "$text",
-  wordWrap: 'break-word',
+  wordWrap: "break-word",
   variants: {
     variant: {
       log: {

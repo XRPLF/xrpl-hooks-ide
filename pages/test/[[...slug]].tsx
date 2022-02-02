@@ -1,7 +1,18 @@
-import { Container, Flex, Box, Tabs, Tab, Input, Select, Text, Button } from "../../components";
+import {
+  Container,
+  Flex,
+  Box,
+  Tabs,
+  Tab,
+  Input,
+  Select,
+  Text,
+  Button,
+} from "../../components";
 import { Play } from "phosphor-react";
 import dynamic from "next/dynamic";
 import { useSnapshot } from "valtio";
+import Split from "react-split";
 import state from "../../state";
 import { sendTransaction } from "../../state/actions";
 import { useCallback, useEffect, useState, FC } from "react";
@@ -19,7 +30,10 @@ const Accounts = dynamic(() => import("../../components/Accounts"), {
 });
 
 // type SelectOption<T> = { value: T, label: string };
-type TxFields = Omit<typeof transactionsData[0], "Account" | "Sequence" | "TransactionType">;
+type TxFields = Omit<
+  typeof transactionsData[0],
+  "Account" | "Sequence" | "TransactionType"
+>;
 type OtherFields = (keyof Omit<TxFields, "Destination">)[];
 
 interface Props {
@@ -29,7 +43,7 @@ interface Props {
 const Transaction: FC<Props> = ({ header, ...props }) => {
   const snap = useSnapshot(state);
 
-  const transactionsOptions = transactionsData.map(tx => ({
+  const transactionsOptions = transactionsData.map((tx) => ({
     value: tx.TransactionType,
     label: tx.TransactionType,
   }));
@@ -37,18 +51,20 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
     typeof transactionsOptions[0] | null
   >(null);
 
-  const accountOptions = snap.accounts.map(acc => ({
+  const accountOptions = snap.accounts.map((acc) => ({
     label: acc.name,
     value: acc.address,
   }));
-  const [selectedAccount, setSelectedAccount] = useState<typeof accountOptions[0] | null>(null);
+  const [selectedAccount, setSelectedAccount] = useState<
+    typeof accountOptions[0] | null
+  >(null);
 
   const destAccountOptions = snap.accounts
-    .map(acc => ({
+    .map((acc) => ({
       label: acc.name,
       value: acc.address,
     }))
-    .filter(acc => acc.value !== selectedAccount?.value);
+    .filter((acc) => acc.value !== selectedAccount?.value);
   const [selectedDestAccount, setSelectedDestAccount] = useState<
     typeof destAccountOptions[0] | null
   >(null);
@@ -59,7 +75,9 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
 
   useEffect(() => {
     const transactionType = selectedTransaction?.value;
-    const account = snap.accounts.find(acc => acc.address === selectedAccount?.value);
+    const account = snap.accounts.find(
+      (acc) => acc.address === selectedAccount?.value
+    );
     if (!account || !transactionType || txIsLoading) {
       setTxIsDisabled(true);
     } else {
@@ -69,7 +87,7 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
 
   useEffect(() => {
     let _txFields: TxFields | undefined = transactionsData.find(
-      tx => tx.TransactionType === selectedTransaction?.value
+      (tx) => tx.TransactionType === selectedTransaction?.value
     );
     if (!_txFields) return setTxFields({});
     _txFields = { ..._txFields } as TxFields;
@@ -85,7 +103,9 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
   }, [selectedTransaction, setSelectedDestAccount]);
 
   const submitTest = useCallback(async () => {
-    const account = snap.accounts.find(acc => acc.address === selectedAccount?.value);
+    const account = snap.accounts.find(
+      (acc) => acc.address === selectedAccount?.value
+    );
     const TransactionType = selectedTransaction?.value;
     if (!account || !TransactionType || txIsDisabled) return;
 
@@ -95,7 +115,7 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
       let options = { ...txFields };
 
       options.Destination = selectedDestAccount?.value;
-      (Object.keys(options) as (keyof TxFields)[]).forEach(field => {
+      (Object.keys(options) as (keyof TxFields)[]).forEach((field) => {
         let _value = options[field];
         // convert currency
         if (typeof _value === "object" && _value.type === "currency") {
@@ -162,12 +182,20 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
   }, []);
 
   const usualFields = ["TransactionType", "Amount", "Account", "Destination"];
-  const otherFields = Object.keys(txFields).filter(k => !usualFields.includes(k)) as OtherFields;
+  const otherFields = Object.keys(txFields).filter(
+    (k) => !usualFields.includes(k)
+  ) as OtherFields;
   return (
     <Box css={{ position: "relative", height: "calc(100% - 28px)" }} {...props}>
-      <Container css={{ p: "$3 0", fontSize: "$sm", height: "calc(100% - 28px)" }}>
+      <Container
+        css={{ p: "$3 0", fontSize: "$sm", height: "calc(100% - 28px)" }}
+      >
         <Flex column fluid css={{ height: "100%", overflowY: "auto" }}>
-          <Flex row fluid css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}>
+          <Flex
+            row
+            fluid
+            css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}
+          >
             <Text muted css={{ mr: "$3" }}>
               Transaction type:{" "}
             </Text>
@@ -178,10 +206,14 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
               hideSelectedOptions
               css={{ width: "70%" }}
               value={selectedTransaction}
-              onChange={tt => setSelectedTransaction(tt as any)}
+              onChange={(tt) => setSelectedTransaction(tt as any)}
             />
           </Flex>
-          <Flex row fluid css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}>
+          <Flex
+            row
+            fluid
+            css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}
+          >
             <Text muted css={{ mr: "$3" }}>
               Account:{" "}
             </Text>
@@ -191,17 +223,25 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
               css={{ width: "70%" }}
               options={accountOptions}
               value={selectedAccount}
-              onChange={acc => setSelectedAccount(acc as any)}
+              onChange={(acc) => setSelectedAccount(acc as any)}
             />
           </Flex>
           {txFields.Amount !== undefined && (
-            <Flex row fluid css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}>
+            <Flex
+              row
+              fluid
+              css={{
+                justifyContent: "flex-end",
+                alignItems: "center",
+                mb: "$3",
+              }}
+            >
               <Text muted css={{ mr: "$3" }}>
                 Amount (XRP):{" "}
               </Text>
               <Input
                 value={txFields.Amount.value}
-                onChange={e =>
+                onChange={(e) =>
                   setTxFields({
                     ...txFields,
                     Amount: { type: "currency", value: e.target.value },
@@ -213,7 +253,15 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
             </Flex>
           )}
           {txFields.Destination !== undefined && (
-            <Flex row fluid css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}>
+            <Flex
+              row
+              fluid
+              css={{
+                justifyContent: "flex-end",
+                alignItems: "center",
+                mb: "$3",
+              }}
+            >
               <Text muted css={{ mr: "$3" }}>
                 Destination account:{" "}
               </Text>
@@ -224,28 +272,36 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
                 options={destAccountOptions}
                 value={selectedDestAccount}
                 isClearable
-                onChange={acc => setSelectedDestAccount(acc as any)}
+                onChange={(acc) => setSelectedDestAccount(acc as any)}
               />
             </Flex>
           )}
-          {otherFields.map(field => {
+          {otherFields.map((field) => {
             let _value = txFields[field];
             let value = typeof _value === "object" ? _value.value : _value;
-            value = typeof value === "object" ? JSON.stringify(value) : value?.toLocaleString();
-            let isCurrency = typeof _value === "object" && _value.type === "currency";
+            value =
+              typeof value === "object"
+                ? JSON.stringify(value)
+                : value?.toLocaleString();
+            let isCurrency =
+              typeof _value === "object" && _value.type === "currency";
             return (
               <Flex
                 key={field}
                 row
                 fluid
-                css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}
+                css={{
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                  mb: "$3",
+                }}
               >
                 <Text muted css={{ mr: "$3" }}>
                   {field + (isCurrency ? " (XRP)" : "")}:{" "}
                 </Text>
                 <Input
                   value={value}
-                  onChange={e =>
+                  onChange={(e) =>
                     setTxFields({
                       ...txFields,
                       [field]:
@@ -296,44 +352,92 @@ const Test = () => {
   const snap = useSnapshot(state);
   const [tabHeaders, setTabHeaders] = useState<string[]>(["test1.json"]);
   return (
-    <Container css={{ py: "$3", px: 0 }}>
-      <Flex
-        row
-        fluid
-        css={{ justifyContent: "center", mb: "$2", height: "40vh", minHeight: "300px", p: "$3 $2" }}
+    <Container css={{ px: 0 }}>
+      <Split
+        direction="vertical"
+        sizes={[50, 50]}
+        gutterSize={4}
+        gutterAlign="center"
+        style={{ height: "calc(100vh - 60px)" }}
       >
-        <Box css={{ width: "55%", px: "$2" }}>
-          <Tabs
-            keepAllAlive
-            forceDefaultExtension
-            defaultExtension=".json"
-            onCreateNewTab={name => setTabHeaders(tabHeaders.concat(name))}
-            onCloseTab={index => setTabHeaders(tabHeaders.filter((_, idx) => idx !== index))}
+        <Flex
+          row
+          fluid
+          css={{
+            justifyContent: "center",
+            p: "$3 $2",
+          }}
+        >
+          <Split
+            direction="horizontal"
+            sizes={[50, 50]}
+            minSize={[180, 320]}
+            gutterSize={4}
+            gutterAlign="center"
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              height: "100%",
+            }}
           >
-            {tabHeaders.map(header => (
-              <Tab key={header} header={header}>
-                <Transaction header={header} />
-              </Tab>
-            ))}
-          </Tabs>
-        </Box>
-        <Box css={{ width: "45%", mx: "$2", height: "100%" }}>
-          <Accounts card hideDeployBtn showHookStats />
-        </Box>
-      </Flex>
+            <Box css={{ width: "55%", px: "$2" }}>
+              <Tabs
+                keepAllAlive
+                forceDefaultExtension
+                defaultExtension=".json"
+                onCreateNewTab={(name) =>
+                  setTabHeaders(tabHeaders.concat(name))
+                }
+                onCloseTab={(index) =>
+                  setTabHeaders(tabHeaders.filter((_, idx) => idx !== index))
+                }
+              >
+                {tabHeaders.map((header) => (
+                  <Tab key={header} header={header}>
+                    <Transaction header={header} />
+                  </Tab>
+                ))}
+              </Tabs>
+            </Box>
+            <Box css={{ width: "45%", mx: "$2", height: "100%" }}>
+              <Accounts card hideDeployBtn showHookStats />
+            </Box>
+          </Split>
+        </Flex>
 
-      <Flex row fluid css={{ borderBottom: "1px solid $mauve8" }}>
-        <Box css={{ width: "50%", borderRight: "1px solid $mauve8" }}>
-          <LogBox
-            title="Development Log"
-            logs={snap.transactionLogs}
-            clearLog={() => (state.transactionLogs = [])}
-          />
-        </Box>
-        <Box css={{ width: "50%" }}>
-          <DebugStream />
-        </Box>
-      </Flex>
+        <Flex row fluid>
+          <Split
+            direction="horizontal"
+            sizes={[50, 50]}
+            minSize={[320, 160]}
+            gutterSize={4}
+            gutterAlign="center"
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            <Box
+              css={{
+                borderRight: "1px solid $mauve8",
+                height: "100%",
+              }}
+            >
+              <LogBox
+                title="Development Log"
+                logs={snap.transactionLogs}
+                clearLog={() => (state.transactionLogs = [])}
+              />
+            </Box>
+            <Box css={{ height: "100%" }}>
+              <DebugStream />
+            </Box>
+          </Split>
+        </Flex>
+      </Split>
     </Container>
   );
 };

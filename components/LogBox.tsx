@@ -21,7 +21,14 @@ interface ILogBox {
   enhanced?: boolean;
 }
 
-const LogBox: React.FC<ILogBox> = ({ title, clearLog, logs, children, renderNav, enhanced }) => {
+const LogBox: React.FC<ILogBox> = ({
+  title,
+  clearLog,
+  logs,
+  children,
+  renderNav,
+  enhanced,
+}) => {
   const logRef = useRef<HTMLPreElement>(null);
   const { stayScrolled /*, scrollBottom*/ } = useStayScrolled(logRef);
 
@@ -38,10 +45,23 @@ const LogBox: React.FC<ILogBox> = ({ title, clearLog, logs, children, renderNav,
         background: "$mauve1",
         position: "relative",
         flex: 1,
+        height: "100%",
       }}
     >
-      <Container css={{ px: 0, flexShrink: 1 }}>
-        <Flex css={{ py: "$3", alignItems: "center", fontSize: "$sm", fontWeight: 300 }}>
+      <Container
+        css={{
+          px: 0,
+          height: "100%",
+        }}
+      >
+        <Flex
+          css={{
+            height: "48px",
+            alignItems: "center",
+            fontSize: "$sm",
+            fontWeight: 300,
+          }}
+        >
           <Heading
             as="h3"
             css={{
@@ -67,6 +87,7 @@ const LogBox: React.FC<ILogBox> = ({ title, clearLog, logs, children, renderNav,
             )}
           </Flex>
         </Flex>
+
         <Box
           as="pre"
           ref={logRef}
@@ -76,14 +97,14 @@ const LogBox: React.FC<ILogBox> = ({ title, clearLog, logs, children, renderNav,
             display: "flex",
             flexDirection: "column",
             width: "100%",
-            height: "160px",
+            height: "calc(100% - 48px)", // 100% minus the logbox header height
+            overflowY: "auto",
             fontSize: "13px",
             fontWeight: "$body",
             fontFamily: "$monospace",
             px: "$3",
             pb: "$2",
             whiteSpace: "normal",
-            overflowY: "auto",
           }}
         >
           {logs?.map((log, index) => (

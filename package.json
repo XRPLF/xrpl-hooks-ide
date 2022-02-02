@@ -41,6 +41,7 @@
     "react-hot-toast": "^2.1.1",
     "react-new-window": "^0.2.1",
     "react-select": "^5.2.1",
+    "react-split": "^2.0.14",
     "react-stay-scrolled": "^7.4.0",
     "reconnecting-websocket": "^4.4.0",
     "valtio": "^1.2.5",
