@@ -21,6 +21,7 @@ const Deploy = () => {
   return (
     <Split
       direction="vertical"
+      gutterSize={4}
       sizes={[40, 60]}
       style={{ height: "calc(100vh - 60px)" }}
     >
@@ -31,6 +32,7 @@ const Deploy = () => {
         direction="horizontal"
         sizes={[50, 50]}
         minSize={[320, 160]}
+        gutterSize={4}
         style={{
           display: "flex",
           flexDirection: "row",

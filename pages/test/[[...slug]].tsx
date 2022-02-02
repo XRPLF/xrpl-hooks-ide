@@ -356,6 +356,7 @@ const Test = () => {
       <Split
         direction="vertical"
         sizes={[50, 50]}
+        gutterSize={4}
         style={{ height: "calc(100vh - 60px)" }}
       >
         <Flex
@@ -363,7 +364,6 @@ const Test = () => {
           fluid
           css={{
             justifyContent: "center",
-            mb: "$2",
             p: "$3 $2",
           }}
         >
@@ -371,6 +371,7 @@ const Test = () => {
             direction="horizontal"
             sizes={[50, 50]}
             minSize={[180, 320]}
+            gutterSize={4}
             gutterAlign="center"
             style={{
               display: "flex",
@@ -409,6 +410,7 @@ const Test = () => {
             direction="horizontal"
             sizes={[50, 50]}
             minSize={[320, 160]}
+            gutterSize={4}
             style={{
               display: "flex",
               flexDirection: "row",
@@ -416,14 +418,19 @@ const Test = () => {
               height: "100%",
             }}
           >
-            <Box css={{ width: "50%", borderRight: "1px solid $mauve8" }}>
+            <Box
+              css={{
+                borderRight: "1px solid $mauve8",
+                height: "100%",
+              }}
+            >
               <LogBox
                 title="Development Log"
                 logs={snap.transactionLogs}
                 clearLog={() => (state.transactionLogs = [])}
               />
             </Box>
-            <Box css={{ width: "50%" }}>
+            <Box css={{ height: "100%" }}>
               <DebugStream />
             </Box>
           </Split>

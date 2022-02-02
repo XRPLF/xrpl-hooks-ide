@@ -26,6 +26,7 @@ const Home: NextPage = () => {
       direction="vertical"
       sizes={[70, 30]}
       minSize={[100, 100]}
+      gutterSize={4}
       style={{ height: "calc(100vh - 60px)" }}
     >
       <main style={{ display: "flex", flex: 1, position: "relative" }}>

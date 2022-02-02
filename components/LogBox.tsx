@@ -45,9 +45,15 @@ const LogBox: React.FC<ILogBox> = ({
         background: "$mauve1",
         position: "relative",
         flex: 1,
+        height: "100%",
       }}
     >
-      <Container css={{ px: 0, flexShrink: 1 }}>
+      <Container
+        css={{
+          px: 0,
+          height: "100%",
+        }}
+      >
         <Flex
           css={{
             py: "$3",
@@ -81,6 +87,7 @@ const LogBox: React.FC<ILogBox> = ({
             )}
           </Flex>
         </Flex>
+
         <Box
           as="pre"
           ref={logRef}
@@ -90,13 +97,14 @@ const LogBox: React.FC<ILogBox> = ({
             display: "flex",
             flexDirection: "column",
             width: "100%",
+            height: "100%",
+            overflowY: "auto",
             fontSize: "13px",
             fontWeight: "$body",
             fontFamily: "$monospace",
             px: "$3",
             pb: "$2",
             whiteSpace: "normal",
-            overflowY: "auto",
           }}
         >
           {logs?.map((log, index) => (
