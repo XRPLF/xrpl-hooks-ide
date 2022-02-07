@@ -18,6 +18,9 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const slug = router.query?.slug;
   const gistId = (Array.isArray(slug) && slug[0]) ?? null;
 
+  const origin = "https://xrpl-hooks-ide.vercel.app"; // TODO: Change when site is deployed
+  const shareImg = "/share-image.png";
+
   useEffect(() => {
     if (gistId && router.isReady) {
       fetchFiles(gistId);
@@ -31,7 +34,72 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
     <>
       <Head>
-        <title>XRPL Hooks Playground</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta property="og:url" content={`${origin}${router.asPath}`} />
+        <title>XRPL Hooks Editor</title>
+        <meta property="og:title" content="XRPL Hooks Editor" />
+        <meta name="twitter:title" content="XRPL Hooks Editor" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@xrpllabs" />
+        <meta
+          name="description"
+          content="Playground for buildings Hooks, that add smart contract functionality to the XRP Ledger."
+        />
+        <meta
+          property="og:description"
+          content="Playground for buildings Hooks, that add smart contract functionality to the XRP Ledger."
+        />
+        <meta
+          name="twitter:description"
+          content="Playground for buildings Hooks, that add smart contract functionality to the XRP Ledger.."
+        />
+        <meta property="og:image" content={`${origin}${shareImg}`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:image" content={`${origin}${shareImg}`} />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#161618" />
+        <meta name="application-name" content="XRPL Hooks Editor" />
+        <meta name="msapplication-TileColor" content="#c10ad0" />
+        <meta
+          name="theme-color"
+          content="#161618"
+          media="(prefers-color-scheme: dark)"
+        />
+        <meta
+          name="theme-color"
+          content="#FDFCFD"
+          media="(prefers-color-scheme: light)"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin=""
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital@0;1&family=Work+Sans:wght@400;600;700&display=swap"
+          rel="stylesheet"
+        />
       </Head>
       <IdProvider>
         <SessionProvider session={session}>

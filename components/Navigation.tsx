@@ -61,7 +61,7 @@ const Navigation = () => {
             pr: "$4",
           }}
         >
-          <Link href="/" passHref>
+          <Link href={gistId ? `/develop/${gistId}` : "/develop"} passHref>
             <Box
               as="a"
               css={{
@@ -91,10 +91,25 @@ const Navigation = () => {
                   css={{ fontSize: "$xs", color: "$mauve10", lineHeight: 1 }}
                 >
                   {snap.files.length > 0 ? "Gist: " : "Playground"}
-                  <Text css={{ color: "$mauve12" }}>
-                    {snap.files.length > 0 &&
-                      `${snap.gistOwner || "-"}/${truncate(snap.gistId || "")}`}
-                  </Text>
+                  {snap.files.length > 0 && (
+                    <Link
+                      href={`https://gist.github.com/${snap.gistOwner || ""}/${
+                        snap.gistId || ""
+                      }`}
+                      passHref
+                    >
+                      <Text
+                        as="a"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        css={{ color: "$mauve12" }}
+                      >
+                        {`${snap.gistOwner || "-"}/${truncate(
+                          snap.gistId || ""
+                        )}`}
+                      </Text>
+                    </Link>
+                  )}
                 </Text>
               </>
             )}
@@ -391,9 +406,13 @@ const Navigation = () => {
                 </Button>
               </Link>
             </ButtonGroup>
-            <Button outline disabled>
-              <BookOpen size="15px" />
-            </Button>
+            <Link href="https://xrpl-hooks.readme.io/" passHref>
+              <a target="_blank" rel="noreferrer noopener">
+                <Button outline>
+                  <BookOpen size="15px" />
+                </Button>
+              </a>
+            </Link>
           </Stack>
         </Flex>
       </Container>
