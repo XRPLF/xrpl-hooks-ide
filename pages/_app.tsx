@@ -38,6 +38,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         <meta name="format-detection" content="telephone=no" />
         <meta property="og:url" content={`${origin}${router.asPath}`} />
+
         <title>XRPL Hooks Editor</title>
         <meta property="og:title" content="XRPL Hooks Editor" />
         <meta name="twitter:title" content="XRPL Hooks Editor" />
