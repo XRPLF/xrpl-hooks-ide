@@ -38,7 +38,6 @@ export const compileCode = async (activeId: number) => {
           {
             type: "c",
             name: state.files[activeId].name,
-            options: "-O0",
             src: state.files[activeId].content,
           },
         ],
