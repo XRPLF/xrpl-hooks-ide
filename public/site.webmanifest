@@ -1,6 +1,6 @@
 {
-    "name": "Hooks Editor",
-    "short_name": "Hooks Editor",
+    "name": "Hooks Builder",
+    "short_name": "Hooks Builder",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
