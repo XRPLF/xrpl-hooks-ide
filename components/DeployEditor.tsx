@@ -34,7 +34,7 @@ const DeployEditor = () => {
         display: "flex",
         position: "relative",
         flexDirection: "column",
-        backgroundColor: "$mauve3",
+        backgroundColor: "$mauve2",
         width: "100%",
       }}
     >

@@ -117,15 +117,17 @@ export const Input = styled("input", {
     },
     state: {
       invalid: {
-        boxShadow: "inset 0 0 0 1px $colors$red7",
+        boxShadow: "inset 0 0 0 1px $colors$crimson7",
         "&:focus": {
-          boxShadow: "inset 0px 0px 0px 1px $colors$red8, 0px 0px 0px 1px $colors$red8",
+          boxShadow:
+            "inset 0px 0px 0px 1px $colors$crimson8, 0px 0px 0px 1px $colors$crimson8",
         },
       },
       valid: {
-        boxShadow: "inset 0 0 0 1px $colors$green7",
+        boxShadow: "inset 0 0 0 1px $colors$grass7",
         "&:focus": {
-          boxShadow: "inset 0px 0px 0px 1px $colors$green8, 0px 0px 0px 1px $colors$green8",
+          boxShadow:
+            "inset 0px 0px 0px 1px $colors$grass8, 0px 0px 0px 1px $colors$grass8",
         },
       },
     },

@@ -186,7 +186,7 @@ const AccountDialog = ({
                   <Button
                     size="sm"
                     ghost
-                    css={{ color: "$green11 !important", mt: "$3" }}
+                    css={{ color: "$grass11 !important", mt: "$3" }}
                   >
                     <ArrowSquareOut size="15px" />
                   </Button>

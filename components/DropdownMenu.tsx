@@ -71,7 +71,7 @@ const itemStyles = {
   },
 
   "&:focus": {
-    backgroundColor: "$pink9",
+    backgroundColor: "$purple9",
     color: "$white",
   },
 };
@@ -85,8 +85,8 @@ const StyledRadioItem = styled(DropdownMenuPrimitive.RadioItem, {
 });
 const StyledTriggerItem = styled(DropdownMenuPrimitive.TriggerItem, {
   '&[data-state="open"]': {
-    backgroundColor: "$pink9",
-    color: "$pink9",
+    backgroundColor: "$purple9",
+    color: "$purple9",
   },
   ...itemStyles,
 });
