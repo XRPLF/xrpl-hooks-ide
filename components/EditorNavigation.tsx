@@ -85,8 +85,15 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
 
   const validateFilename = useCallback(
     (filename: string): { error: string | null } => {
+      // check if filename already exists
       if (snap.files.find(file => file.name === filename)) {
         return { error: "Filename already exists." };
+      }
+
+      // check for illegal characters
+      const ILLEGAL_REGEX = /[/]/gi;
+      if (filename.match(ILLEGAL_REGEX)) {
+        return { error: "Filename contains illegal characters" };
       }
       // More checks in future
       return { error: null };
@@ -216,10 +223,7 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
                     <DialogClose asChild>
                       <Button outline>Cancel</Button>
                     </DialogClose>
-                    <Button
-                      variant="primary"
-                      onClick={handleConfirm}
-                    >
+                    <Button variant="primary" onClick={handleConfirm}>
                       Create file
                     </Button>
                   </Flex>
@@ -330,7 +334,13 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
               },
             }}
           >
-            <Button isLoading={snap.zipLoading} onClick={downloadAsZip} outline size="sm" css={{ alignItems: "center" }}>
+            <Button
+              isLoading={snap.zipLoading}
+              onClick={downloadAsZip}
+              outline
+              size="sm"
+              css={{ alignItems: "center" }}
+            >
               <DownloadSimple size="16px" />
             </Button>
             <Button
