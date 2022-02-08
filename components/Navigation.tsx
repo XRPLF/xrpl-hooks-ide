@@ -266,7 +266,7 @@ const Navigation = () => {
                       </PanelBox>
                       <PanelBox
                         as="a"
-                        href={`/develop/${templateFileIds.starter}`}
+                        href={`/develop/${templateFileIds.firewall}`}
                       >
                         <Heading>Firewall</Heading>
                         <Text>
