@@ -47,6 +47,6 @@ html.light .gutter-horizontal:hover {
 .monaco-editor .monaco-hover hr {
   margin: 8px 0;
 }
-.monaco-hover {
+.monaco-editor .monaco-hover {
   z-index: 9999;
 }
