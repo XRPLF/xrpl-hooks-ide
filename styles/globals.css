@@ -44,7 +44,7 @@ html.light .gutter-horizontal:hover {
 .markdown-hover h3 {
   margin: 0;
 }
-.markdown-hover hr {
+.monaco-editor .monaco-hover hr {
   margin: 8px 0;
 }
 .monaco-hover {
