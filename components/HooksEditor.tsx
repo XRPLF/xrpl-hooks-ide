@@ -29,7 +29,7 @@ loader.config({
 
 const validateWritability = (editor: monaco.editor.IStandaloneCodeEditor) => {
   const currPath = editor.getModel()?.uri.path;
-  if (apiHeaderFiles.find(h => currPath?.endsWith(h))) {
+  if (apiHeaderFiles.find((h) => currPath?.endsWith(h))) {
     editor.updateOptions({ readOnly: true });
   } else {
     editor.updateOptions({ readOnly: false });
@@ -60,7 +60,7 @@ const HooksEditor = () => {
         display: "flex",
         position: "relative",
         flexDirection: "column",
-        backgroundColor: "$mauve3",
+        backgroundColor: "$mauve2",
         width: "100%",
       }}
     >
@@ -73,9 +73,9 @@ const HooksEditor = () => {
           language={snap.files?.[snap.active]?.language}
           path={`file:///work/c/${snap.files?.[snap.active]?.name}`}
           defaultValue={snap.files?.[snap.active]?.content}
-          beforeMount={monaco => {
+          beforeMount={(monaco) => {
             if (!snap.editorCtx) {
-              snap.files.forEach(file =>
+              snap.files.forEach((file) =>
                 monaco.editor.createModel(
                   file.content,
                   file.language,
@@ -100,7 +100,7 @@ const HooksEditor = () => {
               // listen when the web socket is opened
               listen({
                 webSocket: webSocket as WebSocket,
-                onConnection: connection => {
+                onConnection: (connection) => {
                   // create and start the language client
                   const languageClient = createLanguageClient(connection);
                   const disposable = languageClient.start();
@@ -139,10 +139,13 @@ const HooksEditor = () => {
                 enabled: true,
               },
             });
-            editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-              saveFile();
-            });
-            validateWritability(editor)
+            editor.addCommand(
+              monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
+              () => {
+                saveFile();
+              }
+            );
+            validateWritability(editor);
           }}
           theme={theme === "dark" ? "dark" : "light"}
         />
@@ -160,7 +163,9 @@ const HooksEditor = () => {
               <Box css={{ display: "inline-flex", pl: "35px" }}>
                 <ArrowBendLeftUp size={30} />
               </Box>
-              <Box css={{ pl: "0px", pt: "15px", flex: 1, display: "inline-flex" }}>
+              <Box
+                css={{ pl: "0px", pt: "15px", flex: 1, display: "inline-flex" }}
+              >
                 <Text
                   css={{
                     fontSize: "14px",

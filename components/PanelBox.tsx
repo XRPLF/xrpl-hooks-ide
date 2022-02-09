@@ -5,8 +5,8 @@ import Text from "./Text";
 const PanelBox = styled("div", {
   display: "flex",
   flexDirection: "column",
-  border: "1px solid $colors$mauve5",
-  backgroundColor: "$mauve1",
+  border: "1px solid $colors$mauve6",
+  backgroundColor: "$mauve2",
   padding: "$3",
   borderRadius: "$sm",
   fontWeight: "lighter",

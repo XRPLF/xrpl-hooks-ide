@@ -91,26 +91,26 @@ export const StyledButton = styled("button", {
           },
       },
       primary: {
-        backgroundColor: `$pink9`,
-        boxShadow: "inset 0 0 0 1px $colors$pink9",
+        backgroundColor: `$accent`,
+        boxShadow: "inset 0 0 0 1px $colors$purple9",
         color: "$white",
         "@hover": {
           "&:hover": {
-            backgroundColor: "$pink10",
-            boxShadow: "inset 0 0 0 1px $colors$pink11",
+            backgroundColor: "$purple10",
+            boxShadow: "inset 0 0 0 1px $colors$purple11",
           },
         },
         "&:active": {
-          backgroundColor: "$pink8",
-          boxShadow: "inset 0 0 0 1px $colors$pink8",
+          backgroundColor: "$purple8",
+          boxShadow: "inset 0 0 0 1px $colors$purple8",
         },
         "&:focus": {
-          boxShadow: "inset 0 0 0 2px $colors$pink12",
+          boxShadow: "inset 0 0 0 2px $colors$purple12",
         },
         '&[data-radix-popover-trigger][data-state="open"], &[data-radix-dropdown-menu-trigger][data-state="open"]':
           {
             backgroundColor: "$mauve4",
-            boxShadow: "inset 0 0 0 1px $colors$pink8",
+            boxShadow: "inset 0 0 0 1px $colors$purple8",
           },
       },
       secondary: {
