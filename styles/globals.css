@@ -39,3 +39,14 @@ html.light .gutter-vertical:hover {
 html.light .gutter-horizontal:hover {
   background-color: rgba(0, 0, 0, 0.25);
 }
+
+/* Adjust Monaco tooltip stylings */
+.markdown-hover h3 {
+  margin: 0;
+}
+.markdown-hover hr {
+  margin: 8px 0;
+}
+.monaco-hover {
+  z-index: 9999;
+}
