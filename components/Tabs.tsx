@@ -1,4 +1,10 @@
-import React, { useEffect, useState, Fragment, isValidElement, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  Fragment,
+  isValidElement,
+  useCallback,
+} from "react";
 import type { ReactNode, ReactElement } from "react";
 import { Box, Button, Flex, Input, Stack, Text } from ".";
 import {
@@ -13,7 +19,7 @@ import { Plus, X } from "phosphor-react";
 import { styled } from "../stitches.config";
 
 const ErrorText = styled(Text, {
-  color: "$red9",
+  color: "$crimson9",
   mt: "$1",
   display: "block",
 });
@@ -50,7 +56,7 @@ export const Tabs = ({
   forceDefaultExtension,
 }: Props) => {
   const [active, setActive] = useState(activeIndex || 0);
-  const tabs: TabProps[] = children.map(elem => elem.props);
+  const tabs: TabProps[] = children.map((elem) => elem.props);
 
   const [isNewtabDialogOpen, setIsNewtabDialogOpen] = useState(false);
   const [tabname, setTabname] = useState("");
@@ -62,7 +68,7 @@ export const Tabs = ({
 
   useEffect(() => {
     if (activeHeader) {
-      const idx = tabs.findIndex(tab => tab.header === activeHeader);
+      const idx = tabs.findIndex((tab) => tab.header === activeHeader);
       setActive(idx);
     }
   }, [activeHeader, tabs]);
@@ -74,7 +80,7 @@ export const Tabs = ({
 
   const validateTabname = useCallback(
     (tabname: string): { error: string | null } => {
-      if (tabs.find(tab => tab.header === tabname)) {
+      if (tabs.find((tab) => tab.header === tabname)) {
         return { error: "Name already exists." };
       }
       return { error: null };
@@ -170,9 +176,16 @@ export const Tabs = ({
             </Button>
           ))}
           {onCreateNewTab && (
-            <Dialog open={isNewtabDialogOpen} onOpenChange={setIsNewtabDialogOpen}>
+            <Dialog
+              open={isNewtabDialogOpen}
+              onOpenChange={setIsNewtabDialogOpen}
+            >
               <DialogTrigger asChild>
-                <Button ghost size="sm" css={{ alignItems: "center", px: "$2", mr: "$3" }}>
+                <Button
+                  ghost
+                  size="sm"
+                  css={{ alignItems: "center", px: "$2", mr: "$3" }}
+                >
                   <Plus size="16px" /> {tabs.length === 0 && "Add new tab"}
                 </Button>
               </DialogTrigger>
@@ -182,8 +195,8 @@ export const Tabs = ({
                   <label>Tabname</label>
                   <Input
                     value={tabname}
-                    onChange={e => setTabname(e.target.value)}
-                    onKeyPress={e => {
+                    onChange={(e) => setTabname(e.target.value)}
+                    onKeyPress={(e) => {
                       if (e.key === "Enter") {
                         handleCreateTab();
                       }
@@ -235,7 +248,9 @@ export const Tabs = ({
           );
         })
       ) : (
-        <Fragment key={tabs[active].header || active}>{tabs[active].children}</Fragment>
+        <Fragment key={tabs[active].header || active}>
+          {tabs[active].children}
+        </Fragment>
       )}
     </>
   );

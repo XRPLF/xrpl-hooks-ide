@@ -26,7 +26,12 @@ import NewWindow from "react-new-window";
 import { signOut, useSession } from "next-auth/react";
 import { useSnapshot } from "valtio";
 
-import { createNewFile, syncToGist, updateEditorSettings, downloadAsZip } from "../state/actions";
+import {
+  createNewFile,
+  syncToGist,
+  updateEditorSettings,
+  downloadAsZip,
+} from "../state/actions";
 import state from "../state";
 import Box from "./Box";
 import Button from "./Button";
@@ -57,7 +62,7 @@ import { styled } from "../stitches.config";
 const DEFAULT_EXTENSION = ".c";
 
 const ErrorText = styled(Text, {
-  color: "$red9",
+  color: "$crimson9",
   mt: "$1",
   display: "block",
 });
@@ -85,7 +90,7 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
 
   const validateFilename = useCallback(
     (filename: string): { error: string | null } => {
-      if (snap.files.find(file => file.name === filename)) {
+      if (snap.files.find((file) => file.name === filename)) {
         return { error: "Filename already exists." };
       }
       // More checks in future
@@ -95,7 +100,9 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
   );
   const handleConfirm = useCallback(() => {
     // add default extension in case omitted
-    let _filename = filename.includes(".") ? filename : filename + DEFAULT_EXTENSION;
+    let _filename = filename.includes(".")
+      ? filename
+      : filename + DEFAULT_EXTENSION;
     const chk = validateFilename(_filename);
     if (chk.error) {
       setNewfileError(`Error: ${chk.error}`);
@@ -139,7 +146,9 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
                 return (
                   <Button
                     size="sm"
-                    outline={showWat ? snap.activeWat !== index : snap.active !== index}
+                    outline={
+                      showWat ? snap.activeWat !== index : snap.active !== index
+                    }
                     onClick={() => (state.active = index)}
                     key={file.name + index}
                     css={{
@@ -174,7 +183,8 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
                           // If deleted file is behind active tab
                           // we keep the current state otherwise
                           // select previous file on the list
-                          state.active = index > snap.active ? snap.active : snap.active - 1;
+                          state.active =
+                            index > snap.active ? snap.active : snap.active - 1;
                         }}
                       >
                         <X size="9px" weight="bold" />
@@ -184,10 +194,18 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
                 );
               })}
             {!showWat && (
-              <Dialog open={isNewfileDialogOpen} onOpenChange={setIsNewfileDialogOpen}>
+              <Dialog
+                open={isNewfileDialogOpen}
+                onOpenChange={setIsNewfileDialogOpen}
+              >
                 <DialogTrigger asChild>
-                  <Button ghost size="sm" css={{ alignItems: "center", px: "$2", mr: "$3" }}>
-                    <Plus size="16px" /> {snap.files.length === 0 && "Add new file"}
+                  <Button
+                    ghost
+                    size="sm"
+                    css={{ alignItems: "center", px: "$2", mr: "$3" }}
+                  >
+                    <Plus size="16px" />{" "}
+                    {snap.files.length === 0 && "Add new file"}
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
@@ -196,8 +214,8 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
                     <label>Filename</label>
                     <Input
                       value={filename}
-                      onChange={e => setFilename(e.target.value)}
-                      onKeyPress={e => {
+                      onChange={(e) => setFilename(e.target.value)}
+                      onKeyPress={(e) => {
                         if (e.key === "Enter") {
                           handleConfirm();
                         }
@@ -216,10 +234,7 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
                     <DialogClose asChild>
                       <Button outline>Cancel</Button>
                     </DialogClose>
-                    <Button
-                      variant="primary"
-                      onClick={handleConfirm}
-                    >
+                    <Button variant="primary" onClick={handleConfirm}>
                       Create file
                     </Button>
                   </Flex>
@@ -237,11 +252,13 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
       <Flex
         css={{
           py: "$3",
-          backgroundColor: "$mauve3",
+          backgroundColor: "$mauve2",
           zIndex: 1,
         }}
       >
-        <Container css={{ width: "unset", display: "flex", alignItems: "center" }}>
+        <Container
+          css={{ width: "unset", display: "flex", alignItems: "center" }}
+        >
           {status === "authenticated" ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -274,10 +291,15 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem disabled onClick={() => signOut()}>
-                  <User size="16px" /> {session?.user?.username} ({session?.user.name})
+                  <User size="16px" /> {session?.user?.username} (
+                  {session?.user.name})
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => window.open(`http://gist.github.com/${session?.user.username}`)}
+                  onClick={() =>
+                    window.open(
+                      `http://gist.github.com/${session?.user.username}`
+                    )
+                  }
                 >
                   <ArrowSquareOut size="16px" />
                   Go to your Gist
@@ -291,7 +313,12 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button outline size="sm" css={{ mr: "$3" }} onClick={() => setPopUp(true)}>
+            <Button
+              outline
+              size="sm"
+              css={{ mr: "$3" }}
+              onClick={() => setPopUp(true)}
+            >
               <GithubLogo size="16px" /> Login
             </Button>
           )}
@@ -330,7 +357,13 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
               },
             }}
           >
-            <Button isLoading={snap.zipLoading} onClick={downloadAsZip} outline size="sm" css={{ alignItems: "center" }}>
+            <Button
+              isLoading={snap.zipLoading}
+              onClick={downloadAsZip}
+              outline
+              size="sm"
+              css={{ alignItems: "center" }}
+            >
               <DownloadSimple size="16px" />
             </Button>
             <Button
@@ -338,7 +371,9 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
               size="sm"
               css={{ alignItems: "center" }}
               onClick={() => {
-                navigator.clipboard.writeText(`${window.location.origin}/develop/${snap.gistId}`);
+                navigator.clipboard.writeText(
+                  `${window.location.origin}/develop/${snap.gistId}`
+                );
                 toast.success("Copied share link to clipboard!");
               }}
             >
@@ -368,7 +403,10 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem disabled={snap.zipLoading} onClick={downloadAsZip}>
+                <DropdownMenuItem
+                  disabled={snap.zipLoading}
+                  onClick={downloadAsZip}
+                >
                   <DownloadSimple size="16px" /> Download as ZIP
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -383,7 +421,9 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
                   Copy share link to clipboard
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  disabled={session?.user.username !== snap.gistOwner || !snap.gistId}
+                  disabled={
+                    session?.user.username !== snap.gistOwner || !snap.gistId
+                  }
                   onClick={() => {
                     syncToGist(session);
                   }}
@@ -409,15 +449,21 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
             </DropdownMenu>
           </Stack>
 
-          {popup && !session ? <NewWindow center="parent" url="/sign-in" /> : null}
+          {popup && !session ? (
+            <NewWindow center="parent" url="/sign-in" />
+          ) : null}
         </Container>
       </Flex>
-      <AlertDialog open={createNewAlertOpen} onOpenChange={value => setCreateNewAlertOpen(value)}>
+      <AlertDialog
+        open={createNewAlertOpen}
+        onOpenChange={(value) => setCreateNewAlertOpen(value)}
+      >
         <AlertDialogContent>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action will create new <strong>public</strong> Github Gist from your current saved
-            files. You can delete gist anytime from your GitHub Gists page.
+            This action will create new <strong>public</strong> Github Gist from
+            your current saved files. You can delete gist anytime from your
+            GitHub Gists page.
           </AlertDialogDescription>
           <Flex css={{ justifyContent: "flex-end", gap: "$3" }}>
             <AlertDialogCancel asChild>
@@ -451,8 +497,8 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
               type="number"
               min="1"
               value={editorSettings.tabSize}
-              onChange={e =>
-                setEditorSettings(curr => ({
+              onChange={(e) =>
+                setEditorSettings((curr) => ({
                   ...curr,
                   tabSize: Number(e.target.value),
                 }))
@@ -462,12 +508,18 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
 
           <Flex css={{ marginTop: 25, justifyContent: "flex-end", gap: "$3" }}>
             <DialogClose asChild>
-              <Button outline onClick={() => updateEditorSettings(editorSettings)}>
+              <Button
+                outline
+                onClick={() => updateEditorSettings(editorSettings)}
+              >
                 Cancel
               </Button>
             </DialogClose>
             <DialogClose asChild>
-              <Button variant="primary" onClick={() => updateEditorSettings(editorSettings)}>
+              <Button
+                variant="primary"
+                onClick={() => updateEditorSettings(editorSettings)}
+              >
                 Save changes
               </Button>
             </DialogClose>

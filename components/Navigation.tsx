@@ -40,6 +40,7 @@ const Navigation = () => {
       as="nav"
       css={{
         display: "flex",
+        backgroundColor: "$mauve1",
         borderBottom: "1px solid $mauve6",
         position: "relative",
         zIndex: 2003,
@@ -61,7 +62,7 @@ const Navigation = () => {
             pr: "$4",
           }}
         >
-          <Link href="/" passHref>
+          <Link href={gistId ? `/develop/${gistId}` : "/develop"} passHref>
             <Box
               as="a"
               css={{
@@ -70,7 +71,7 @@ const Navigation = () => {
                 color: "$textColor",
               }}
             >
-              <Logo width="30px" height="30px" />
+              <Logo width="32px" height="32px" />
             </Box>
           </Link>
           <Flex
@@ -91,10 +92,25 @@ const Navigation = () => {
                   css={{ fontSize: "$xs", color: "$mauve10", lineHeight: 1 }}
                 >
                   {snap.files.length > 0 ? "Gist: " : "Playground"}
-                  <Text css={{ color: "$mauve12" }}>
-                    {snap.files.length > 0 &&
-                      `${snap.gistOwner || "-"}/${truncate(snap.gistId || "")}`}
-                  </Text>
+                  {snap.files.length > 0 && (
+                    <Link
+                      href={`https://gist.github.com/${snap.gistOwner || ""}/${
+                        snap.gistId || ""
+                      }`}
+                      passHref
+                    >
+                      <Text
+                        as="a"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        css={{ color: "$mauve12" }}
+                      >
+                        {`${snap.gistOwner || "-"}/${truncate(
+                          snap.gistId || ""
+                        )}`}
+                      </Text>
+                    </Link>
+                  )}
                 </Text>
               </>
             )}
@@ -138,10 +154,12 @@ const Navigation = () => {
                         flexDirection: "column",
                         p: "$7",
                         height: "100%",
+                        backgroundColor: "$mauve2",
                         "@md": {
                           width: "30%",
+                          maxWidth: "300px",
                           borderBottom: "0px",
-                          borderRight: "1px solid $colors$mauve5",
+                          borderRight: "1px solid $colors$mauve6",
                         },
                       }}
                     >
@@ -152,9 +170,11 @@ const Navigation = () => {
                           alignItems: "center",
                           gap: "$3",
                           fontSize: "$xl",
+                          lineHeight: "$one",
+                          fontWeight: "$bold",
                         }}
                       >
-                        <Logo width="30px" height="30px" /> XRPL Hooks Editor
+                        <Logo width="48px" height="48px" /> XRPL Hooks Builder
                       </DialogTitle>
                       <DialogDescription as="div">
                         <Text
@@ -176,9 +196,9 @@ const Navigation = () => {
                               display: "inline-flex",
                               alignItems: "center",
                               gap: "$3",
-                              color: "$green9",
+                              color: "$purple10",
                               "&:hover": {
-                                color: "$green11 !important",
+                                color: "$purple11",
                               },
                               "&:focus": {
                                 outline: 0,
@@ -189,7 +209,7 @@ const Navigation = () => {
                             target="_blank"
                             href="https://github.com/XRPL-Labs/xrpld-hooks"
                           >
-                            <ArrowUpRight size="15px" /> Developing Hooks
+                            <ArrowUpRight size="15px" /> Hooks Github
                           </Text>
 
                           <Text
@@ -197,9 +217,9 @@ const Navigation = () => {
                               display: "inline-flex",
                               alignItems: "center",
                               gap: "$3",
-                              color: "$green9",
+                              color: "$purple10",
                               "&:hover": {
-                                color: "$green11 !important",
+                                color: "$purple11",
                               },
                               "&:focus": {
                                 outline: 0,
@@ -217,9 +237,9 @@ const Navigation = () => {
                               display: "inline-flex",
                               alignItems: "center",
                               gap: "$3",
-                              color: "$green9",
+                              color: "$purple10",
                               "&:hover": {
-                                color: "$green11 !important",
+                                color: "$purple11",
                               },
                               "&:focus": {
                                 outline: 0,
@@ -246,9 +266,7 @@ const Navigation = () => {
                         gap: "$3",
                         alignItems: "flex-start",
                         flexWrap: "wrap",
-                        backgroundImage: `url('/pattern.svg'), url('/pattern-2.svg')`,
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "bottom left, top right",
+                        backgroundColor: "$mauve1",
                         "@md": {
                           gridTemplateColumns: "1fr 1fr 1fr",
                           gridTemplateRows: "max-content",
@@ -391,9 +409,13 @@ const Navigation = () => {
                 </Button>
               </Link>
             </ButtonGroup>
-            <Button outline disabled>
-              <BookOpen size="15px" />
-            </Button>
+            <Link href="https://xrpl-hooks.readme.io/" passHref>
+              <a target="_blank" rel="noreferrer noopener">
+                <Button outline>
+                  <BookOpen size="15px" />
+                </Button>
+              </a>
+            </Link>
           </Stack>
         </Flex>
       </Container>
