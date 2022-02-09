@@ -90,8 +90,15 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
 
   const validateFilename = useCallback(
     (filename: string): { error: string | null } => {
-      if (snap.files.find((file) => file.name === filename)) {
+      // check if filename already exists
+      if (snap.files.find(file => file.name === filename)) {
         return { error: "Filename already exists." };
+      }
+
+      // check for illegal characters
+      const ILLEGAL_REGEX = /[/]/gi;
+      if (filename.match(ILLEGAL_REGEX)) {
+        return { error: "Filename contains illegal characters" };
       }
       // More checks in future
       return { error: null };

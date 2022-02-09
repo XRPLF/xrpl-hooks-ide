@@ -279,26 +279,16 @@ const Navigation = () => {
                       >
                         <Heading>Starter</Heading>
                         <Text>
-                          Just an empty starter with essential imports
+                          Just a basic starter with essential imports
                         </Text>
                       </PanelBox>
                       <PanelBox
                         as="a"
-                        href={`/develop/${templateFileIds.starter}`}
+                        href={`/develop/${templateFileIds.firewall}`}
                       >
                         <Heading>Firewall</Heading>
                         <Text>
                           This Hook essentially checks a blacklist of accounts
-                        </Text>
-                      </PanelBox>
-                      <PanelBox
-                        as="a"
-                        href={`/develop/${templateFileIds.accept}`}
-                      >
-                        <Heading>Accept</Heading>
-                        <Text>
-                          This hook just accepts any transaction coming through
-                          it
                         </Text>
                       </PanelBox>
                       <PanelBox

@@ -25,6 +25,7 @@ export const compileCode = async (activeId: number) => {
   }
   // Set loading state to true
   state.compiling = true;
+  state.logs = []
   try {
     const res = await fetch(process.env.NEXT_PUBLIC_COMPILE_API_ENDPOINT, {
       method: "POST",
