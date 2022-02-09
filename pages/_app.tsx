@@ -13,6 +13,10 @@ import Navigation from "../components/Navigation";
 import { fetchFiles } from "../state/actions";
 import state from "../state";
 
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en.json";
+TimeAgo.addDefaultLocale(en);
+
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const router = useRouter();
   const slug = router.query?.slug;

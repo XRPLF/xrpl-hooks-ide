@@ -19,6 +19,8 @@ import {
   mauveDark,
   amberDark,
   purpleDark,
+  red,
+  redDark,
 } from "@radix-ui/colors";
 
 export const {
@@ -41,11 +43,16 @@ export const {
       ...mauve,
       ...amber,
       ...purple,
+      ...red,
       accent: "#9D2DFF",
       background: "$gray1",
       backgroundAlt: "$gray4",
       text: "$gray12",
+      textMuted: "$gray10",
       primary: "$plum",
+      error: '$red9',
+      warning: '$amber11',
+      success: "$grass11",
       white: "white",
       black: "black",
       deep: "rgb(244, 244, 244)",
@@ -348,6 +355,7 @@ export const darkTheme = createTheme("dark", {
     ...mauveDark,
     ...amberDark,
     ...purpleDark,
+    ...redDark,
     deep: "rgb(10, 10, 10)",
     // backgroundA: transparentize(0.1, grayDark.gray1),
   },

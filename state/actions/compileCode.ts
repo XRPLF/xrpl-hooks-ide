@@ -66,6 +66,7 @@ export const compileCode = async (activeId: number) => {
     // Decode base64 encoded wasm that is coming back from the endpoint
     const bufferData = await decodeBinary(json.output);
     state.files[state.active].compiledContent = ref(bufferData);
+    state.files[state.active].lastCompiled = new Date();
     // Import wabt from and create human readable version of wasm file and
     // put it into state
     import("wabt").then((wabt) => {
