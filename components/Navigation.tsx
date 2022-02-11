@@ -312,7 +312,7 @@ const Navigation = () => {
                         href={`/develop/${templateFileIds.peggy}`}
                       >
                         <Heading>Peggy</Heading>
-                        <Text>An oracle based stabe coin hook</Text>
+                        <Text>An oracle based stable coin hook</Text>
                       </PanelBox>
                     </Flex>
                   </Flex>
