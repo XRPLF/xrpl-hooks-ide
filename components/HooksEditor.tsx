@@ -173,7 +173,7 @@ const HooksEditor = () => {
                     fontFamily: "$monospace",
                   }}
                 >
-                  Click the link above to create a your file
+                  Click the link above to create your file
                 </Text>
               </Box>
             </Box>
