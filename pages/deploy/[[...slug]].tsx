@@ -1,8 +1,9 @@
-import React from "react";
 import dynamic from "next/dynamic";
+import React from "react";
+import Split from "react-split";
 import { useSnapshot } from "valtio";
 import state from "../../state";
-import Split from "react-split";
+import { getSplit, saveSplit } from "../../state/actions/persistSplits";
 
 const DeployEditor = dynamic(() => import("../../components/DeployEditor"), {
   ssr: false,
@@ -17,21 +18,22 @@ const LogBox = dynamic(() => import("../../components/LogBox"), {
 });
 
 const Deploy = () => {
-  const snap = useSnapshot(state);
+  const { deployLogs } = useSnapshot(state);
   return (
     <Split
       direction="vertical"
       gutterSize={4}
       gutterAlign="center"
-      sizes={[40, 60]}
+      sizes={getSplit("deployVertical") || [40, 60]}
       style={{ height: "calc(100vh - 60px)" }}
+      onDragEnd={(e) => saveSplit("deployVertical", e)}
     >
       <main style={{ display: "flex", flex: 1, position: "relative" }}>
         <DeployEditor />
       </main>
       <Split
         direction="horizontal"
-        sizes={[50, 50]}
+        sizes={getSplit("deployHorizontal") || [50, 50]}
         minSize={[320, 160]}
         gutterSize={4}
         gutterAlign="center"
@@ -41,6 +43,7 @@ const Deploy = () => {
           width: "100%",
           height: "100%",
         }}
+        onDragEnd={(e) => saveSplit("deployHorizontal", e)}
       >
         <div style={{ alignItems: "stretch", display: "flex" }}>
           <Accounts />
@@ -48,7 +51,7 @@ const Deploy = () => {
         <div>
           <LogBox
             title="Deploy Log"
-            logs={snap.deployLogs}
+            logs={deployLogs}
             clearLog={() => (state.deployLogs = [])}
           />
         </div>

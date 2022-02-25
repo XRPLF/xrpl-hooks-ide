@@ -1,7 +1,8 @@
-import { proxy, ref, subscribe } from "valtio";
-import { devtools } from 'valtio/utils'
 import type monaco from "monaco-editor";
+import { proxy, ref, subscribe } from "valtio";
+import { devtools } from 'valtio/utils';
 import { XrplClient } from "xrpl-client";
+import { SplitSize } from "./actions/persistSplits";
 
 export interface IFile {
   name: string;
@@ -55,6 +56,9 @@ export interface IState {
   editorSettings: {
     tabSize: number;
   };
+  splits: {
+    [id: string]: SplitSize
+  };
   client: XrplClient | null;
   clientStatus: "offline" | "online";
   mainModalOpen: boolean;
@@ -83,6 +87,7 @@ let initialState: IState = {
   editorSettings: {
     tabSize: 2,
   },
+  splits: {},
   client: null,
   clientStatus: "offline" as "offline",
   mainModalOpen: false,

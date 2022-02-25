@@ -1,22 +1,17 @@
-import {
-  Container,
-  Flex,
-  Box,
-  Tabs,
-  Tab,
-  Input,
-  Select,
-  Text,
-  Button,
-} from "../../components";
-import { Play } from "phosphor-react";
 import dynamic from "next/dynamic";
-import { useSnapshot } from "valtio";
+import { Play } from "phosphor-react";
+import { FC, useCallback, useEffect, useState } from "react";
 import Split from "react-split";
+import { useSnapshot } from "valtio";
+import {
+  Box, Button, Container,
+  Flex, Input,
+  Select, Tab, Tabs, Text
+} from "../../components";
+import transactionsData from "../../content/transactions.json";
 import state from "../../state";
 import { sendTransaction } from "../../state/actions";
-import { useCallback, useEffect, useState, FC } from "react";
-import transactionsData from "../../content/transactions.json";
+import { getSplit, saveSplit } from "../../state/actions/persistSplits";
 
 const DebugStream = dynamic(() => import("../../components/DebugStream"), {
   ssr: false,
@@ -349,16 +344,17 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
 };
 
 const Test = () => {
-  const snap = useSnapshot(state);
+  const { transactionLogs, splits } = useSnapshot(state);
   const [tabHeaders, setTabHeaders] = useState<string[]>(["test1.json"]);
   return (
     <Container css={{ px: 0 }}>
       <Split
         direction="vertical"
-        sizes={[50, 50]}
+        sizes={getSplit("testVertical") || [50, 50]}
         gutterSize={4}
         gutterAlign="center"
         style={{ height: "calc(100vh - 60px)" }}
+        onDragEnd={(e) => saveSplit("testVertical", e)}
       >
         <Flex
           row
@@ -370,7 +366,7 @@ const Test = () => {
         >
           <Split
             direction="horizontal"
-            sizes={[50, 50]}
+            sizes={getSplit("testHorizontal") || [50, 50]}
             minSize={[180, 320]}
             gutterSize={4}
             gutterAlign="center"
@@ -380,6 +376,7 @@ const Test = () => {
               width: "100%",
               height: "100%",
             }}
+            onDragEnd={(e) => saveSplit("testHorizontal", e)}
           >
             <Box css={{ width: "55%", px: "$2" }}>
               <Tabs
@@ -428,7 +425,7 @@ const Test = () => {
             >
               <LogBox
                 title="Development Log"
-                logs={snap.transactionLogs}
+                logs={transactionLogs}
                 clearLog={() => (state.transactionLogs = [])}
               />
             </Box>
