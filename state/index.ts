@@ -96,6 +96,9 @@ let initialState: IState = {
 
 let localStorageAccounts: string | null = null;
 let initialAccounts: IAccount[] = [];
+
+// TODO: What exactly should we store in localStorage? editorSettings, splits, accounts?
+
 // Check if there's a persited accounts in localStorage
 if (typeof window !== "undefined") {
   try {
