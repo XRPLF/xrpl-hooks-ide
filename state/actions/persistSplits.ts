@@ -4,7 +4,6 @@ import state from ".."
 export type SplitSize = number[]
 
 export const saveSplit = (splitId: string, event: SplitSize) => {
-  console.log(splitId, event)
   state.splits[splitId] = event
 }
 
