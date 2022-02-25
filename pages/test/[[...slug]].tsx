@@ -344,7 +344,7 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
 };
 
 const Test = () => {
-  const { transactionLogs, splits } = useSnapshot(state);
+  const { transactionLogs } = useSnapshot(state);
   const [tabHeaders, setTabHeaders] = useState<string[]>(["test1.json"]);
   return (
     <Container css={{ px: 0 }}>
