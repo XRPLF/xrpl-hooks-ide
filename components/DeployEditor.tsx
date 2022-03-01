@@ -1,10 +1,12 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useSnapshot, ref } from "valtio";
 import Editor, { loader } from "@monaco-editor/react";
 import type monaco from "monaco-editor";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
+import ReactTimeAgo from "react-time-ago";
+import filesize from "filesize";
 
 import Box from "./Box";
 import Container from "./Container";
@@ -13,8 +15,7 @@ import light from "../theme/editor/xcode_default.json";
 import state from "../state";
 
 import EditorNavigation from "./EditorNavigation";
-import Text from "./Text";
-import Link from "./Link";
+import { Button, Text, Link, Flex } from ".";
 
 loader.config({
   paths: {
@@ -22,11 +23,65 @@ loader.config({
   },
 });
 
+const FILESIZE_BREAKPOINTS: [number, number] = [2 * 1024, 5 * 1024];
+
 const DeployEditor = () => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
   const snap = useSnapshot(state);
   const router = useRouter();
   const { theme } = useTheme();
+
+  const [showContent, setShowContent] = useState(false);
+
+  const activeFile = snap.files[snap.active];
+  const compiledSize = activeFile?.compiledContent?.byteLength || 0;
+  const color =
+    compiledSize > FILESIZE_BREAKPOINTS[1]
+      ? "$error"
+      : compiledSize > FILESIZE_BREAKPOINTS[0]
+      ? "$warning"
+      : "$success";
+
+  const CompiledStatView = activeFile && (
+    <Flex
+      column
+      align="center"
+      css={{
+        fontSize: "$sm",
+        fontFamily: "$monospace",
+        textAlign: "center",
+      }}
+    >
+      <Flex row align="center">
+        <Text css={{ mr: "$1" }}>Compiled {activeFile.name.split(".")[0] + ".wasm"}</Text>
+        {activeFile?.lastCompiled && <ReactTimeAgo date={activeFile.lastCompiled} locale="en-US" />}
+        {activeFile.compiledContent?.byteLength && (
+          <Text css={{ ml: "$2", color }}>({filesize(activeFile.compiledContent.byteLength)})</Text>
+        )}
+      </Flex>
+      <Button variant="link" onClick={() => setShowContent(true)}>
+        View as WAT-file
+      </Button>
+    </Flex>
+  );
+  const NoContentView = !snap.loading && router.isReady && (
+    <Text
+      css={{
+        mt: "-60px",
+        fontSize: "$sm",
+        fontFamily: "$monospace",
+        maxWidth: "300px",
+        textAlign: "center",
+      }}
+    >
+      {`You haven't compiled any files yet, compile files on `}
+      <NextLink shallow href={`/develop/${router.query.slug}`} passHref>
+        <Link as="a">develop view</Link>
+      </NextLink>
+    </Text>
+  );
+  const isContent =
+    snap.files?.filter(file => file.compiledWatContent).length > 0 && router.isReady;
   return (
     <Box
       css={{
@@ -39,60 +94,45 @@ const DeployEditor = () => {
       }}
     >
       <EditorNavigation showWat />
-      {snap.files?.filter((file) => file.compiledWatContent).length > 0 &&
-      router.isReady ? (
-        <Editor
-          className="hooks-editor"
-          // keepCurrentModel
-          defaultLanguage={snap.files?.[snap.active]?.language}
-          language={snap.files?.[snap.active]?.language}
-          path={`file://tmp/c/${snap.files?.[snap.active]?.name}.wat`}
-          value={snap.files?.[snap.active]?.compiledWatContent || ""}
-          beforeMount={(monaco) => {
-            if (!state.editorCtx) {
-              state.editorCtx = ref(monaco.editor);
-              // @ts-expect-error
-              monaco.editor.defineTheme("dark", dark);
-              // @ts-expect-error
-              monaco.editor.defineTheme("light", light);
-            }
-          }}
-          onMount={(editor, monaco) => {
-            editorRef.current = editor;
-            editor.updateOptions({
-              glyphMargin: true,
-              readOnly: true,
-            });
-          }}
-          theme={theme === "dark" ? "dark" : "light"}
-        />
-      ) : (
-        <Container
-          css={{
-            display: "flex",
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {!snap.loading && router.isReady && (
-            <Text
-              css={{
-                mt: "-60px",
-                fontSize: "14px",
-                fontFamily: "$monospace",
-                maxWidth: "300px",
-                textAlign: "center",
-              }}
-            >
-              {`You haven't compiled any files yet, compile files on `}
-              <NextLink shallow href={`/develop/${router.query.slug}`} passHref>
-                <Link as="a">develop view</Link>
-              </NextLink>
-            </Text>
-          )}
-        </Container>
-      )}
+      <Container
+        css={{
+          display: "flex",
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {!isContent ? (
+          NoContentView
+        ) : !showContent ? (
+          CompiledStatView
+        ) : (
+          <Editor
+            className="hooks-editor"
+            defaultLanguage={snap.files?.[snap.active]?.language}
+            language={snap.files?.[snap.active]?.language}
+            path={`file://tmp/c/${snap.files?.[snap.active]?.name}.wat`}
+            value={snap.files?.[snap.active]?.compiledWatContent || ""}
+            beforeMount={monaco => {
+              if (!state.editorCtx) {
+                state.editorCtx = ref(monaco.editor);
+                // @ts-expect-error
+                monaco.editor.defineTheme("dark", dark);
+                // @ts-expect-error
+                monaco.editor.defineTheme("light", light);
+              }
+            }}
+            onMount={(editor, monaco) => {
+              editorRef.current = editor;
+              editor.updateOptions({
+                glyphMargin: true,
+                readOnly: true,
+              });
+            }}
+            theme={theme === "dark" ? "dark" : "light"}
+          />
+        )}
+      </Container>
     </Box>
   );
 };

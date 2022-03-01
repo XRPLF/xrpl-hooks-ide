@@ -19,7 +19,7 @@ import { Plus, X } from "phosphor-react";
 import { styled } from "../stitches.config";
 
 const ErrorText = styled(Text, {
-  color: "$crimson9",
+  color: "$error",
   mt: "$1",
   display: "block",
 });

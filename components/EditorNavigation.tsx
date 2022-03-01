@@ -62,7 +62,7 @@ import { styled } from "../stitches.config";
 const DEFAULT_EXTENSION = ".c";
 
 const ErrorText = styled(Text, {
-  color: "$crimson9",
+  color: "$error",
   mt: "$1",
   display: "block",
 });

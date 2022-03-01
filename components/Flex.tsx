@@ -16,9 +16,37 @@ const Flex = styled(Box, {
     },
     fluid: {
       true: {
-        width: '100%'
-      }
-    }
+        width: "100%",
+      },
+    },
+    align: {
+      start: {
+        alignItems: "start",
+      },
+      center: {
+        alignItems: "center",
+      },
+      end: {
+        alignItems: "end",
+      },
+    },
+    justify: {
+      start: {
+        justifyContent: "start",
+      },
+      center: {
+        justifyContent: "center",
+      },
+      end: {
+        justifyContent: "end",
+      },
+      "space-between": {
+        justifyContent: "space-between",
+      },
+      "space-around": {
+        justifyContent: "space-around",
+      },
+    },
   },
 });
 

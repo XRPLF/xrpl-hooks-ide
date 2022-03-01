@@ -364,7 +364,7 @@ const Accounts: FC<AccountProps> = props => {
                   <Text>{account.name} </Text>
                   <Text
                     css={{
-                      color: "$mauve9",
+                      color: "$textMuted",
                       wordBreak: "break-word",
                     }}
                   >

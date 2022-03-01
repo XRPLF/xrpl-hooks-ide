@@ -11,13 +11,13 @@ const Text = styled("span", {
         color: "$text",
       },
       warning: {
-        color: "$amber11",
+        color: "$warning",
       },
       error: {
-        color: "$crimson11",
+        color: "$error",
       },
       success: {
-        color: "$grass11",
+        color: "$success",
       },
     },
     capitalize: {

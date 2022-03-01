@@ -66,6 +66,12 @@ export const StyledButton = styled("button", {
       },
     },
     variant: {
+      link: {
+        textDecoration: "underline",
+        fontSize: "inherit",
+        color: "$textMuted",
+        textUnderlineOffset: "2px",
+      },
       default: {
         backgroundColor: "$mauve12",
         boxShadow: "inset 0 0 0 1px $colors$mauve12",
@@ -81,8 +87,7 @@ export const StyledButton = styled("button", {
           boxShadow: "inset 0 0 0 1px $colors$mauve11",
         },
         "&:focus": {
-          boxShadow:
-            "inset 0 0 0 1px $colors$mauve12, inset 0 0 0 2px $colors$mauve12",
+          boxShadow: "inset 0 0 0 1px $colors$mauve12, inset 0 0 0 2px $colors$mauve12",
         },
         '&[data-radix-popover-trigger][data-state="open"], &[data-radix-dropdown-menu-trigger][data-state="open"]':
           {
@@ -137,7 +142,11 @@ export const StyledButton = styled("button", {
           },
       },
     },
-
+    muted: {
+      true: {
+        color: "$textMuted",
+      },
+    },
     outline: {
       true: {
         backgroundColor: "transparent",
@@ -227,21 +236,16 @@ export const StyledButton = styled("button", {
   },
 });
 
-const CustomButton: React.FC<
-  React.ComponentProps<typeof StyledButton> & { as?: string }
-> = React.forwardRef(({ children, as = "button", ...rest }, ref) => (
-  // @ts-expect-error
-  <StyledButton {...rest} ref={ref} as={as}>
-    <Flex
-      as="span"
-      css={{ gap: "$2", alignItems: "center" }}
-      className="button-content"
-    >
-      {children}
-    </Flex>
-    {rest.isLoading && <Spinner css={{ position: "absolute" }} />}
-  </StyledButton>
-));
+const CustomButton: React.FC<React.ComponentProps<typeof StyledButton> & { as?: string }> =
+  React.forwardRef(({ children, as = "button", ...rest }, ref) => (
+    // @ts-expect-error
+    <StyledButton {...rest} ref={ref} as={as}>
+      <Flex as="span" css={{ gap: "$2", alignItems: "center" }} className="button-content">
+        {children}
+      </Flex>
+      {rest.isLoading && <Spinner css={{ position: "absolute" }} />}
+    </StyledButton>
+  ));
 
 CustomButton.displayName = "CustomButton";
 

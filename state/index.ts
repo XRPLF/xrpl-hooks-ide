@@ -9,6 +9,7 @@ export interface IFile {
   content: string;
   compiledContent?: ArrayBuffer | null;
   compiledWatContent?: string | null;
+  lastCompiled?: Date
 }
 
 export interface FaucetAccountRes {
