@@ -33,6 +33,8 @@ export interface IAccount {
 export interface ILog {
   type: "error" | "warning" | "log" | "success";
   message: string;
+  jsonData?: any,
+  timestamp?: Date;
   link?: string;
   linkText?: string;
 }

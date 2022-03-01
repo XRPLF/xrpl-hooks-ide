@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSnapshot } from "valtio";
 import { Select } from ".";
-import state from "../state";
+import state, { ILog } from "../state";
+import { extractJSON } from "../utils/json";
 import LogBox from "./LogBox";
-import Text from "./Text";
 
 const DebugStream = () => {
   const snap = useSnapshot(state);
@@ -16,7 +16,6 @@ const DebugStream = () => {
 
   const renderNav = () => (
     <>
-      <Text css={{ mx: "$2", fontSize: "inherit" }}>Account: </Text>
       <Select
         instanceId="debugStreamAccount"
         placeholder="Select account"
@@ -24,10 +23,30 @@ const DebugStream = () => {
         hideSelectedOptions
         value={selectedAccount}
         onChange={acc => setSelectedAccount(acc as any)}
-        css={{ width: "30%" }}
+        css={{ width: "100%" }}
       />
     </>
   );
+
+  const prepareLog = useCallback((str: any): ILog => {
+    if (typeof str !== "string") throw Error("Unrecognized debug log stream!");
+
+    const match = str.match(/([\s\S]+(?:UTC|ISO|GMT[+|-]\d+))\ ?([\s\S]*)/m);
+    const [_, time, msg] = match || [];
+
+    const jsonData = extractJSON(msg);
+    const timestamp = time ? new Date(time) : undefined;
+    const message = !jsonData
+      ? msg
+      : msg.slice(0, jsonData.start) + msg.slice(jsonData.end + 1);
+
+    return {
+      type: "log",
+      message,
+      timestamp,
+      jsonData: jsonData?.result,
+    };
+  }, []);
 
   useEffect(() => {
     const account = selectedAccount?.value;
@@ -52,10 +71,7 @@ const DebugStream = () => {
     };
     const onMessage = (event: any) => {
       if (!event.data) return;
-      state.debugLogs.push({
-        type: "log",
-        message: event.data,
-      });
+      state.debugLogs.push(prepareLog(event.data));
     };
 
     socket.addEventListener("open", onOpen);
@@ -67,10 +83,11 @@ const DebugStream = () => {
       socket.removeEventListener("open", onOpen);
       socket.removeEventListener("close", onError);
       socket.removeEventListener("message", onMessage);
+      socket.removeEventListener("error", onError);
 
       socket.close();
     };
-  }, [selectedAccount]);
+  }, [prepareLog, selectedAccount]);
 
   return (
     <LogBox

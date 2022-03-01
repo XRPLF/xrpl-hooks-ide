@@ -4,14 +4,9 @@ import useStayScrolled from "react-stay-scrolled";
 import NextLink from "next/link";
 
 import Container from "./Container";
-import Box from "./Box";
-import Flex from "./Flex";
 import LogText from "./LogText";
 import { ILog } from "../state";
-import Text from "./Text";
-import Button from "./Button";
-import Heading from "./Heading";
-import Link from "./Link";
+import { Code, Link, Heading, Button, Text, Flex, Box } from ".";
 
 interface ILogBox {
   title: string;
@@ -21,14 +16,7 @@ interface ILogBox {
   enhanced?: boolean;
 }
 
-const LogBox: React.FC<ILogBox> = ({
-  title,
-  clearLog,
-  logs,
-  children,
-  renderNav,
-  enhanced,
-}) => {
+const LogBox: React.FC<ILogBox> = ({ title, clearLog, logs, children, renderNav, enhanced }) => {
   const logRef = useRef<HTMLPreElement>(null);
   const { stayScrolled /*, scrollBottom*/ } = useStayScrolled(logRef);
 
@@ -55,6 +43,7 @@ const LogBox: React.FC<ILogBox> = ({
         }}
       >
         <Flex
+          fluid
           css={{
             height: "48px",
             alignItems: "center",
@@ -78,7 +67,15 @@ const LogBox: React.FC<ILogBox> = ({
           >
             <Notepad size="15px" /> <Text css={{ lineHeight: 1 }}>{title}</Text>
           </Heading>
-          {renderNav?.()}
+          <Flex
+            row
+            align="center"
+            css={{
+              width: "50%", // TODO make it max without breaking layout!
+            }}
+          >
+            {renderNav?.()}
+          </Flex>
           <Flex css={{ ml: "auto", gap: "$3", marginRight: "$3" }}>
             {clearLog && (
               <Button ghost size="xs" onClick={clearLog}>
@@ -117,16 +114,18 @@ const LogBox: React.FC<ILogBox> = ({
                     backgroundColor: enhanced ? "$backgroundAlt" : undefined,
                   },
                 },
-                p: enhanced ? "$2 $1" : undefined,
+                p: enhanced ? "$1" : undefined,
               }}
             >
               <LogText variant={log.type}>
+                {log.timestamp && <Text muted>{log.timestamp.toLocaleTimeString()} </Text>}
                 {log.message}{" "}
                 {log.link && (
                   <NextLink href={log.link} shallow passHref>
                     <Link as="a">{log.linkText}</Link>
                   </NextLink>
                 )}
+                {log.jsonData && <Code>{JSON.stringify(log.jsonData, null, 2)}</Code>}
               </LogText>
             </Box>
           ))}
