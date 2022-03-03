@@ -39,6 +39,11 @@ export interface ILog {
   linkText?: string;
 }
 
+export interface ISelect<T = string> {
+  label: string;
+  value: T;
+}
+
 export interface IState {
   files: IFile[];
   gistId?: string | null;
@@ -53,7 +58,6 @@ export interface IState {
   logs: ILog[];
   deployLogs: ILog[];
   transactionLogs: ILog[];
-  debugLogs: ILog[];
   editorCtx?: typeof monaco.editor;
   editorSettings: {
     tabSize: number;
@@ -62,6 +66,9 @@ export interface IState {
   clientStatus: "offline" | "online";
   mainModalOpen: boolean;
   accounts: IAccount[];
+  // TODO Maybe time to have multilple separate state proxies.
+  ds_selectedAccount: ISelect | null;
+  ds_logs: ILog[];
 }
 
 // let localStorageState: null | string = null;
@@ -76,7 +83,6 @@ let initialState: IState = {
   logs: [],
   deployLogs: [],
   transactionLogs: [],
-  debugLogs: [],
   editorCtx: undefined,
   gistId: undefined,
   gistOwner: undefined,
@@ -90,6 +96,8 @@ let initialState: IState = {
   clientStatus: "offline" as "offline",
   mainModalOpen: false,
   accounts: [],
+  ds_logs: [],
+  ds_selectedAccount: null
 };
 
 let localStorageAccounts: string | null = null;

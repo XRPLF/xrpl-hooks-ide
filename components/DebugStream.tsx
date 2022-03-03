@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useSnapshot } from "valtio";
 import { Select } from ".";
 import state, { ILog } from "../state";
@@ -6,23 +6,22 @@ import { extractJSON } from "../utils/json";
 import LogBox from "./LogBox";
 
 const DebugStream = () => {
-  const snap = useSnapshot(state);
+  const { ds_selectedAccount, ds_logs, accounts } = useSnapshot(state);
 
-  const accountOptions = snap.accounts.map(acc => ({
+  const accountOptions = accounts.map(acc => ({
     label: acc.name,
     value: acc.address,
   }));
-  const [selectedAccount, setSelectedAccount] = useState<typeof accountOptions[0] | null>(null);
 
   const renderNav = () => (
     <>
       <Select
-        instanceId="debugStreamAccount"
+        instanceId="DSAccount"
         placeholder="Select account"
         options={accountOptions}
         hideSelectedOptions
-        value={selectedAccount}
-        onChange={acc => setSelectedAccount(acc as any)}
+        value={ds_selectedAccount}
+        onChange={acc => (state.ds_selectedAccount = acc as any)}
         css={{ width: "100%" }}
       />
     </>
@@ -36,9 +35,7 @@ const DebugStream = () => {
 
     const jsonData = extractJSON(msg);
     const timestamp = time ? new Date(time) : undefined;
-    const message = !jsonData
-      ? msg
-      : msg.slice(0, jsonData.start) + msg.slice(jsonData.end + 1);
+    const message = !jsonData ? msg : msg.slice(0, jsonData.start) + msg.slice(jsonData.end + 1);
 
     return {
       type: "log",
@@ -49,35 +46,35 @@ const DebugStream = () => {
   }, []);
 
   useEffect(() => {
-    const account = selectedAccount?.value;
+    const account = ds_selectedAccount?.value;
     if (!account) {
       return;
     }
     const socket = new WebSocket(`wss://hooks-testnet-debugstream.xrpl-labs.com/${account}`);
 
     const onOpen = () => {
-      state.debugLogs = [];
-      state.debugLogs.push({
+      state.ds_logs = [];
+      state.ds_logs.push({
         type: "success",
         message: `Debug stream opened for account ${account}`,
       });
     };
     const onError = () => {
-      state.debugLogs.push({
+      state.ds_logs.push({
         type: "error",
         message: "Something went wrong in establishing connection!",
       });
     };
     const onClose = () => {
-      state.debugLogs.push({
+      state.ds_logs.push({
         type: "error",
         message: "Connection was closed!",
       });
-      setSelectedAccount(null)
+      state.ds_selectedAccount = null;
     };
     const onMessage = (event: any) => {
       if (!event.data) return;
-      state.debugLogs.push(prepareLog(event.data));
+      state.ds_logs.push(prepareLog(event.data));
     };
 
     socket.addEventListener("open", onOpen);
@@ -93,15 +90,15 @@ const DebugStream = () => {
 
       socket.close();
     };
-  }, [prepareLog, selectedAccount]);
+  }, [ds_selectedAccount?.value, prepareLog]);
 
   return (
     <LogBox
       enhanced
       renderNav={renderNav}
       title="Debug stream"
-      logs={snap.debugLogs}
-      clearLog={() => (state.debugLogs = [])}
+      logs={ds_logs}
+      clearLog={() => (state.ds_logs = [])}
     />
   );
 };
