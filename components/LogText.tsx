@@ -5,6 +5,7 @@ const Text = styled("span", {
   lineHeight: "$body",
   color: "$text",
   wordWrap: "break-word",
+  whiteSpace: 'pre-wrap',
   variants: {
     variant: {
       log: {

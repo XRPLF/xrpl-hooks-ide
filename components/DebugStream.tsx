@@ -67,7 +67,13 @@ const DebugStream = () => {
         type: "error",
         message: "Something went wrong in establishing connection!",
       });
-      setSelectedAccount(null);
+    };
+    const onClose = () => {
+      state.debugLogs.push({
+        type: "error",
+        message: "Connection was closed!",
+      });
+      setSelectedAccount(null)
     };
     const onMessage = (event: any) => {
       if (!event.data) return;
@@ -75,13 +81,13 @@ const DebugStream = () => {
     };
 
     socket.addEventListener("open", onOpen);
-    socket.addEventListener("close", onError);
+    socket.addEventListener("close", onClose);
     socket.addEventListener("error", onError);
     socket.addEventListener("message", onMessage);
 
     return () => {
       socket.removeEventListener("open", onOpen);
-      socket.removeEventListener("close", onError);
+      socket.removeEventListener("close", onClose);
       socket.removeEventListener("message", onMessage);
       socket.removeEventListener("error", onError);
 
