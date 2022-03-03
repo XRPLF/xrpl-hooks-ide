@@ -37,6 +37,7 @@ export interface ILog {
   timestamp?: Date;
   link?: string;
   linkText?: string;
+  defaultCollapsed?: boolean
 }
 
 export interface ISelect<T = string> {

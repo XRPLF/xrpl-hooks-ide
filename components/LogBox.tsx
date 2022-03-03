@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, ReactNode } from "react";
+import { useRef, useLayoutEffect, ReactNode, FC, useState } from "react";
 import { Notepad, Prohibit } from "phosphor-react";
 import useStayScrolled from "react-stay-scrolled";
 import NextLink from "next/link";
@@ -16,7 +16,7 @@ interface ILogBox {
   enhanced?: boolean;
 }
 
-const LogBox: React.FC<ILogBox> = ({ title, clearLog, logs, children, renderNav, enhanced }) => {
+const LogBox: FC<ILogBox> = ({ title, clearLog, logs, children, renderNav, enhanced }) => {
   const logRef = useRef<HTMLPreElement>(null);
   const { stayScrolled /*, scrollBottom*/ } = useStayScrolled(logRef);
 
@@ -117,22 +117,42 @@ const LogBox: React.FC<ILogBox> = ({ title, clearLog, logs, children, renderNav,
                 p: enhanced ? "$1" : undefined,
               }}
             >
-              <LogText variant={log.type}>
-                {log.timestamp && <Text muted>{log.timestamp.toLocaleTimeString()} </Text>}
-                {log.message}{" "}
-                {log.link && (
-                  <NextLink href={log.link} shallow passHref>
-                    <Link as="a">{log.linkText}</Link>
-                  </NextLink>
-                )}
-                {log.jsonData && <Code>{JSON.stringify(log.jsonData, null, 2)}</Code>}
-              </LogText>
+              <Log {...log} />
             </Box>
           ))}
           {children}
         </Box>
       </Container>
     </Flex>
+  );
+};
+
+export const Log: FC<ILog> = ({
+  type,
+  timestamp,
+  message,
+  link,
+  linkText,
+  defaultCollapsed,
+  jsonData,
+}) => {
+  const [expanded, setExpanded] = useState(!defaultCollapsed);
+  return (
+    <LogText variant={type}>
+      {timestamp && <Text muted>{timestamp.toLocaleTimeString()} </Text>}
+      {message}{" "}
+      {link && (
+        <NextLink href={link} shallow passHref>
+          <Link as="a">{linkText}</Link>
+        </NextLink>
+      )}
+      {jsonData && (
+        <Link onClick={() => setExpanded(!expanded)} as="a">
+          {expanded ? "Collapse" : "Expand"}
+        </Link>
+      )}
+      {expanded && jsonData && <Code>{JSON.stringify(jsonData, null, 2)}</Code>}
+    </LogText>
   );
 };
 

@@ -42,6 +42,8 @@ const DebugStream = () => {
       message,
       timestamp,
       jsonData: jsonData?.result,
+      linkText: 'Expand',
+      defaultCollapsed: true
     };
   }, []);
 
