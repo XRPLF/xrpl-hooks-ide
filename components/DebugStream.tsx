@@ -31,10 +31,10 @@ const DebugStream = () => {
     if (typeof str !== "string") throw Error("Unrecognized debug log stream!");
 
     const match = str.match(/([\s\S]+(?:UTC|ISO|GMT[+|-]\d+))\ ?([\s\S]*)/m);
-    const [_, time, msg] = match || [];
+    const [_, tm, msg] = match || [];
 
     const extracted = extractJSON(msg);
-    const timestamp = time ? new Date(time) : undefined;
+    const timestamp = isNaN(Date.parse(tm || '') ) ? tm : new Date(tm).toLocaleTimeString();
 
     const message = !extracted ? msg : msg.slice(0, extracted.start) + msg.slice(extracted.end + 1);
 

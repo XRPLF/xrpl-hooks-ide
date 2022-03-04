@@ -132,7 +132,7 @@ const LogBox: FC<ILogBox> = ({ title, clearLog, logs, children, renderNav, enhan
 
 export const Log: FC<ILog> = ({
   type,
-  timestamp,
+  timestamp: timestamp,
   message: _message,
   link,
   linkText,
@@ -181,7 +181,7 @@ export const Log: FC<ILog> = ({
         activeAccountAddress={dialogAccount}
       />
       <LogText variant={type}>
-        {timestamp && <Text muted>{timestamp.toLocaleTimeString()} </Text>}
+        {timestamp && <Text muted>{timestamp} </Text>}
         <Pre line>{message} </Pre>
         {link && (
           <NextLink href={link} shallow passHref>
