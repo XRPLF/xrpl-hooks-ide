@@ -67,10 +67,10 @@ const DebugStream = () => {
         message: "Something went wrong in establishing connection!",
       });
     };
-    const onClose = () => {
+    const onClose = (e: CloseEvent) => {
       state.ds_logs.push({
         type: "error",
-        message: "Connection was closed!",
+        message: `[${e.code}] Connection was closed.`,
       });
       state.ds_selectedAccount = null;
     };
