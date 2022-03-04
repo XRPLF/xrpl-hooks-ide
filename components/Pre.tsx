@@ -1,6 +1,6 @@
 import { styled } from "../stitches.config";
 
-const Code = styled("pre", {
+const Pre = styled("span", {
   m: 0,
   wordBreak: "break-all",
   fontFamily: '$monospace',
@@ -11,7 +11,17 @@ const Code = styled("pre", {
         width: "100%",
       },
     },
+    line: {
+      true: {
+        whiteSpace: 'pre-line'
+      }
+    },
+    block: {
+      true: {
+        display: 'block'
+      }
+    }
   },
 });
 
-export default Code;
+export default Pre;

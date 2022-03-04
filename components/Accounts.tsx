@@ -27,7 +27,7 @@ const labelStyle = css({
   mb: "$0.5",
 });
 
-const AccountDialog = ({
+export const AccountDialog = ({
   activeAccountAddress,
   setActiveAccountAddress,
 }: {

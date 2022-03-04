@@ -33,17 +33,19 @@ const DebugStream = () => {
     const match = str.match(/([\s\S]+(?:UTC|ISO|GMT[+|-]\d+))\ ?([\s\S]*)/m);
     const [_, time, msg] = match || [];
 
-    const jsonData = extractJSON(msg);
+    const extracted = extractJSON(msg);
     const timestamp = time ? new Date(time) : undefined;
-    const message = !jsonData ? msg : msg.slice(0, jsonData.start) + msg.slice(jsonData.end + 1);
+
+    const message = !extracted ? msg : msg.slice(0, extracted.start) + msg.slice(extracted.end + 1);
+
+    const jsonData = extracted ? JSON.stringify(extracted.result, null, 2) : undefined;
 
     return {
       type: "log",
       message,
       timestamp,
-      jsonData: jsonData?.result,
-      linkText: 'Expand',
-      defaultCollapsed: true
+      jsonData,
+      defaultCollapsed: true,
     };
   }, []);
 
@@ -93,7 +95,6 @@ const DebugStream = () => {
       socket.close();
     };
   }, [ds_selectedAccount?.value, prepareLog]);
-
   return (
     <LogBox
       enhanced
