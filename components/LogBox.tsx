@@ -118,6 +118,7 @@ const LogBox: FC<ILogBox> = ({ title, clearLog, logs, children, renderNav, enhan
                   },
                 },
                 p: enhanced ? "$1" : undefined,
+                my: enhanced ? "$1" : undefined,
               }}
             >
               <Log {...log} />
