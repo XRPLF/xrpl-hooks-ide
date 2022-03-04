@@ -5,6 +5,7 @@ import type monaco from "monaco-editor";
 import { ArrowBendLeftUp } from "phosphor-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/router";
+import uniqBy from "lodash.uniqby";
 
 import Box from "./Box";
 import Container from "./Container";
@@ -21,6 +22,8 @@ import { createLanguageClient, createWebSocket } from "../utils/languageClient";
 import { listen } from "@codingame/monaco-jsonrpc";
 import ReconnectingWebSocket from "reconnecting-websocket";
 
+import hooksDocsFiles from "../xrpl-hooks-docs/xrpl-hooks-docs-files.json";
+
 loader.config({
   paths: {
     vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.30.1/min/vs",
@@ -35,6 +38,8 @@ const validateWritability = (editor: monaco.editor.IStandaloneCodeEditor) => {
     editor.updateOptions({ readOnly: false });
   }
 };
+
+let decorations: string[] | undefined = [];
 
 const HooksEditor = () => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
@@ -145,6 +150,64 @@ const HooksEditor = () => {
                 saveFile();
               }
             );
+            // When the markers (errors/warnings from clangd language server) change
+            // Lets improve the markers by adding extra content to them from related
+            // rst files
+            monaco.editor.onDidChangeMarkers(() => {
+              // Get all the markers that are active at the moment,
+              // Also if same error is there twice, we can show the content
+              // only once (that's why we're using uniqBy)
+              const markers = uniqBy(
+                monaco.editor
+                  .getModelMarkers({})
+                  // Filter out the markers that are hooks specific
+                  .filter(
+                    (marker) =>
+                      typeof marker?.code === "string" &&
+                      // Take only markers that starts with "hooks-"
+                      marker?.code?.includes("hooks-") &&
+                      // Filter also markers that are related to active model
+                      // We don't want to show markers from other files
+                      marker?.resource.path
+                        .split("/")
+                        .includes(`${state.files?.[state.active]?.name}`)
+                  ),
+                "code"
+              );
+              // Get the active model (aka active file you're editing)
+              const model = monaco.editor?.getModel(
+                monaco.Uri.parse(
+                  `file:///work/c/${state.files?.[state.active]?.name}`
+                )
+              );
+              // Add decoration (aka extra hoverMessages) to markers in the
+              // exact same range (location) where the markers are
+              decorations = model?.deltaDecorations(
+                decorations || [],
+                markers.map((marker) => ({
+                  range: new monaco.Range(
+                    marker.startLineNumber,
+                    marker.startColumn,
+                    marker.endLineNumber,
+                    marker.endColumn
+                  ),
+                  options: {
+                    hoverMessage: {
+                      value:
+                        // Find the related hover message markdown from the
+                        // /xrpl-hooks-docs/xrpl-hooks-docs-files.json file
+                        // which was generated from rst files
+                        hooksDocsFiles.find(
+                          (messages) => messages.code === marker.code
+                        )?.markdown || "",
+                      supportHtml: true,
+                      isTrusted: true,
+                    },
+                  },
+                }))
+              );
+            });
+
             validateWritability(editor);
           }}
           theme={theme === "dark" ? "dark" : "light"}
