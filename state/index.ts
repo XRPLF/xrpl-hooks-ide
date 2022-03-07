@@ -40,11 +40,6 @@ export interface ILog {
   defaultCollapsed?: boolean
 }
 
-export interface ISelect<T = string> {
-  label: string;
-  value: T;
-}
-
 export interface IState {
   files: IFile[];
   gistId?: string | null;
@@ -67,9 +62,6 @@ export interface IState {
   clientStatus: "offline" | "online";
   mainModalOpen: boolean;
   accounts: IAccount[];
-  // TODO Maybe time to have multilple separate state proxies.
-  ds_selectedAccount: ISelect | null;
-  ds_logs: ILog[];
 }
 
 // let localStorageState: null | string = null;
@@ -97,8 +89,6 @@ let initialState: IState = {
   clientStatus: "offline" as "offline",
   mainModalOpen: false,
   accounts: [],
-  ds_logs: [],
-  ds_selectedAccount: null
 };
 
 let localStorageAccounts: string | null = null;
