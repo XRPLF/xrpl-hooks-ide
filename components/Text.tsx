@@ -14,6 +14,11 @@ const Text = styled("span", {
       true: {
         color: '$mauve9'
       }
+    },
+    monospace: {
+      true: {
+        fontFamily: '$monospace'
+      }
     }
   }
 });

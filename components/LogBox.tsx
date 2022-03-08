@@ -172,7 +172,8 @@ export const Log: FC<ILog> = ({
     },
     [accounts]
   );
-  const message = enrichAccounts(_message.trim());
+  _message = _message.trim().replace(/\n /gi, "\n");
+  const message = enrichAccounts(_message);
   const jsonData = enrichAccounts(_jsonData);
 
   return (
@@ -182,8 +183,8 @@ export const Log: FC<ILog> = ({
         activeAccountAddress={dialogAccount}
       />
       <LogText variant={type}>
-        {timestamp && <Text muted>{timestamp} </Text>}
-        <Pre line>{message} </Pre>
+        {timestamp && <Text muted monospace>{timestamp} </Text>}
+        <Pre>{message} </Pre>
         {link && (
           <NextLink href={link} shallow passHref>
             <Link as="a">{linkText}</Link>
