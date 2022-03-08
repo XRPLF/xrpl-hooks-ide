@@ -152,7 +152,7 @@ const HooksEditor = () => {
             );
             // When the markers (errors/warnings from clangd language server) change
             // Lets improve the markers by adding extra content to them from related
-            // rst files
+            // md files
             monaco.editor.onDidChangeMarkers(() => {
               // Get all the markers that are active at the moment,
               // Also if same error is there twice, we can show the content
@@ -174,6 +174,7 @@ const HooksEditor = () => {
                   ),
                 "code"
               );
+
               // Get the active model (aka active file you're editing)
               const model = monaco.editor?.getModel(
                 monaco.Uri.parse(
@@ -182,6 +183,7 @@ const HooksEditor = () => {
               );
               // Add decoration (aka extra hoverMessages) to markers in the
               // exact same range (location) where the markers are
+
               decorations = model?.deltaDecorations(
                 decorations || [],
                 markers.map((marker) => ({
@@ -197,6 +199,7 @@ const HooksEditor = () => {
                         // Find the related hover message markdown from the
                         // /xrpl-hooks-docs/xrpl-hooks-docs-files.json file
                         // which was generated from rst files
+
                         hooksDocsFiles.find(
                           (messages) => messages.code === marker.code
                         )?.markdown || "",
