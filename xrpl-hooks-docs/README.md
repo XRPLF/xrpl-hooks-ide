@@ -1,10 +1,10 @@
-# How to generate markdown from language server rst-files
+# How to generate json file from markdown files
 
 Go to xrpl-hooks-docs folder
 `cd xrpl-hooks-docs`
 
-Then run the `convert-to-md.js` script in that folder:
-`node convert-to-md.js`
+Then run the `makeJson.js` script in that folder:
+`node makeJson.js`
 
 If everything goes well this should output `xrpl-hooks-docs-files.json` file which contains array of the error codes and markdown related to that.
 
