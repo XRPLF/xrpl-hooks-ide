@@ -1,14 +1,15 @@
-import dynamic from "next/dynamic";
-import { useSnapshot } from "valtio";
-import Hotkeys from "react-hot-keys";
-import { Play } from "phosphor-react";
-import Split from "react-split";
-
 import type { NextPage } from "next";
-import { compileCode } from "../../state/actions";
-import state from "../../state";
-import Button from "../../components/Button";
+import dynamic from "next/dynamic";
+import { Play } from "phosphor-react";
+import Hotkeys from "react-hot-keys";
+import Split from "react-split";
+import { useSnapshot } from "valtio";
 import Box from "../../components/Box";
+import Button from "../../components/Button";
+import state from "../../state";
+import { compileCode } from "../../state/actions";
+import { getSplit, saveSplit } from "../../state/actions/persistSplits";
+
 
 const HooksEditor = dynamic(() => import("../../components/HooksEditor"), {
   ssr: false,
@@ -24,11 +25,12 @@ const Home: NextPage = () => {
   return (
     <Split
       direction="vertical"
-      sizes={[70, 30]}
+      sizes={getSplit("developVertical") || [70, 30]}
       minSize={[100, 100]}
       gutterAlign="center"
       gutterSize={4}
       style={{ height: "calc(100vh - 60px)" }}
+      onDragEnd={(e) => saveSplit("developVertical", e)}
     >
       <main style={{ display: "flex", flex: 1, position: "relative" }}>
         <HooksEditor />
