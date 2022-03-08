@@ -1,17 +1,15 @@
-import React, { useRef, useLayoutEffect, ReactNode } from "react";
+import { useRef, useLayoutEffect, ReactNode, FC, useState, useCallback } from "react";
 import { Notepad, Prohibit } from "phosphor-react";
 import useStayScrolled from "react-stay-scrolled";
 import NextLink from "next/link";
 
 import Container from "./Container";
-import Box from "./Box";
-import Flex from "./Flex";
 import LogText from "./LogText";
-import { ILog } from "../state";
-import Text from "./Text";
-import Button from "./Button";
-import Heading from "./Heading";
-import Link from "./Link";
+import state, { ILog } from "../state";
+import { Pre, Link, Heading, Button, Text, Flex, Box } from ".";
+import regexifyString from "regexify-string";
+import { useSnapshot } from "valtio";
+import { AccountDialog } from "./Accounts";
 
 interface ILogBox {
   title: string;
@@ -21,14 +19,7 @@ interface ILogBox {
   enhanced?: boolean;
 }
 
-const LogBox: React.FC<ILogBox> = ({
-  title,
-  clearLog,
-  logs,
-  children,
-  renderNav,
-  enhanced,
-}) => {
+const LogBox: FC<ILogBox> = ({ title, clearLog, logs, children, renderNav, enhanced }) => {
   const logRef = useRef<HTMLPreElement>(null);
   const { stayScrolled /*, scrollBottom*/ } = useStayScrolled(logRef);
 
@@ -55,6 +46,7 @@ const LogBox: React.FC<ILogBox> = ({
         }}
       >
         <Flex
+          fluid
           css={{
             height: "48px",
             alignItems: "center",
@@ -78,7 +70,15 @@ const LogBox: React.FC<ILogBox> = ({
           >
             <Notepad size="15px" /> <Text css={{ lineHeight: 1 }}>{title}</Text>
           </Heading>
-          {renderNav?.()}
+          <Flex
+            row
+            align="center"
+            css={{
+              width: "50%", // TODO make it max without breaking layout!
+            }}
+          >
+            {renderNav?.()}
+          </Flex>
           <Flex css={{ ml: "auto", gap: "$3", marginRight: "$3" }}>
             {clearLog && (
               <Button ghost size="xs" onClick={clearLog}>
@@ -117,23 +117,87 @@ const LogBox: React.FC<ILogBox> = ({
                     backgroundColor: enhanced ? "$backgroundAlt" : undefined,
                   },
                 },
-                p: enhanced ? "$2 $1" : undefined,
+                p: enhanced ? "$1" : undefined,
+                my: enhanced ? "$1" : undefined,
               }}
             >
-              <LogText variant={log.type}>
-                {log.message}{" "}
-                {log.link && (
-                  <NextLink href={log.link} shallow passHref>
-                    <Link as="a">{log.linkText}</Link>
-                  </NextLink>
-                )}
-              </LogText>
+              <Log {...log} />
             </Box>
           ))}
           {children}
         </Box>
       </Container>
     </Flex>
+  );
+};
+
+export const Log: FC<ILog> = ({
+  type,
+  timestamp: timestamp,
+  message: _message,
+  link,
+  linkText,
+  defaultCollapsed,
+  jsonData: _jsonData,
+}) => {
+  const [expanded, setExpanded] = useState(!defaultCollapsed);
+  const { accounts } = useSnapshot(state);
+  const [dialogAccount, setDialogAccount] = useState<string | null>(null);
+
+  const enrichAccounts = useCallback(
+    (str?: string): ReactNode => {
+      if (!str || !accounts.length) return null;
+
+      const pattern = `(${accounts.map(acc => acc.address).join("|")})`;
+      const res = regexifyString({
+        pattern: new RegExp(pattern, "gim"),
+        decorator: (match, idx) => {
+          const name = accounts.find(acc => acc.address === match)?.name;
+          return (
+            <Link
+              key={match + idx}
+              as="a"
+              onClick={() => setDialogAccount(match)}
+              title={match}
+              highlighted
+            >
+              {name || match}
+            </Link>
+          );
+        },
+        input: str,
+      });
+
+      return <>{res}</>;
+    },
+    [accounts]
+  );
+  _message = _message.trim().replace(/\n /gi, "\n");
+  const message = enrichAccounts(_message);
+  const jsonData = enrichAccounts(_jsonData);
+
+  return (
+    <>
+      <AccountDialog
+        setActiveAccountAddress={setDialogAccount}
+        activeAccountAddress={dialogAccount}
+      />
+      <LogText variant={type}>
+        {timestamp && <Text muted monospace>{timestamp} </Text>}
+        <Pre>{message} </Pre>
+        {link && (
+          <NextLink href={link} shallow passHref>
+            <Link as="a">{linkText}</Link>
+          </NextLink>
+        )}
+        {jsonData && (
+          <Link onClick={() => setExpanded(!expanded)} as="a">
+            {expanded ? "Collapse" : "Expand"}
+          </Link>
+        )}
+        {expanded && jsonData && <Pre block>{jsonData}</Pre>}
+      </LogText>
+    </>
   );
 };
 

@@ -34,8 +34,11 @@ export interface IAccount {
 export interface ILog {
   type: "error" | "warning" | "log" | "success";
   message: string;
+  jsonData?: any,
+  timestamp?: string;
   link?: string;
   linkText?: string;
+  defaultCollapsed?: boolean
 }
 
 export interface IState {
@@ -52,7 +55,6 @@ export interface IState {
   logs: ILog[];
   deployLogs: ILog[];
   transactionLogs: ILog[];
-  debugLogs: ILog[];
   editorCtx?: typeof monaco.editor;
   editorSettings: {
     tabSize: number;
@@ -78,7 +80,6 @@ let initialState: IState = {
   logs: [],
   deployLogs: [],
   transactionLogs: [],
-  debugLogs: [],
   editorCtx: undefined,
   gistId: undefined,
   gistOwner: undefined,

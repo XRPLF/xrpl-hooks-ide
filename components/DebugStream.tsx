@@ -1,84 +1,136 @@
-import { useEffect, useState } from "react";
-import { useSnapshot } from "valtio";
+import { useCallback, useEffect } from "react";
+import { proxy, ref, useSnapshot } from "valtio";
 import { Select } from ".";
-import state from "../state";
+import state, { ILog } from "../state";
+import { extractJSON } from "../utils/json";
 import LogBox from "./LogBox";
-import Text from "./Text";
+
+interface ISelect<T = string> {
+  label: string;
+  value: T;
+}
+
+const streamState = proxy({
+  selectedAccount: null as ISelect | null,
+  logs: [] as ILog[],
+  socket: undefined as WebSocket | undefined,
+});
 
 const DebugStream = () => {
-  const snap = useSnapshot(state);
+  const { selectedAccount, logs, socket } = useSnapshot(streamState);
+  const { accounts } = useSnapshot(state);
 
-  const accountOptions = snap.accounts.map(acc => ({
+  const accountOptions = accounts.map(acc => ({
     label: acc.name,
     value: acc.address,
   }));
-  const [selectedAccount, setSelectedAccount] = useState<typeof accountOptions[0] | null>(null);
 
   const renderNav = () => (
     <>
-      <Text css={{ mx: "$2", fontSize: "inherit" }}>Account: </Text>
       <Select
-        instanceId="debugStreamAccount"
+        instanceId="DSAccount"
         placeholder="Select account"
         options={accountOptions}
         hideSelectedOptions
         value={selectedAccount}
-        onChange={acc => setSelectedAccount(acc as any)}
-        css={{ width: "30%" }}
+        onChange={acc => (streamState.selectedAccount = acc as any)}
+        css={{ width: "100%" }}
       />
     </>
   );
 
+  const prepareLog = useCallback((str: any): ILog => {
+    if (typeof str !== "string") throw Error("Unrecognized debug log stream!");
+
+    const match = str.match(/([\s\S]+(?:UTC|ISO|GMT[+|-]\d+))\ ?([\s\S]*)/m);
+    const [_, tm, msg] = match || [];
+
+    const extracted = extractJSON(msg);
+    const timestamp = isNaN(Date.parse(tm || ""))
+      ? tm
+      : new Date(tm).toLocaleTimeString();
+
+    const message = !extracted
+      ? msg
+      : msg.slice(0, extracted.start) + msg.slice(extracted.end + 1);
+
+    const jsonData = extracted
+      ? JSON.stringify(extracted.result, null, 2)
+      : undefined;
+
+    return {
+      type: "log",
+      message,
+      timestamp,
+      jsonData,
+      defaultCollapsed: true,
+    };
+  }, []);
+
   useEffect(() => {
     const account = selectedAccount?.value;
-    if (!account) {
-      return;
+    if (account && (!socket || !socket.url.endsWith(account))) {
+      socket?.close();
+      streamState.socket = ref(
+        new WebSocket(
+          `wss://hooks-testnet-debugstream.xrpl-labs.com/${account}`
+        )
+      );
+    } else if (!account && socket) {
+      socket.close();
+      streamState.socket = undefined;
     }
-    const socket = new WebSocket(`wss://hooks-testnet-debugstream.xrpl-labs.com/${account}`);
+  }, [selectedAccount?.value, socket]);
+
+  useEffect(() => {
+    const account = selectedAccount?.value;
+    const socket = streamState.socket;
+    if (!socket) return;
 
     const onOpen = () => {
-      state.debugLogs = [];
-      state.debugLogs.push({
+      streamState.logs = [];
+      streamState.logs.push({
         type: "success",
         message: `Debug stream opened for account ${account}`,
       });
     };
     const onError = () => {
-      state.debugLogs.push({
+      streamState.logs.push({
         type: "error",
-        message: "Something went wrong in establishing connection!",
+        message: "Something went wrong! Check your connection and try again.",
       });
-      setSelectedAccount(null);
+    };
+    const onClose = (e: CloseEvent) => {
+      streamState.logs.push({
+        type: "error",
+        message: `Connection was closed. [code: ${e.code}]`,
+      });
+      streamState.selectedAccount = null;
     };
     const onMessage = (event: any) => {
       if (!event.data) return;
-      state.debugLogs.push({
-        type: "log",
-        message: event.data,
-      });
+      streamState.logs.push(prepareLog(event.data));
     };
 
     socket.addEventListener("open", onOpen);
-    socket.addEventListener("close", onError);
+    socket.addEventListener("close", onClose);
     socket.addEventListener("error", onError);
     socket.addEventListener("message", onMessage);
 
     return () => {
       socket.removeEventListener("open", onOpen);
-      socket.removeEventListener("close", onError);
+      socket.removeEventListener("close", onClose);
       socket.removeEventListener("message", onMessage);
-
-      socket.close();
+      socket.removeEventListener("error", onError);
     };
-  }, [selectedAccount]);
-
+  }, [prepareLog, selectedAccount?.value, socket]);
   return (
     <LogBox
       enhanced
       renderNav={renderNav}
       title="Debug stream"
-      logs={snap.debugLogs}
-      clearLog={() => (state.debugLogs = [])}
+      logs={logs}
+      clearLog={() => (streamState.logs = [])}
     />
   );
 };
