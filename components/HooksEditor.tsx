@@ -22,7 +22,7 @@ import { createLanguageClient, createWebSocket } from "../utils/languageClient";
 import { listen } from "@codingame/monaco-jsonrpc";
 import ReconnectingWebSocket from "reconnecting-websocket";
 
-import hooksDocsFiles from "../xrpl-hooks-docs/xrpl-hooks-docs-files.json";
+import docs from "../xrpl-hooks-docs/docs";
 
 loader.config({
   paths: {
@@ -200,9 +200,9 @@ const HooksEditor = () => {
                         // /xrpl-hooks-docs/xrpl-hooks-docs-files.json file
                         // which was generated from rst files
 
-                        hooksDocsFiles.find(
-                          (messages) => messages.code === marker.code
-                        )?.markdown || "",
+                        (typeof marker.code === "string" &&
+                          docs[marker?.code]?.toString()) ||
+                        "",
                       supportHtml: true,
                       isTrusted: true,
                     },
