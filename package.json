@@ -48,7 +48,6 @@
     "react-stay-scrolled": "^7.4.0",
     "react-time-ago": "^7.1.9",
     "reconnecting-websocket": "^4.4.0",
-    "rst2mdown": "^0.1.0",
     "valtio": "^1.2.5",
     "vscode-languageserver": "^7.0.0",
     "vscode-uri": "^3.0.2",
