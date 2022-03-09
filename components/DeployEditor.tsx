@@ -13,6 +13,7 @@ import Container from "./Container";
 import dark from "../theme/editor/amy.json";
 import light from "../theme/editor/xcode_default.json";
 import state from "../state";
+import wat from "../utils/wat-highlight";
 
 import EditorNavigation from "./EditorNavigation";
 import { Button, Text, Link, Flex } from ".";
@@ -53,10 +54,16 @@ const DeployEditor = () => {
       }}
     >
       <Flex row align="center">
-        <Text css={{ mr: "$1" }}>Compiled {activeFile.name.split(".")[0] + ".wasm"}</Text>
-        {activeFile?.lastCompiled && <ReactTimeAgo date={activeFile.lastCompiled} locale="en-US" />}
+        <Text css={{ mr: "$1" }}>
+          Compiled {activeFile.name.split(".")[0] + ".wasm"}
+        </Text>
+        {activeFile?.lastCompiled && (
+          <ReactTimeAgo date={activeFile.lastCompiled} locale="en-US" />
+        )}
         {activeFile.compiledContent?.byteLength && (
-          <Text css={{ ml: "$2", color }}>({filesize(activeFile.compiledContent.byteLength)})</Text>
+          <Text css={{ ml: "$2", color }}>
+            ({filesize(activeFile.compiledContent.byteLength)})
+          </Text>
         )}
       </Flex>
       <Button variant="link" onClick={() => setShowContent(true)}>
@@ -81,7 +88,8 @@ const DeployEditor = () => {
     </Text>
   );
   const isContent =
-    snap.files?.filter(file => file.compiledWatContent).length > 0 && router.isReady;
+    snap.files?.filter((file) => file.compiledWatContent).length > 0 &&
+    router.isReady;
   return (
     <Box
       css={{
@@ -109,11 +117,14 @@ const DeployEditor = () => {
         ) : (
           <Editor
             className="hooks-editor"
-            defaultLanguage={snap.files?.[snap.active]?.language}
-            language={snap.files?.[snap.active]?.language}
+            defaultLanguage={"wat"}
+            language={"wat"}
             path={`file://tmp/c/${snap.files?.[snap.active]?.name}.wat`}
             value={snap.files?.[snap.active]?.compiledWatContent || ""}
-            beforeMount={monaco => {
+            beforeMount={(monaco) => {
+              monaco.languages.register({ id: "wat" });
+              monaco.languages.setLanguageConfiguration("wat", wat.config);
+              monaco.languages.setMonarchTokensProvider("wat", wat.tokens);
               if (!state.editorCtx) {
                 state.editorCtx = ref(monaco.editor);
                 // @ts-expect-error
