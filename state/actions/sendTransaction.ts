@@ -24,6 +24,10 @@ export const sendTransaction = async (account: IAccount, txOptions: TransactionO
         Fee,  // TODO auto-fillable
         ...opts
     };
+    const currAcc = state.accounts.find(acc => acc.address === account.address);
+    if (currAcc) {
+        currAcc.sequence = account.sequence + 1;
+    }
     const { logPrefix = '' } = options || {}
     try {
         const signedAccount = derive.familySeed(account.secret);
