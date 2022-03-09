@@ -39,10 +39,73 @@ const validateWritability = (editor: monaco.editor.IStandaloneCodeEditor) => {
   }
 };
 
-let decorations: string[] | undefined = [];
+let decorations: { [key: string]: string[] } = {};
+
+const setMarkers = (monacoE: typeof monaco) => {
+  // Get all the markers that are active at the moment,
+  // Also if same error is there twice, we can show the content
+  // only once (that's why we're using uniqBy)
+  const markers = uniqBy(
+    monacoE.editor
+      .getModelMarkers({})
+      // Filter out the markers that are hooks specific
+      .filter(
+        (marker) =>
+          typeof marker?.code === "string" &&
+          // Take only markers that starts with "hooks-"
+          marker?.code?.includes("hooks-")
+      ),
+    "code"
+  );
+
+  // Get the active model (aka active file you're editing)
+  // const model = monacoE.editor?.getModel(
+  //   monacoE.Uri.parse(`file:///work/c/${state.files?.[state.active]?.name}`)
+  // );
+  // console.log(state.active);
+  // Add decoration (aka extra hoverMessages) to markers in the
+  // exact same range (location) where the markers are
+  const models = monacoE.editor.getModels();
+  models.forEach((model) => {
+    console.log(decorations);
+    decorations[model.id] = model?.deltaDecorations(
+      decorations?.[model.id] || [],
+      markers
+        .filter((marker) =>
+          marker?.resource.path
+            .split("/")
+            .includes(`${state.files?.[state.active]?.name}`)
+        )
+        .map((marker) => ({
+          range: new monacoE.Range(
+            marker.startLineNumber,
+            marker.startColumn,
+            marker.endLineNumber,
+            marker.endColumn
+          ),
+          options: {
+            hoverMessage: {
+              value:
+                // Find the related hover message markdown from the
+                // /xrpl-hooks-docs/xrpl-hooks-docs-files.json file
+                // which was generated from rst files
+
+                (typeof marker.code === "string" &&
+                  docs[marker?.code]?.toString()) ||
+                "",
+              supportHtml: true,
+              isTrusted: true,
+            },
+          },
+        }))
+    );
+  });
+  console.log("decorat", decorations);
+};
 
 const HooksEditor = () => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
+  const monacoRef = useRef<typeof monaco>();
   const subscriptionRef = useRef<ReconnectingWebSocket | null>(null);
   const snap = useSnapshot(state);
   const router = useRouter();
@@ -57,6 +120,11 @@ const HooksEditor = () => {
       subscriptionRef?.current?.close();
     };
   }, []);
+  useEffect(() => {
+    if (monacoRef.current) {
+      setMarkers(monacoRef.current);
+    }
+  }, [snap.active]);
   return (
     <Box
       css={{
@@ -70,6 +138,7 @@ const HooksEditor = () => {
       }}
     >
       <EditorNavigation />
+      {console.log(snap)}
       {snap.files.length > 0 && router.isReady ? (
         <Editor
           className="hooks-editor"
@@ -79,6 +148,7 @@ const HooksEditor = () => {
           path={`file:///work/c/${snap.files?.[snap.active]?.name}`}
           defaultValue={snap.files?.[snap.active]?.content}
           beforeMount={(monaco) => {
+            console.log(monaco.languages.getLanguages());
             if (!snap.editorCtx) {
               snap.files.forEach((file) =>
                 monaco.editor.createModel(
@@ -138,6 +208,7 @@ const HooksEditor = () => {
           }}
           onMount={(editor, monaco) => {
             editorRef.current = editor;
+            monacoRef.current = monaco;
             editor.updateOptions({
               glyphMargin: true,
               lightbulb: {
@@ -154,61 +225,9 @@ const HooksEditor = () => {
             // Lets improve the markers by adding extra content to them from related
             // md files
             monaco.editor.onDidChangeMarkers(() => {
-              // Get all the markers that are active at the moment,
-              // Also if same error is there twice, we can show the content
-              // only once (that's why we're using uniqBy)
-              const markers = uniqBy(
-                monaco.editor
-                  .getModelMarkers({})
-                  // Filter out the markers that are hooks specific
-                  .filter(
-                    (marker) =>
-                      typeof marker?.code === "string" &&
-                      // Take only markers that starts with "hooks-"
-                      marker?.code?.includes("hooks-") &&
-                      // Filter also markers that are related to active model
-                      // We don't want to show markers from other files
-                      marker?.resource.path
-                        .split("/")
-                        .includes(`${state.files?.[state.active]?.name}`)
-                  ),
-                "code"
-              );
-
-              // Get the active model (aka active file you're editing)
-              const model = monaco.editor?.getModel(
-                monaco.Uri.parse(
-                  `file:///work/c/${state.files?.[state.active]?.name}`
-                )
-              );
-              // Add decoration (aka extra hoverMessages) to markers in the
-              // exact same range (location) where the markers are
-
-              decorations = model?.deltaDecorations(
-                decorations || [],
-                markers.map((marker) => ({
-                  range: new monaco.Range(
-                    marker.startLineNumber,
-                    marker.startColumn,
-                    marker.endLineNumber,
-                    marker.endColumn
-                  ),
-                  options: {
-                    hoverMessage: {
-                      value:
-                        // Find the related hover message markdown from the
-                        // /xrpl-hooks-docs/xrpl-hooks-docs-files.json file
-                        // which was generated from rst files
-
-                        (typeof marker.code === "string" &&
-                          docs[marker?.code]?.toString()) ||
-                        "",
-                      supportHtml: true,
-                      isTrusted: true,
-                    },
-                  },
-                }))
-              );
+              if (monacoRef.current) {
+                setMarkers(monacoRef.current);
+              }
             });
 
             validateWritability(editor);
