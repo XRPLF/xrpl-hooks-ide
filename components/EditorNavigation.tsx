@@ -59,8 +59,6 @@ import {
 } from "./AlertDialog";
 import { styled } from "../stitches.config";
 
-const DEFAULT_EXTENSION = ".c";
-
 const ErrorText = styled(Text, {
   color: "$error",
   mt: "$1",
