@@ -67,7 +67,6 @@ const setMarkers = (monacoE: typeof monaco) => {
   // exact same range (location) where the markers are
   const models = monacoE.editor.getModels();
   models.forEach((model) => {
-    console.log(decorations);
     decorations[model.id] = model?.deltaDecorations(
       decorations?.[model.id] || [],
       markers
@@ -100,7 +99,6 @@ const setMarkers = (monacoE: typeof monaco) => {
         }))
     );
   });
-  console.log("decorat", decorations);
 };
 
 const HooksEditor = () => {
@@ -138,7 +136,6 @@ const HooksEditor = () => {
       }}
     >
       <EditorNavigation />
-      {console.log(snap)}
       {snap.files.length > 0 && router.isReady ? (
         <Editor
           className="hooks-editor"
@@ -148,7 +145,6 @@ const HooksEditor = () => {
           path={`file:///work/c/${snap.files?.[snap.active]?.name}`}
           defaultValue={snap.files?.[snap.active]?.content}
           beforeMount={(monaco) => {
-            console.log(monaco.languages.getLanguages());
             if (!snap.editorCtx) {
               snap.files.forEach((file) =>
                 monaco.editor.createModel(
