@@ -87,6 +87,9 @@ By default `@monaco-editor/react` was using 0.29.? version of Monaco editor. @co
 
 Monaco Languageclient related stuff is found from `./utils/languageClient.ts`. Basically we're connecting the editor to clangd language server which lives on separate backend. That project can be found from https://github.com/eqlabs/xrpl-hooks-compiler/. If you need access to that project ask permissions from @vbar (Vaclav Barta) on GitHub.
 
+### Language server hover messages
+If you want to extend hover messages provided by language-server you can add extra docs to `xrpl-hooks-docs/md/` folder. Just make sure the filename is matching with the error code that comes from language server. So lets say you want to add extra documentation for `hooks-func-addr-taken` check create new file called `hooks-func-addr-taken.md` and then remember to import and export it on `docs.ts` file with same logic as the other files.
+
 ## Global state management
 
 Global state management is handled with library called Valtio (https://github.com/pmndrs/valtio). Initial state can be found from `./state/index.ts` file. All the actions which updates the state is found under `./state/actions/` folder.
