@@ -91,13 +91,18 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
   const validateFilename = useCallback(
     (filename: string): { error: string | null } => {
       // check if filename already exists
-      if (snap.files.find(file => file.name === filename)) {
+      if (snap.files.find((file) => file.name === filename)) {
         return { error: "Filename already exists." };
       }
 
       // check for illegal characters
       const ILLEGAL_REGEX = /[/]/gi;
-      if (filename.match(ILLEGAL_REGEX)) {
+      const ALPHA_NUMERICAL_REGEX = /[^A-Za-z0-9._-]+/g;
+      if (
+        filename.match(ILLEGAL_REGEX) ||
+        // Allow only a-z, A-Z, 0-9, ".", "-" and "_"
+        filename.match(ALPHA_NUMERICAL_REGEX)
+      ) {
         return { error: "Filename contains illegal characters" };
       }
       // More checks in future
