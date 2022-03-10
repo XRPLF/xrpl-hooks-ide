@@ -11,4 +11,4 @@ A guard is a marker that must be placed in your code at the top of each loop. Co
 <BR/>
 This is the only way to satisfy the guard rule when using a for-loop in C.
 
-[Read more](https://xrpl-hooks.readme.io/docs/loops-and-guarding)
+[Read more](https://xrpl-hooks.readme.io/v2.0/docs/loops-and-guarding)
