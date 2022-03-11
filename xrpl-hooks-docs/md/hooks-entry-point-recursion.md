@@ -1,4 +1,5 @@
 # hooks-entry-point-recursion
 
-Recursive calls are disallowed in the implementation of hook entry
-points.
+Recursive calls are disallowed in the implementation of hook entry points.
+
+[Read more](https://xrpl-hooks.readme.io/v2.0/docs/loops-and-guarding#no-recursion)

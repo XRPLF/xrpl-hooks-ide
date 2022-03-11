@@ -9,3 +9,6 @@ Like for loops, while loops must have a guard in their condition:
   int i = 0;
   while (GUARD(3), i < 3)
 ```
+
+<BR/>
+[Read more](https://xrpl-hooks.readme.io/v2.0/docs/loops-and-guarding)
