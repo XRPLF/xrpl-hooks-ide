@@ -20,7 +20,7 @@ const DebugStream = () => {
   const { selectedAccount, logs, socket } = useSnapshot(streamState);
   const { accounts } = useSnapshot(state);
 
-  const accountOptions = accounts.map(acc => ({
+  const accountOptions = accounts.map((acc) => ({
     label: acc.name,
     value: acc.address,
   }));
@@ -33,7 +33,7 @@ const DebugStream = () => {
         options={accountOptions}
         hideSelectedOptions
         value={selectedAccount}
-        onChange={acc => (streamState.selectedAccount = acc as any)}
+        onChange={(acc) => (streamState.selectedAccount = acc as any)}
         css={{ width: "100%" }}
       />
     </>
@@ -73,7 +73,7 @@ const DebugStream = () => {
       socket?.close();
       streamState.socket = ref(
         new WebSocket(
-          `wss://hooks-testnet-debugstream.xrpl-labs.com/${account}`
+          `wss://hooks-testnet-debugstream-v2.xrpl-labs.com/${account}`
         )
       );
     } else if (!account && socket) {

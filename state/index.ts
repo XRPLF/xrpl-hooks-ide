@@ -120,9 +120,8 @@ const state = proxy<IState>({
   accounts: initialAccounts.length > 0 ? initialAccounts : [],
   logs: [],
 });
-
 // Initialize socket connection
-const client = new XrplClient("wss://hooks-testnet.xrpl-labs.com");
+const client = new XrplClient("wss://hooks-testnet-v2.xrpl-labs.com");
 
 client.on("online", () => {
   state.client = ref(client);

@@ -19,6 +19,7 @@ import {
 } from "./Dialog";
 import { css } from "../stitches.config";
 import { Input } from "./Input";
+import truncate from "../utils/truncate";
 
 const labelStyle = css({
   color: "$mauve10",
@@ -201,7 +202,9 @@ export const AccountDialog = ({
                     fontFamily: "$monospace",
                   }}
                 >
-                  {activeAccount && activeAccount.hooks.length}
+                  {activeAccount && console.log(activeAccount.hooks)}
+                  {activeAccount &&
+                    activeAccount.hooks.map((i) => truncate(i, 6)).join(",")}
                 </Text>
               </Flex>
             </Flex>
@@ -265,9 +268,10 @@ const Accounts: FC<AccountProps> = (props) => {
             (acc) => acc.address === address
           );
           if (accountToUpdate) {
-            accountToUpdate.hooks = res.account_objects
-              .filter((ac: any) => ac?.LedgerEntryType === "Hook")
-              .map((oo: any) => oo.HookHash);
+            accountToUpdate.hooks =
+              res.account_objects
+                .find((ac: any) => ac?.LedgerEntryType === "Hook")
+                ?.Hooks?.map((oo: any) => oo.Hook.HookHash) || [];
           }
         });
       }

@@ -1,6 +1,7 @@
 import { derive, sign } from "xrpl-accountlib";
 
 import state, { IAccount } from "../index";
+import calculateHookOn from "../../utils/hookOnCalculator";
 
 function arrayBufferToHex(arrayBuffer?: ArrayBuffer | null) {
   if (!arrayBuffer) {
@@ -49,13 +50,35 @@ export const deployHook = async (account: IAccount & { name?: string }) => {
     const tx = {
       Account: account.address,
       TransactionType: "SetHook",
-      CreateCode: arrayBufferToHex(
-        state.files?.[state.active]?.compiledContent
-      ).toUpperCase(),
-      HookOn: "0000000000000000",
       Sequence: account.sequence,
-      Fee: "1000",
+      Fee: "100000",
+      Hooks: [
+        //   {
+        //     Hook: {
+        //       CreateCode: 
+        //       HookApiVersion: 0,
+        //       HookNamespace: "Kissa",
+        //       HookOn: calculateHookOn([]),
+        //       Flags: 2
+        //     }
+        //   }
+        // ]
+        // [  
+        {
+          Hook: {
+            CreateCode: arrayBufferToHex(
+              state.files?.[state.active]?.compiledContent
+            ).toUpperCase(),
+            HookOn: calculateHookOn([]),
+            HookNamespace: "DEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF",
+            HookApiVersion: 0,
+          }
+        }
+      ]
     };
+
+    console.log(tx)
+
     const keypair = derive.familySeed(account.secret);
     const { signedTransaction } = sign(tx, keypair);
     const currentAccount = state.accounts.find(
@@ -69,6 +92,7 @@ export const deployHook = async (account: IAccount & { name?: string }) => {
         command: "submit",
         tx_blob: signedTransaction,
       });
+      console.log(submitRes)
       if (submitRes.engine_result === "tesSUCCESS") {
         state.deployLogs.push({
           type: "success",
@@ -81,7 +105,7 @@ export const deployHook = async (account: IAccount & { name?: string }) => {
       } else {
         state.deployLogs.push({
           type: "error",
-          message: `[${submitRes.engine_result}] ${submitRes.engine_result_message}`,
+          message: `[${submitRes.engine_result || submitRes.error}] ${submitRes.engine_result_message || submitRes.error_exception}`,
         });
       }
     } catch (err) {
