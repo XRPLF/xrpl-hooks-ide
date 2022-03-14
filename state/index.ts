@@ -65,6 +65,7 @@ export interface IState {
   client: XrplClient | null;
   clientStatus: "offline" | "online";
   mainModalOpen: boolean;
+  mainModalShowed: boolean;
   accounts: IAccount[];
 }
 
@@ -93,6 +94,7 @@ let initialState: IState = {
   client: null,
   clientStatus: "offline" as "offline",
   mainModalOpen: false,
+  mainModalShowed: false,
   accounts: [],
 };
 
