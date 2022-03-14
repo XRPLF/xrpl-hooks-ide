@@ -15,6 +15,7 @@ import state from "../state";
 
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en.json";
+import { useSnapshot } from "valtio";
 TimeAgo.addDefaultLocale(en);
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
@@ -25,15 +26,29 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const origin = "https://xrpl-hooks-ide.vercel.app"; // TODO: Change when site is deployed
   const shareImg = "/share-image.png";
 
+  const snap = useSnapshot(state);
   useEffect(() => {
     if (gistId && router.isReady) {
       fetchFiles(gistId);
     } else {
-      if (!gistId && router.isReady && !router.pathname.includes("/sign-in")) {
+      if (
+        !gistId &&
+        router.isReady &&
+        !router.pathname.includes("/sign-in") &&
+        !snap.files.length &&
+        !snap.mainModalShowed
+      ) {
         state.mainModalOpen = true;
+        state.mainModalShowed = true;
       }
     }
-  }, [gistId, router.isReady, router.pathname]);
+  }, [
+    gistId,
+    router.isReady,
+    router.pathname,
+    snap.files,
+    snap.mainModalShowed,
+  ]);
 
   return (
     <>
