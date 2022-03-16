@@ -4,6 +4,11 @@ import { devtools } from 'valtio/utils';
 import { XrplClient } from "xrpl-client";
 import { SplitSize } from "./actions/persistSplits";
 
+declare module "valtio" {
+  function useSnapshot<T extends object>(p: T): T;
+  function snapshot<T extends object>(p: T): T;
+}
+
 export interface IFile {
   name: string;
   language: string;
@@ -123,7 +128,7 @@ const state = proxy<IState>({
   logs: [],
 });
 // Initialize socket connection
-const client = new XrplClient("wss://hooks-testnet-v2.xrpl-labs.com");
+const client = new XrplClient(process.env.NEXT_PUBLIC_TESTNET_URL);
 
 client.on("online", () => {
   state.client = ref(client);
