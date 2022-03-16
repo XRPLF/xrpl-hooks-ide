@@ -72,9 +72,7 @@ const DebugStream = () => {
     if (account && (!socket || !socket.url.endsWith(account))) {
       socket?.close();
       streamState.socket = ref(
-        new WebSocket(
-          `wss://hooks-testnet-debugstream-v2.xrpl-labs.com/${account}`
-        )
+        new WebSocket(`${process.env.NEXT_PUBLIC_DEBUG_STREAM_URL}/${account}`)
       );
     } else if (!account && socket) {
       socket.close();
@@ -109,6 +107,14 @@ const DebugStream = () => {
     };
     const onMessage = (event: any) => {
       if (!event.data) return;
+      // Filter out account_info and account_objects requests
+      if (
+        event.data.includes("account_info") ||
+        event.data.includes("account_objects")
+      ) {
+        return;
+      }
+      console.log(event);
       streamState.logs.push(prepareLog(event.data));
     };
 
