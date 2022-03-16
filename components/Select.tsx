@@ -1,12 +1,13 @@
-import { FC } from "react";
+import { forwardRef } from "react";
 import { mauve, mauveDark } from "@radix-ui/colors";
 import { useTheme } from "next-themes";
-import { styled } from '../stitches.config';
-import dynamic from 'next/dynamic';
+import { styled } from "../stitches.config";
+import dynamic from "next/dynamic";
 import type { Props } from "react-select";
 const SelectInput = dynamic(() => import("react-select"), { ssr: false });
 
-const Select: FC<Props> = props => {
+// eslint-disable-next-line react/display-name
+const Select = forwardRef<any, Props>((props, ref) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const colors: any = {
@@ -21,12 +22,13 @@ const Select: FC<Props> = props => {
   colors.selected = colors.secondary;
   return (
     <SelectInput
-      menuPosition="fixed"
-      theme={theme => ({
+      ref={ref}
+      menuPosition={props.menuPosition || "fixed"}
+      theme={(theme) => ({
         ...theme,
         spacing: {
           ...theme.spacing,
-          controlHeight: 30
+          controlHeight: 30,
         },
         colors: {
           primary: colors.selected,
@@ -51,6 +53,6 @@ const Select: FC<Props> = props => {
       {...props}
     />
   );
-};
+});
 
 export default styled(Select, {});

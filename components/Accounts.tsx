@@ -5,7 +5,7 @@ import React, { useEffect, useState, FC } from "react";
 import Dinero from "dinero.js";
 
 import Button from "./Button";
-import { addFaucetAccount, deployHook, importAccount } from "../state/actions";
+import { addFaucetAccount, importAccount } from "../state/actions";
 import state from "../state";
 import Box from "./Box";
 import { Container, Heading, Stack, Text, Flex } from ".";
@@ -27,6 +27,8 @@ const labelStyle = css({
   fontSize: "10px",
   mb: "$0.5",
 });
+import transactionsData from "../content/transactions.json";
+import { SetHookDialog } from "./SetHookDialog";
 
 export const AccountDialog = ({
   activeAccountAddress,
@@ -342,7 +344,6 @@ const Accounts: FC<AccountProps> = (props) => {
             fontSize: "13px",
             wordWrap: "break-word",
             fontWeight: "$body",
-            fontFamily: "$monospace",
             gap: 0,
             height: "calc(100% - 52px)",
             flexWrap: "nowrap",
@@ -396,29 +397,12 @@ const Accounts: FC<AccountProps> = (props) => {
                 </Box>
                 {!props.hideDeployBtn && (
                   <div
+                    className="hook-deploy-button"
                     onClick={(e) => {
-                      e.preventDefault();
                       e.stopPropagation();
                     }}
                   >
-                    <Button
-                      css={{ ml: "auto" }}
-                      size="xs"
-                      uppercase
-                      isLoading={account.isLoading}
-                      disabled={
-                        account.isLoading ||
-                        !snap.files.filter((file) => file.compiledWatContent)
-                          .length
-                      }
-                      variant="secondary"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deployHook(account);
-                      }}
-                    >
-                      Deploy
-                    </Button>
+                    <SetHookDialog account={account} />
                   </div>
                 )}
               </Flex>
@@ -439,6 +423,11 @@ const Accounts: FC<AccountProps> = (props) => {
     </Box>
   );
 };
+
+export const transactionsOptions = transactionsData.map((tx) => ({
+  value: tx.TransactionType,
+  label: tx.TransactionType,
+}));
 
 const ImportAccountDialog = () => {
   const [value, setValue] = useState("");

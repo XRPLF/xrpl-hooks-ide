@@ -55,7 +55,7 @@ const StyledContent = styled(DialogPrimitive.Content, {
 
 const Content: React.FC<{ css?: Stiches.CSS }> = ({ css, children }) => {
   return (
-    <div>
+    <div style={{ overflowY: "auto" }}>
       <StyledOverlay />
       <StyledContent css={css}>{children}</StyledContent>
     </div>
@@ -77,7 +77,7 @@ const StyledDescription = styled(DialogPrimitive.Description, {
 });
 
 // Exports
-export const Dialog = styled(DialogPrimitive.Root);
+export const Dialog = styled(DialogPrimitive.Root, { overflowY: "auto" });
 export const DialogTrigger = DialogPrimitive.Trigger;
 export const DialogContent = Content;
 export const DialogTitle = StyledTitle;

@@ -1,3 +1,4 @@
+import React from "react";
 import { styled } from "../stitches.config";
 
 export const Input = styled("input", {
@@ -148,4 +149,10 @@ export const Input = styled("input", {
   },
 });
 
-export default Input;
+// eslint-disable-next-line react/display-name
+const ReffedInput = React.forwardRef<
+  HTMLInputElement,
+  React.ComponentProps<typeof Input>
+>((props, ref) => <Input {...props} ref={ref} />);
+
+export default ReffedInput;
