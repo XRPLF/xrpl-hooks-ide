@@ -1,7 +1,19 @@
 import { derive, sign } from "xrpl-accountlib";
 
 import state, { IAccount } from "../index";
-import calculateHookOn from "../../utils/hookOnCalculator";
+import calculateHookOn, { TTS } from "../../utils/hookOnCalculator";
+import { SetHookData } from "../../components/SetHookDialog";
+
+const hash = async (string: string) => {
+  const utf8 = new TextEncoder().encode(string);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray
+    .map((bytes) => bytes.toString(16).padStart(2, '0'))
+    .join('');
+  return hashHex;
+}
+
 
 function arrayBufferToHex(arrayBuffer?: ArrayBuffer | null) {
   if (!arrayBuffer) {
@@ -31,7 +43,7 @@ function arrayBufferToHex(arrayBuffer?: ArrayBuffer | null) {
  * hex string, signs the transaction and deploys it to
  * Hooks testnet.
  */
-export const deployHook = async (account: IAccount & { name?: string }) => {
+export const deployHook = async (account: IAccount & { name?: string }, data: SetHookData) => {
   if (
     !state.files ||
     state.files.length === 0 ||
@@ -46,6 +58,21 @@ export const deployHook = async (account: IAccount & { name?: string }) => {
   if (!state.client) {
     return;
   }
+  const HookNamespace = await hash(arrayBufferToHex(
+    state.files?.[state.active]?.compiledContent
+  ).toUpperCase());
+  const hookOnValues: (keyof TTS)[] = data.Invoke.map(tt => tt.value);
+  const { HookParameters } = data;
+  const filteredHookParameters = HookParameters.filter(hp => hp.HookParameter.HookParameterName && hp.HookParameter.HookParameterValue);
+  // const filteredHookGrants = HookGrants.filter(hg => hg.HookGrant.Authorize || hg.HookGrant.HookHash).map(hg => {
+  //   return {
+  //     HookGrant: {
+  //       ...(hg.HookGrant.Authorize && { Authorize: hg.HookGrant.Authorize }),
+  //       // HookHash: hg.HookGrant.HookHash || undefined
+  //       ...(hg.HookGrant.HookHash && { HookHash: hg.HookGrant.HookHash })
+  //     }
+  //   }
+  // });
   if (typeof window !== "undefined") {
     const tx = {
       Account: account.address,
@@ -53,25 +80,17 @@ export const deployHook = async (account: IAccount & { name?: string }) => {
       Sequence: account.sequence,
       Fee: "100000",
       Hooks: [
-        //   {
-        //     Hook: {
-        //       CreateCode: 
-        //       HookApiVersion: 0,
-        //       HookNamespace: "Kissa",
-        //       HookOn: calculateHookOn([]),
-        //       Flags: 2
-        //     }
-        //   }
-        // ]
-        // [  
         {
           Hook: {
             CreateCode: arrayBufferToHex(
               state.files?.[state.active]?.compiledContent
             ).toUpperCase(),
-            HookOn: calculateHookOn([]),
-            HookNamespace: "DEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF",
+            HookOn: calculateHookOn(hookOnValues),
+            HookNamespace,
             HookApiVersion: 0,
+            Flags: 1,
+            // ...(filteredHookGrants.length > 0 && { HookGrants: filteredHookGrants }),
+            ...(filteredHookParameters.length > 0 && { HookParameters: filteredHookParameters }),
           }
         }
       ]
