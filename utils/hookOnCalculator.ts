@@ -1,4 +1,4 @@
-const tts = {
+export const tts = {
   ttPAYMENT: 0,
   ttESCROW_CREATE: 1,
   ttESCROW_FINISH: 2,
@@ -21,7 +21,7 @@ const tts = {
   ttHOOK_SET: 22
 };
 
-type TTS = typeof tts;
+export type TTS = typeof tts;
 
 const calculateHookOn = (arr: (keyof TTS)[]) => {
   let start = '0x0000000000000000';
