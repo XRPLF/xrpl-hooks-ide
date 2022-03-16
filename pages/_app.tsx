@@ -110,16 +110,6 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
           content="#FDFCFD"
           media="(prefers-color-scheme: light)"
         />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin=""
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital@0;1&family=Work+Sans:wght@400;600;700&display=swap"
-          rel="stylesheet"
-        />
       </Head>
       <IdProvider>
         <SessionProvider session={session}>
