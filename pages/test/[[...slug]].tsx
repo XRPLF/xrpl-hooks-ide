@@ -4,9 +4,15 @@ import { FC, useCallback, useEffect, useState } from "react";
 import Split from "react-split";
 import { useSnapshot } from "valtio";
 import {
-  Box, Button, Container,
-  Flex, Input,
-  Select, Tab, Tabs, Text
+  Box,
+  Button,
+  Container,
+  Flex,
+  Input,
+  Select,
+  Tab,
+  Tabs,
+  Text,
 } from "../../components";
 import transactionsData from "../../content/transactions.json";
 import state from "../../state";
@@ -183,13 +189,23 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
   return (
     <Box css={{ position: "relative", height: "calc(100% - 28px)" }} {...props}>
       <Container
-        css={{ p: "$3 0", fontSize: "$sm", height: "calc(100% - 28px)" }}
+        css={{
+          p: "$3 01",
+          fontSize: "$sm",
+          height: "calc(100% - 45px)",
+        }}
       >
         <Flex column fluid css={{ height: "100%", overflowY: "auto" }}>
           <Flex
             row
             fluid
-            css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}
+            css={{
+              justifyContent: "flex-end",
+              alignItems: "center",
+              mb: "$3",
+              mt: "1px",
+              pr: "1px",
+            }}
           >
             <Text muted css={{ mr: "$3" }}>
               Transaction type:{" "}
@@ -207,7 +223,12 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
           <Flex
             row
             fluid
-            css={{ justifyContent: "flex-end", alignItems: "center", mb: "$3" }}
+            css={{
+              justifyContent: "flex-end",
+              alignItems: "center",
+              mb: "$3",
+              pr: "1px",
+            }}
           >
             <Text muted css={{ mr: "$3" }}>
               Account:{" "}
@@ -229,6 +250,7 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
                 justifyContent: "flex-end",
                 alignItems: "center",
                 mb: "$3",
+                pr: "1px",
               }}
             >
               <Text muted css={{ mr: "$3" }}>
@@ -242,7 +264,6 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
                     Amount: { type: "currency", value: e.target.value },
                   })
                 }
-                variant="deep"
                 css={{ width: "70%", flex: "inherit", height: "$9" }}
               />
             </Flex>
@@ -255,6 +276,7 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
                 justifyContent: "flex-end",
                 alignItems: "center",
                 mb: "$3",
+                pr: "1px",
               }}
             >
               <Text muted css={{ mr: "$3" }}>
@@ -289,6 +311,7 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
                   justifyContent: "flex-end",
                   alignItems: "center",
                   mb: "$3",
+                  pr: "1px",
                 }}
               >
                 <Text muted css={{ mr: "$3" }}>
@@ -305,7 +328,6 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
                           : e.target.value,
                     })
                   }
-                  variant="deep"
                   css={{ width: "70%", flex: "inherit", height: "$9" }}
                 />
               </Flex>

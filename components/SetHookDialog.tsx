@@ -1,5 +1,5 @@
+import React, { useState } from "react";
 import { Plus, Trash, X } from "phosphor-react";
-import React from "react";
 import Button from "./Button";
 import Box from "./Box";
 import { Stack, Flex, Select } from ".";
@@ -24,6 +24,7 @@ import { deployHook } from "../state/actions";
 import type { IAccount } from "../state";
 import { useSnapshot } from "valtio";
 import state from "../state";
+import toast from "react-hot-toast";
 
 const transactionOptions = Object.keys(tts).map((key) => ({
   label: key,
@@ -51,6 +52,7 @@ export type SetHookData = {
 
 export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
   const snap = useSnapshot(state);
+  const [isSetHookDialogOpen, setIsSetHookDialogOpen] = useState(false);
   const {
     register,
     handleSubmit,
@@ -72,11 +74,16 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
   if (!account) {
     return null;
   }
-  const onSubmit: SubmitHandler<SetHookData> = (data) => {
-    deployHook(account, data);
+  const onSubmit: SubmitHandler<SetHookData> = async (data) => {
+    const res = await deployHook(account, data);
+    if (res && res.engine_result === "tesSUCCESS") {
+      toast.success("Transaction succeeded!");
+      return setIsSetHookDialogOpen(false);
+    }
+    toast.error(`Transaction failed! (${res?.engine_result_message})`);
   };
   return (
-    <Dialog>
+    <Dialog open={isSetHookDialogOpen} onOpenChange={setIsSetHookDialogOpen}>
       <DialogTrigger asChild>
         <Button
           ghost
@@ -110,12 +117,6 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
                       closeMenuOnSelect={false}
                       isMulti
                       menuPosition="absolute"
-                      styles={{
-                        menuPortal: (provided) => ({
-                          ...provided,
-                          zIndex: 9000,
-                        }),
-                      }}
                       options={transactionOptions}
                     />
                   )}

@@ -106,8 +106,9 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
     if (currentAccount) {
       currentAccount.isLoading = true;
     }
+    let submitRes;
     try {
-      const submitRes = await state.client.send({
+      submitRes = await state.client.send({
         command: "submit",
         tx_blob: signedTransaction,
       });
@@ -137,5 +138,6 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
     if (currentAccount) {
       currentAccount.isLoading = false;
     }
+    return submitRes;
   }
 };
