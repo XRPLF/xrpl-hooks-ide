@@ -22,7 +22,7 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed!' })
   }
   try {
-    const response = await fetch('https://hooks-testnet-v2.xrpl-labs.com/newcreds', { method: 'POST' });
+    const response = await fetch(`https://${process.env.NEXT_PUBLIC_TESTNET_URL}/newcreds`, { method: 'POST' });
     const json: Faucet | ErrorResponse = await response.json();
     if ("error" in json) {
       return res.status(429).json(json)

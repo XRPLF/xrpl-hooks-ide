@@ -182,7 +182,7 @@ export const AccountDialog = ({
               </Flex>
               <Flex css={{ marginLeft: "auto" }}>
                 <a
-                  href={`https://hooks-testnet-explorer.xrpl-labs.com/${activeAccount?.address}`}
+                  href={`https://${process.env.NEXT_PUBLIC_EXPLORER_URL}/${activeAccount?.address}`}
                   target="_blank"
                   rel="noreferrer noopener"
                 >
@@ -282,7 +282,7 @@ const Accounts: FC<AccountProps> = (props) => {
     let fetchAccountInfoInterval: NodeJS.Timer;
     if (snap.clientStatus === "online") {
       fetchAccInfo();
-      fetchAccountInfoInterval = setInterval(() => fetchAccInfo(), 2000);
+      fetchAccountInfoInterval = setInterval(() => fetchAccInfo(), 2500);
     }
 
     return () => {

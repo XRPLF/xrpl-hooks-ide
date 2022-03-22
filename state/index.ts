@@ -128,7 +128,7 @@ const state = proxy<IState>({
   logs: [],
 });
 // Initialize socket connection
-const client = new XrplClient(process.env.NEXT_PUBLIC_TESTNET_URL);
+const client = new XrplClient(`wss://${process.env.NEXT_PUBLIC_TESTNET_URL}`);
 
 client.on("online", () => {
   state.client = ref(client);
