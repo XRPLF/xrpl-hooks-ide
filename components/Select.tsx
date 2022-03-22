@@ -38,6 +38,7 @@ const Select = forwardRef<any, Props>((props, ref) => {
         container: (provided) => {
           return {
             ...provided,
+            position: "relative",
           };
         },
         singleValue: (provided) => ({

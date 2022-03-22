@@ -98,8 +98,8 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
           Set Hook
         </Button>
       </DialogTrigger>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogContent css={{ overflowY: "auto" }}>
+      <DialogContent>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <DialogTitle>Deploy configuration</DialogTitle>
           <DialogDescription as="div">
             <Stack css={{ width: "100%", flex: 1 }}>
@@ -116,7 +116,7 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
                       {...field}
                       closeMenuOnSelect={false}
                       isMulti
-                      menuPosition="absolute"
+                      menuPosition="fixed"
                       options={transactionOptions}
                     />
                   )}
@@ -237,8 +237,8 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
               <X size="20px" />
             </Box>
           </DialogClose>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 };
