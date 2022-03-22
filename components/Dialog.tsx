@@ -18,7 +18,7 @@ const StyledOverlay = styled(DialogPrimitive.Overlay, {
   zIndex: 9999,
   backgroundColor: blackA.blackA9,
   position: "fixed",
-  // inset: 0,
+  inset: 0,
   top: 0,
   left: 0,
   right: 0,
@@ -51,7 +51,7 @@ const StyledContent = styled(DialogPrimitive.Content, {
   },
   "&:focus": { outline: "none" },
   ".dark &": {
-    backgroundColor: "$mauve3",
+    backgroundColor: "$mauve5",
     boxShadow:
       "0px 10px 38px 0px rgba(0, 0, 0, 0.85), 0px 10px 20px 0px rgba(0, 0, 0, 0.6)",
   },
@@ -59,11 +59,9 @@ const StyledContent = styled(DialogPrimitive.Content, {
 
 const Content: React.FC<{ css?: Stiches.CSS }> = ({ css, children }) => {
   return (
-    <>
-      <StyledOverlay>
-        <StyledContent>{children}</StyledContent>
-      </StyledOverlay>
-    </>
+    <StyledOverlay>
+      <StyledContent css={css}>{children}</StyledContent>
+    </StyledOverlay>
   );
 };
 

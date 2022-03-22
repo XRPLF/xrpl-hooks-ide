@@ -128,7 +128,7 @@ const Navigation = () => {
                 </DialogTrigger>
                 <DialogContent
                   css={{
-                    maxWidth: "100%",
+                    maxWidth: "1080px",
                     width: "80vw",
                     height: "80%",
                     backgroundColor: "$mauve1 !important",
