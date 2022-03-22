@@ -24,10 +24,12 @@ export const tts = {
 export type TTS = typeof tts;
 
 const calculateHookOn = (arr: (keyof TTS)[]) => {
-  let start = '0x0000000000000000';
+  let start = '0x00000000003ff5bf';
+  // const xorredArr = xor(Object.keys(tts).filter(i => i !== 'ttHOOK_SET'), arr);
+  // console.log(xorredArr, 'aa')
   arr.forEach(n => {
     let v = BigInt(start);
-    v ^= (BigInt(1) << BigInt(tts[n]));
+    v ^= (BigInt(1) << BigInt(tts[n as keyof TTS]));
     let s = v.toString(16);
     let l = s.length;
     if (l < 16)
@@ -36,6 +38,12 @@ const calculateHookOn = (arr: (keyof TTS)[]) => {
     start = s;
   })
   return start.substring(2);
+}
+
+if (typeof window !== 'undefined') {
+  // @ts-ignore
+
+  window.kissa = calculateHookOn
 }
 
 export default calculateHookOn
