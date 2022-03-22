@@ -57,7 +57,6 @@ const DebugStream = () => {
     const jsonData = extracted
       ? JSON.stringify(extracted.result, null, 2)
       : undefined;
-
     return {
       type: "log",
       message,
@@ -72,7 +71,9 @@ const DebugStream = () => {
     if (account && (!socket || !socket.url.endsWith(account))) {
       socket?.close();
       streamState.socket = ref(
-        new WebSocket(`${process.env.NEXT_PUBLIC_DEBUG_STREAM_URL}/${account}`)
+        new WebSocket(
+          `wss://${process.env.NEXT_PUBLIC_DEBUG_STREAM_URL}/${account}`
+        )
       );
     } else if (!account && socket) {
       socket.close();
@@ -107,15 +108,21 @@ const DebugStream = () => {
     };
     const onMessage = (event: any) => {
       if (!event.data) return;
+      const log = prepareLog(event.data);
       // Filter out account_info and account_objects requests
-      if (
-        event.data.includes("account_info") ||
-        event.data.includes("account_objects")
-      ) {
+      try {
+        const parsed = JSON.parse(log.jsonData);
+        if (
+          parsed.command === "account_info" ||
+          parsed.command === "account_objects"
+        ) {
+          return;
+        }
+      } catch (err) {
+        // Lets just skip if we cannot parse the message
         return;
       }
-      console.log(event);
-      streamState.logs.push(prepareLog(event.data));
+      return streamState.logs.push(log);
     };
 
     socket.addEventListener("open", onOpen);
