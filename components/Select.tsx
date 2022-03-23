@@ -59,6 +59,12 @@ const Select = forwardRef<any, Props>((props, ref) => {
             }`,
           };
         },
+        input: (provided) => {
+          return {
+            ...provided,
+            color: "$text",
+          };
+        },
         multiValue: (provided) => {
           return {
             ...provided,
