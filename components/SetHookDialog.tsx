@@ -74,8 +74,15 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
   if (!account) {
     return null;
   }
+
   const onSubmit: SubmitHandler<SetHookData> = async (data) => {
+    const currAccount = state.accounts.find(
+      (acc) => acc.address === account.address
+    );
+    if (currAccount) currAccount.isLoading = true;
     const res = await deployHook(account, data);
+    if (currAccount) currAccount.isLoading = false;
+
     if (res && res.engine_result === "tesSUCCESS") {
       toast.success("Transaction succeeded!");
       return setIsSetHookDialogOpen(false);
@@ -227,7 +234,11 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
               <Button outline>Cancel</Button>
             </DialogClose>
             {/* <DialogClose asChild> */}
-            <Button variant="primary" type="submit">
+            <Button
+              variant="primary"
+              type="submit"
+              isLoading={account.isLoading}
+            >
               Set Hook
             </Button>
             {/* </DialogClose> */}
