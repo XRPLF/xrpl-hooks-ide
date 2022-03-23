@@ -120,7 +120,6 @@ const DebugStream = () => {
         }
       } catch (err) {
         // Lets just skip if we cannot parse the message
-        return;
       }
       return streamState.logs.push(log);
     };
