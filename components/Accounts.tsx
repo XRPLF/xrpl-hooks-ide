@@ -222,7 +222,6 @@ export const AccountDialog = ({
                     fontFamily: "$monospace",
                   }}
                 >
-                  {activeAccount && console.log(activeAccount.hooks)}
                   {activeAccount &&
                     activeAccount.hooks.map((i) => truncate(i, 6)).join(",")}
                 </Text>

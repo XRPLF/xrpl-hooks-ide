@@ -25,8 +25,6 @@ export type TTS = typeof tts;
 
 const calculateHookOn = (arr: (keyof TTS)[]) => {
   let start = '0x00000000003ff5bf';
-  // const xorredArr = xor(Object.keys(tts).filter(i => i !== 'ttHOOK_SET'), arr);
-  // console.log(xorredArr, 'aa')
   arr.forEach(n => {
     let v = BigInt(start);
     v ^= (BigInt(1) << BigInt(tts[n as keyof TTS]));
