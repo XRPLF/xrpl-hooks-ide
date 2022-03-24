@@ -38,10 +38,4 @@ const calculateHookOn = (arr: (keyof TTS)[]) => {
   return start.substring(2);
 }
 
-if (typeof window !== 'undefined') {
-  // @ts-ignore
-
-  window.kissa = calculateHookOn
-}
-
 export default calculateHookOn

@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { useSnapshot } from "valtio";
-import { ArrowSquareOut, Copy, Wallet, X } from "phosphor-react";
+import { ArrowSquareOut, Copy, Trash, Wallet, X } from "phosphor-react";
 import React, { useEffect, useState, FC } from "react";
 import Dinero from "dinero.js";
 
@@ -30,6 +30,7 @@ const labelStyle = css({
 import transactionsData from "../content/transactions.json";
 import { SetHookDialog } from "./SetHookDialog";
 import { addFunds } from "../state/actions/addFaucetAccount";
+import { deleteHook } from "../state/actions/deployHook";
 
 export const AccountDialog = ({
   activeAccountAddress,
@@ -90,6 +91,22 @@ export const AccountDialog = ({
           }}
         >
           <Wallet size="15px" /> {activeAccount?.name}
+          <DialogClose asChild>
+            <Button
+              size="xs"
+              outline
+              css={{ ml: "auto", mr: "$9" }}
+              tabIndex={-1}
+              onClick={() => {
+                const index = state.accounts.findIndex(
+                  (acc) => acc.address === activeAccount?.address
+                );
+                state.accounts.splice(index, 1);
+              }}
+            >
+              Delete Account <Trash size="15px" />
+            </Button>
+          </DialogClose>
         </DialogTitle>
         <DialogDescription as="div" css={{ fontFamily: "$monospace" }}>
           <Stack css={{ display: "flex", flexDirection: "column", gap: "$3" }}>
@@ -222,10 +239,25 @@ export const AccountDialog = ({
                     fontFamily: "$monospace",
                   }}
                 >
-                  {activeAccount &&
-                    activeAccount.hooks.map((i) => truncate(i, 6)).join(",")}
+                  {activeAccount && activeAccount.hooks.length > 0
+                    ? activeAccount.hooks.map((i) => truncate(i, 12)).join(",")
+                    : "–"}
                 </Text>
               </Flex>
+              {activeAccount && activeAccount?.hooks?.length > 0 && (
+                <Flex css={{ marginLeft: "auto" }}>
+                  <Button
+                    size="xs"
+                    outline
+                    css={{ mt: "$3", mr: "$1", ml: "auto" }}
+                    onClick={() => {
+                      deleteHook(activeAccount);
+                    }}
+                  >
+                    Delete Hook <Trash size="15px" />
+                  </Button>
+                </Flex>
+              )}
             </Flex>
           </Stack>
         </DialogDescription>

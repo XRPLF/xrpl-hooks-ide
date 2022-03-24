@@ -50,8 +50,9 @@ export const addFaucetAccount = async (showToast: boolean = false) => {
       if (showToast) {
         toast.success("New account created", { id: toastId });
       }
+      const currNames = state.accounts.map(acc => acc.name);
       state.accounts.push({
-        name: names[state.accounts.length],
+        name: names.filter(name => !currNames.includes(name))[0],
         xrp: (json.xrp || 0 * 1000000).toString(),
         address: json.address,
         secret: json.secret,
@@ -76,7 +77,7 @@ export const addFaucetAccount = async (showToast: boolean = false) => {
 })();
 
 export const addFunds = async (address: string) => {
-  const toastId = toast.loading("Creating account");
+  const toastId = toast.loading("Requesting funds");
   const res = await fetch(`${window.location.origin}/api/faucet?account=${address}`, {
     method: "POST",
   });

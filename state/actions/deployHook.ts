@@ -1,4 +1,5 @@
 import { derive, sign } from "xrpl-accountlib";
+import toast from "react-hot-toast";
 
 import state, { IAccount } from "../index";
 import calculateHookOn, { TTS } from "../../utils/hookOnCalculator";
@@ -131,6 +132,75 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
       state.deployLogs.push({
         type: "error",
         message: "Error occured while deploying",
+      });
+    }
+    if (currentAccount) {
+      currentAccount.isLoading = false;
+    }
+    return submitRes;
+  }
+};
+
+export const deleteHook = async (account: IAccount & { name?: string }) => {
+  if (!state.client) {
+    return;
+  }
+
+  if (typeof window !== "undefined") {
+    const tx = {
+      Account: account.address,
+      TransactionType: "SetHook",
+      Sequence: account.sequence,
+      Fee: "100000",
+      Hooks: [
+        {
+          Hook: {
+            CreateCode: "",
+            Flags: 1,
+          }
+        }
+      ]
+    };
+
+    const keypair = derive.familySeed(account.secret);
+    const { signedTransaction } = sign(tx, keypair);
+    const currentAccount = state.accounts.find(
+      (acc) => acc.address === account.address
+    );
+    if (currentAccount) {
+      currentAccount.isLoading = true;
+    }
+    let submitRes;
+    const toastId = toast.loading("Deleting hook...");
+    try {
+      submitRes = await state.client.send({
+        command: "submit",
+        tx_blob: signedTransaction,
+      });
+
+      if (submitRes.engine_result === "tesSUCCESS") {
+        toast.success('Hook deleted successfully ✅', { id: toastId })
+        state.deployLogs.push({
+          type: "success",
+          message: "Hook deleted successfully ✅",
+        });
+        state.deployLogs.push({
+          type: "success",
+          message: `[${submitRes.engine_result}] ${submitRes.engine_result_message} Validated ledger index: ${submitRes.validated_ledger_index}`,
+        });
+      } else {
+        toast.error(`${submitRes.engine_result_message || submitRes.error_exception}`, { id: toastId })
+        state.deployLogs.push({
+          type: "error",
+          message: `[${submitRes.engine_result || submitRes.error}] ${submitRes.engine_result_message || submitRes.error_exception}`,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error('Error occured while deleting hoook', { id: toastId })
+      state.deployLogs.push({
+        type: "error",
+        message: "Error occured while deleting hook",
       });
     }
     if (currentAccount) {
