@@ -26,6 +26,7 @@ import hooksGuardInWhile from "./md/hooks-guard-in-while.md";
 import hooksHashBufLen from "./md/hooks-hash-buf-len.md";
 import hooksKeyletBufLen from "./md/hooks-keylet-buf-len.md";
 import hooksParamBufLen from "./md/hooks-param-buf-len.md";
+import hooksParamSetBufLen from "./md/hooks-param-set-buf-len.md";
 import hooksRaddrConvBufLen from "./md/hooks-raddr-conv-buf-len.md";
 import hooksRaddrConvPure from "./md/hooks-raddr-conv-pure.md";
 import hooksReserveLimit from "./md/hooks-reserve-limit.md";
@@ -71,6 +72,7 @@ const docs: { [key: string]: string; } = {
   "hooks-hash-buf-len": hooksHashBufLen,
   "hooks-keylet-buf-len": hooksKeyletBufLen,
   "hooks-param-buf-len": hooksParamBufLen,
+  "hooks-param-set-buf-len": hooksParamSetBufLen,
   "hooks-raddr-conv-buf-len": hooksRaddrConvBufLen,
   "hooks-raddr-conv-pure": hooksRaddrConvPure,
   "hooks-reserve-limit": hooksReserveLimit,
