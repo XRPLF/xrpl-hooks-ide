@@ -59,8 +59,6 @@ import {
 } from "./AlertDialog";
 import { styled } from "../stitches.config";
 
-const DEFAULT_EXTENSION = ".c";
-
 const ErrorText = styled(Text, {
   color: "$error",
   mt: "$1",
@@ -91,33 +89,38 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
   const validateFilename = useCallback(
     (filename: string): { error: string | null } => {
       // check if filename already exists
-      if (snap.files.find(file => file.name === filename)) {
+      if (!filename) {
+        return { error: "You need to add filename" };
+      }
+      if (snap.files.find((file) => file.name === filename)) {
         return { error: "Filename already exists." };
       }
 
-      // check for illegal characters
-      const ILLEGAL_REGEX = /[/]/gi;
-      if (filename.match(ILLEGAL_REGEX)) {
-        return { error: "Filename contains illegal characters" };
+      if (!filename.includes(".") || filename[filename.length - 1] === ".") {
+        return { error: "Filename should include file extension" };
       }
-      // More checks in future
+
+      // check for illegal characters
+      const ALPHA_NUMERICAL_REGEX = /^[A-Za-z0-9_-]+[.][A-Za-z0-9]{1,4}$/g;
+      if (!filename.match(ALPHA_NUMERICAL_REGEX)) {
+        return {
+          error: `Filename can contain only characters from a-z, A-Z, 0-9, "_" and "-" and it needs to have file extension (e.g. ".c")`,
+        };
+      }
       return { error: null };
     },
     [snap.files]
   );
   const handleConfirm = useCallback(() => {
     // add default extension in case omitted
-    let _filename = filename.includes(".")
-      ? filename
-      : filename + DEFAULT_EXTENSION;
-    const chk = validateFilename(_filename);
-    if (chk.error) {
+    const chk = validateFilename(filename);
+    if (chk && chk.error) {
       setNewfileError(`Error: ${chk.error}`);
       return;
     }
 
     setIsNewfileDialogOpen(false);
-    createNewFile(_filename);
+    createNewFile(filename);
     setFilename("");
   }, [filename, setIsNewfileDialogOpen, setFilename, validateFilename]);
 
