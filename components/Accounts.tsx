@@ -29,6 +29,7 @@ const labelStyle = css({
 });
 import transactionsData from "../content/transactions.json";
 import { SetHookDialog } from "./SetHookDialog";
+import { addFunds } from "../state/actions/addFaucetAccount";
 
 export const AccountDialog = ({
   activeAccountAddress,
@@ -166,6 +167,8 @@ export const AccountDialog = ({
                 <Text
                   css={{
                     fontFamily: "$monospace",
+                    display: "flex",
+                    alignItems: "center",
                   }}
                 >
                   {Dinero({
@@ -178,6 +181,21 @@ export const AccountDialog = ({
                       currency: "XRP",
                       currencyDisplay: "name",
                     })}
+                  <Button
+                    css={{
+                      fontFamily: "$monospace",
+                      lineHeight: 2,
+                      mt: "2px",
+                      ml: "$3",
+                    }}
+                    ghost
+                    size="xs"
+                    onClick={() => {
+                      addFunds(activeAccount?.address || "");
+                    }}
+                  >
+                    Add Funds
+                  </Button>
                 </Text>
               </Flex>
               <Flex css={{ marginLeft: "auto" }}>

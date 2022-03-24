@@ -29,8 +29,8 @@ export const names = [
  */
 export const addFaucetAccount = async (showToast: boolean = false) => {
   // Lets limit the number of faucet accounts to 5 for now
-  if (state.accounts.length > 4) {
-    return toast.error("You can only have maximum 5 accounts");
+  if (state.accounts.length > 5) {
+    return toast.error("You can only have maximum 6 accounts");
   }
   if (typeof window !== 'undefined') {
 
@@ -74,3 +74,24 @@ export const addFaucetAccount = async (showToast: boolean = false) => {
     }
   }
 })();
+
+export const addFunds = async (address: string) => {
+  const toastId = toast.loading("Creating account");
+  const res = await fetch(`${window.location.origin}/api/faucet?account=${address}`, {
+    method: "POST",
+  });
+  const json: FaucetAccountRes | { error: string } = await res.json();
+  console.log(json)
+  if ("error" in json) {
+    return toast.error(json.error, { id: toastId });
+  } else {
+    console.log(json)
+    toast.success("Funds added", { id: toastId });
+    const currAccount = state.accounts.find(acc => acc.address === address);
+    console.log(currAccount)
+    if (currAccount) {
+      currAccount.xrp = (Number(currAccount.xrp) + (json.xrp * 1000000)).toString();
+    }
+  }
+
+}
