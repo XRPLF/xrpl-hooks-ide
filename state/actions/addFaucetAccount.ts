@@ -81,14 +81,11 @@ export const addFunds = async (address: string) => {
     method: "POST",
   });
   const json: FaucetAccountRes | { error: string } = await res.json();
-  console.log(json)
   if ("error" in json) {
     return toast.error(json.error, { id: toastId });
   } else {
-    console.log(json)
-    toast.success("Funds added", { id: toastId });
+    toast.success(`Funds added (${json.xrp} XRP)`, { id: toastId });
     const currAccount = state.accounts.find(acc => acc.address === address);
-    console.log(currAccount)
     if (currAccount) {
       currAccount.xrp = (Number(currAccount.xrp) + (json.xrp * 1000000)).toString();
     }
