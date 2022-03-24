@@ -89,9 +89,10 @@ const Select = forwardRef<any, Props>((props, ref) => {
           return {
             ...provided,
             color: colors.searchText,
-            backgroundColor: state.isSelected
-              ? colors.activeLight
-              : colors.dropDownBg,
+            backgroundColor:
+              state.isSelected || state.isFocused
+                ? colors.activeLight
+                : colors.dropDownBg,
             ":hover": {
               backgroundColor: colors.active,
               color: "#ffffff",
