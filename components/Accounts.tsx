@@ -238,7 +238,7 @@ const Accounts: FC<AccountProps> = (props) => {
       if (snap.clientStatus === "online") {
         const requests = snap.accounts.map((acc) =>
           snap.client?.send({
-            id: acc.address,
+            id: `hooks-builder-req-info-${acc.address}`,
             command: "account_info",
             account: acc.address,
           })
@@ -258,7 +258,7 @@ const Accounts: FC<AccountProps> = (props) => {
         });
         const objectRequests = snap.accounts.map((acc) => {
           return snap.client?.send({
-            id: `${acc.address}-hooks`,
+            id: `hooks-builder-req-objects-${acc.address}`,
             command: "account_objects",
             account: acc.address,
           });
@@ -282,7 +282,7 @@ const Accounts: FC<AccountProps> = (props) => {
     let fetchAccountInfoInterval: NodeJS.Timer;
     if (snap.clientStatus === "online") {
       fetchAccInfo();
-      fetchAccountInfoInterval = setInterval(() => fetchAccInfo(), 5000);
+      fetchAccountInfoInterval = setInterval(() => fetchAccInfo(), 10000);
     }
 
     return () => {
