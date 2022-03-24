@@ -108,24 +108,17 @@ const DebugStream = () => {
     };
     const onMessage = (event: any) => {
       if (!event.data) return;
-      // const log = prepareLog(event.data);
-      // // Filter out account_info and account_objects requests
-      // try {
-      //   const parsed = JSON.parse(log.jsonData);
-      //   if (
-      //     parsed.command === "account_info" ||
-      //     parsed.command === "account_objects"
-      //   ) {
-      //     return;
-      //   }
-      // } catch (err) {
-      //   // Lets just skip if we cannot parse the message
-      // }
-      if (event.data.includes("hooks-builder-req")) {
-        return;
+      const log = prepareLog(event.data);
+      // Filter out account_info and account_objects requests
+      try {
+        const parsed = JSON.parse(log.jsonData);
+        if (parsed.id.includes("hooks-builder-req")) {
+          return;
+        }
+      } catch (err) {
+        // Lets just skip if we cannot parse the message
       }
-      return streamState.logs.push({ type: "log", message: event.data });
-      // return streamState.logs.push(log);
+      return streamState.logs.push(log);
     };
 
     socket.addEventListener("open", onOpen);

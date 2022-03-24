@@ -4,7 +4,7 @@ import {
   ReactNode,
   FC,
   useState,
-  // useCallback,
+  useCallback,
 } from "react";
 import { Notepad, Prohibit } from "phosphor-react";
 import useStayScrolled from "react-stay-scrolled";
@@ -12,11 +12,10 @@ import NextLink from "next/link";
 
 import Container from "./Container";
 import LogText from "./LogText";
-// import state, { ILog } from "../state";
-import { ILog } from "../state";
+import state, { ILog } from "../state";
 import { Pre, Link, Heading, Button, Text, Flex, Box } from ".";
-// import regexifyString from "regexify-string";
-// import { useSnapshot } from "valtio";
+import regexifyString from "regexify-string";
+import { useSnapshot } from "valtio";
 import { AccountDialog } from "./Accounts";
 
 interface ILogBox {
@@ -155,41 +154,41 @@ export const Log: FC<ILog> = ({
   defaultCollapsed,
   jsonData: _jsonData,
 }) => {
-  // const [expanded, setExpanded] = useState(!defaultCollapsed);
-  // const { accounts } = useSnapshot(state);
+  const [expanded, setExpanded] = useState(!defaultCollapsed);
+  const { accounts } = useSnapshot(state);
   const [dialogAccount, setDialogAccount] = useState<string | null>(null);
 
-  // const enrichAccounts = useCallback(
-  //   (str?: string): ReactNode => {
-  //     if (!str || !accounts.length) return null;
+  const enrichAccounts = useCallback(
+    (str?: string): ReactNode => {
+      if (!str || !accounts.length) return null;
 
-  //     const pattern = `(${accounts.map((acc) => acc.address).join("|")})`;
-  //     const res = regexifyString({
-  //       pattern: new RegExp(pattern, "gim"),
-  //       decorator: (match, idx) => {
-  //         const name = accounts.find((acc) => acc.address === match)?.name;
-  //         return (
-  //           <Link
-  //             key={match + idx}
-  //             as="a"
-  //             onClick={() => setDialogAccount(match)}
-  //             title={match}
-  //             highlighted
-  //           >
-  //             {name || match}
-  //           </Link>
-  //         );
-  //       },
-  //       input: str,
-  //     });
+      const pattern = `(${accounts.map((acc) => acc.address).join("|")})`;
+      const res = regexifyString({
+        pattern: new RegExp(pattern, "gim"),
+        decorator: (match, idx) => {
+          const name = accounts.find((acc) => acc.address === match)?.name;
+          return (
+            <Link
+              key={match + idx}
+              as="a"
+              onClick={() => setDialogAccount(match)}
+              title={match}
+              highlighted
+            >
+              {name || match}
+            </Link>
+          );
+        },
+        input: str,
+      });
 
-  //     return <>{res}</>;
-  //   },
-  //   [accounts]
-  // );
+      return <>{res}</>;
+    },
+    [accounts]
+  );
   _message = _message.trim().replace(/\n /gi, "\n");
-  // const message = enrichAccounts(_message);
-  // const jsonData = enrichAccounts(_jsonData);
+  const message = enrichAccounts(_message);
+  const jsonData = enrichAccounts(_jsonData);
 
   return (
     <>
@@ -203,18 +202,18 @@ export const Log: FC<ILog> = ({
             {timestamp}{" "}
           </Text>
         )}
-        <Pre>{_message} </Pre>
+        <Pre>{message} </Pre>
         {link && (
           <NextLink href={link} shallow passHref>
             <Link as="a">{linkText}</Link>
           </NextLink>
         )}
-        {/* {jsonData && (
+        {jsonData && (
           <Link onClick={() => setExpanded(!expanded)} as="a">
             {expanded ? "Collapse" : "Expand"}
           </Link>
         )}
-        {expanded && jsonData && <Pre block>{jsonData}</Pre>} */}
+        {expanded && jsonData && <Pre block>{jsonData}</Pre>}
       </LogText>
     </>
   );
