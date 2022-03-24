@@ -89,12 +89,19 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
   const validateFilename = useCallback(
     (filename: string): { error: string | null } => {
       // check if filename already exists
+      if (!filename) {
+        return { error: "You need to add filename" };
+      }
       if (snap.files.find((file) => file.name === filename)) {
         return { error: "Filename already exists." };
       }
 
+      if (!filename.includes(".") || filename[filename.length - 1] === ".") {
+        return { error: "Filename should include file extension" };
+      }
+
       // check for illegal characters
-      const ALPHA_NUMERICAL_REGEX = /^[\w,\s-]+\.[A-Za-z0-9]{1,4}$/g;
+      const ALPHA_NUMERICAL_REGEX = /^[A-Za-z0-9_-]+[.][A-Za-z0-9]{1,4}$/g;
       if (!filename.match(ALPHA_NUMERICAL_REGEX)) {
         return {
           error: `Filename can contain only characters from a-z, A-Z, 0-9, "_" and "-" and it needs to have file extension (e.g. ".c")`,
