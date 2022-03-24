@@ -282,7 +282,7 @@ const Accounts: FC<AccountProps> = (props) => {
     let fetchAccountInfoInterval: NodeJS.Timer;
     if (snap.clientStatus === "online") {
       fetchAccInfo();
-      fetchAccountInfoInterval = setInterval(() => fetchAccInfo(), 2500);
+      fetchAccountInfoInterval = setInterval(() => fetchAccInfo(), 5000);
     }
 
     return () => {
