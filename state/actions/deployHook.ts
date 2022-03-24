@@ -96,8 +96,6 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
       ]
     };
 
-    console.log(tx)
-
     const keypair = derive.familySeed(account.secret);
     const { signedTransaction } = sign(tx, keypair);
     const currentAccount = state.accounts.find(
@@ -112,7 +110,7 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
         command: "submit",
         tx_blob: signedTransaction,
       });
-      console.log(submitRes)
+
       if (submitRes.engine_result === "tesSUCCESS") {
         state.deployLogs.push({
           type: "success",

@@ -1,4 +1,11 @@
-import { useRef, useLayoutEffect, ReactNode, FC, useState, useCallback } from "react";
+import {
+  useRef,
+  useLayoutEffect,
+  ReactNode,
+  FC,
+  useState,
+  useCallback,
+} from "react";
 import { Notepad, Prohibit } from "phosphor-react";
 import useStayScrolled from "react-stay-scrolled";
 import NextLink from "next/link";
@@ -19,7 +26,14 @@ interface ILogBox {
   enhanced?: boolean;
 }
 
-const LogBox: FC<ILogBox> = ({ title, clearLog, logs, children, renderNav, enhanced }) => {
+const LogBox: FC<ILogBox> = ({
+  title,
+  clearLog,
+  logs,
+  children,
+  renderNav,
+  enhanced,
+}) => {
   const logRef = useRef<HTMLPreElement>(null);
   const { stayScrolled /*, scrollBottom*/ } = useStayScrolled(logRef);
 
@@ -148,11 +162,11 @@ export const Log: FC<ILog> = ({
     (str?: string): ReactNode => {
       if (!str || !accounts.length) return null;
 
-      const pattern = `(${accounts.map(acc => acc.address).join("|")})`;
+      const pattern = `(${accounts.map((acc) => acc.address).join("|")})`;
       const res = regexifyString({
         pattern: new RegExp(pattern, "gim"),
         decorator: (match, idx) => {
-          const name = accounts.find(acc => acc.address === match)?.name;
+          const name = accounts.find((acc) => acc.address === match)?.name;
           return (
             <Link
               key={match + idx}
@@ -183,19 +197,23 @@ export const Log: FC<ILog> = ({
         activeAccountAddress={dialogAccount}
       />
       <LogText variant={type}>
-        {timestamp && <Text muted monospace>{timestamp} </Text>}
-        <Pre>{message} </Pre>
+        {timestamp && (
+          <Text muted monospace>
+            {timestamp}{" "}
+          </Text>
+        )}
+        <Pre>{_message} </Pre>
         {link && (
           <NextLink href={link} shallow passHref>
             <Link as="a">{linkText}</Link>
           </NextLink>
         )}
-        {jsonData && (
+        {/* {jsonData && (
           <Link onClick={() => setExpanded(!expanded)} as="a">
             {expanded ? "Collapse" : "Expand"}
           </Link>
         )}
-        {expanded && jsonData && <Pre block>{jsonData}</Pre>}
+        {expanded && jsonData && <Pre block>{jsonData}</Pre>} */}
       </LogText>
     </>
   );
