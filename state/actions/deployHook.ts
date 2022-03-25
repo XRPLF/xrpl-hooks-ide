@@ -151,7 +151,7 @@ export const deleteHook = async (account: IAccount & { name?: string }) => {
       Account: account.address,
       TransactionType: "SetHook",
       Sequence: account.sequence,
-      Fee: "100000",
+      Fee: "1000000",
       Hooks: [
         {
           Hook: {

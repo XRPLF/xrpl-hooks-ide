@@ -112,7 +112,7 @@ const DebugStream = () => {
       // Filter out account_info and account_objects requests
       try {
         const parsed = JSON.parse(log.jsonData);
-        if (parsed.id.includes("hooks-builder-req")) {
+        if (parsed?.id?._Request?.includes("hooks-builder-req")) {
           return;
         }
       } catch (err) {

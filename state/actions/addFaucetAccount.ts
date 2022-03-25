@@ -59,6 +59,7 @@ export const addFaucetAccount = async (showToast: boolean = false) => {
         sequence: 1,
         hooks: [],
         isLoading: false,
+        version: '2'
       });
     }
   }
