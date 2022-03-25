@@ -34,6 +34,7 @@ export interface IAccount {
   sequence: number;
   hooks: string[];
   isLoading: boolean;
+  version?: string;
 }
 
 export interface ILog {
@@ -119,6 +120,8 @@ if (typeof window !== "undefined") {
   if (localStorageAccounts) {
     initialAccounts = JSON.parse(localStorageAccounts);
   }
+  // filter out old accounts (they do not have version property at all)
+  initialAccounts = initialAccounts.filter(acc => acc.version === '2');
 }
 
 // Initialize state
