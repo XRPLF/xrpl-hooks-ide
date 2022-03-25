@@ -6,21 +6,28 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { styled } from "../stitches.config";
 
 const overlayShow = keyframes({
-  "0%": { opacity: 0 },
+  "0%": { opacity: 0.01 },
   "100%": { opacity: 1 },
 });
 
 const contentShow = keyframes({
-  "0%": { opacity: 0, transform: "translate(-50%, -48%) scale(.96)" },
-  "100%": { opacity: 1, transform: "translate(-50%, -50%) scale(1)" },
+  "0%": { opacity: 0.01 },
+  "100%": { opacity: 1 },
 });
 const StyledOverlay = styled(DialogPrimitive.Overlay, {
-  zIndex: 1000,
+  zIndex: 9999,
   backgroundColor: blackA.blackA9,
   position: "fixed",
   inset: 0,
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  display: "grid",
+  placeItems: "center",
+  overflowY: "auto",
   "@media (prefers-reduced-motion: no-preference)": {
-    animation: `${overlayShow} 150ms cubic-bezier(0.16, 1, 0.3, 1)`,
+    animation: `${overlayShow} 250ms cubic-bezier(0.16, 1, 0.3, 1)`,
   },
   ".dark &": {
     backgroundColor: blackA.blackA11,
@@ -32,15 +39,12 @@ const StyledContent = styled(DialogPrimitive.Content, {
   backgroundColor: "$mauve2",
   color: "$mauve12",
   borderRadius: "$md",
+  position: "relative",
   boxShadow:
     "0px 10px 38px -5px rgba(22, 23, 24, 0.25), 0px 10px 20px -5px rgba(22, 23, 24, 0.2)",
-  position: "fixed",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
   width: "90vw",
   maxWidth: "450px",
-  maxHeight: "85vh",
+  // maxHeight: "85vh",
   padding: 25,
   "@media (prefers-reduced-motion: no-preference)": {
     animation: `${contentShow} 150ms cubic-bezier(0.16, 1, 0.3, 1)`,
@@ -55,10 +59,9 @@ const StyledContent = styled(DialogPrimitive.Content, {
 
 const Content: React.FC<{ css?: Stiches.CSS }> = ({ css, children }) => {
   return (
-    <div>
-      <StyledOverlay />
+    <StyledOverlay>
       <StyledContent css={css}>{children}</StyledContent>
-    </div>
+    </StyledOverlay>
   );
 };
 
@@ -83,3 +86,4 @@ export const DialogContent = Content;
 export const DialogTitle = StyledTitle;
 export const DialogDescription = StyledDescription;
 export const DialogClose = DialogPrimitive.Close;
+export const DialogPortal = DialogPrimitive.Portal;

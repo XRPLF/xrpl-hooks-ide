@@ -21,8 +21,15 @@ export default async function handler(
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed!' })
   }
+  const { account } = req.query;
+  const ip = Array.isArray(req?.headers?.["x-real-ip"]) ? req?.headers?.["x-real-ip"][0] : req?.headers?.["x-real-ip"];
   try {
-    const response = await fetch('https://hooks-testnet.xrpl-labs.com/newcreds', { method: 'POST' });
+    const response = await fetch(`https://${process.env.NEXT_PUBLIC_TESTNET_URL}/newcreds?account=${account ? account : ''}`, {
+      method: 'POST',
+      headers: {
+        'x-forwarded-for': ip || '',
+      },
+    });
     const json: Faucet | ErrorResponse = await response.json();
     if ("error" in json) {
       return res.status(429).json(json)

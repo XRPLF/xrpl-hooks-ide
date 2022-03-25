@@ -128,7 +128,7 @@ const Navigation = () => {
                 </DialogTrigger>
                 <DialogContent
                   css={{
-                    maxWidth: "100%",
+                    maxWidth: "1080px",
                     width: "80vw",
                     height: "80%",
                     backgroundColor: "$mauve1 !important",
@@ -255,66 +255,67 @@ const Navigation = () => {
                         </Flex>
                       </DialogDescription>
                     </Flex>
-
-                    <Flex
-                      css={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr",
-                        gridTemplateRows: "max-content",
-                        flex: 1,
-                        p: "$7",
-                        gap: "$3",
-                        alignItems: "flex-start",
-                        flexWrap: "wrap",
-                        backgroundColor: "$mauve1",
-                        "@md": {
-                          gridTemplateColumns: "1fr 1fr 1fr",
+                    <div>
+                      <Flex
+                        css={{
+                          display: "grid",
+                          gridTemplateColumns: "1fr",
                           gridTemplateRows: "max-content",
-                        },
-                      }}
-                    >
-                      <PanelBox
-                        as="a"
-                        href={`/develop/${templateFileIds.starter}`}
+                          flex: 1,
+                          p: "$7",
+                          gap: "$3",
+                          alignItems: "normal",
+                          flexWrap: "wrap",
+                          backgroundColor: "$mauve1",
+                          "@md": {
+                            gridTemplateColumns: "1fr 1fr 1fr",
+                            gridTemplateRows: "max-content",
+                          },
+                        }}
                       >
-                        <Heading>Starter</Heading>
-                        <Text>
-                          Just a basic starter with essential imports
-                        </Text>
-                      </PanelBox>
-                      <PanelBox
-                        as="a"
-                        href={`/develop/${templateFileIds.firewall}`}
-                      >
-                        <Heading>Firewall</Heading>
-                        <Text>
-                          This Hook essentially checks a blacklist of accounts
-                        </Text>
-                      </PanelBox>
-                      <PanelBox
-                        as="a"
-                        href={`/develop/${templateFileIds.notary}`}
-                      >
-                        <Heading>Notary</Heading>
-                        <Text>
-                          Collecting signatures for multi-sign transactions
-                        </Text>
-                      </PanelBox>
-                      <PanelBox
-                        as="a"
-                        href={`/develop/${templateFileIds.carbon}`}
-                      >
-                        <Heading>Carbon</Heading>
-                        <Text>Send a percentage of sum to an address</Text>
-                      </PanelBox>
-                      <PanelBox
-                        as="a"
-                        href={`/develop/${templateFileIds.peggy}`}
-                      >
-                        <Heading>Peggy</Heading>
-                        <Text>An oracle based stable coin hook</Text>
-                      </PanelBox>
-                    </Flex>
+                        <PanelBox
+                          as="a"
+                          href={`/develop/${templateFileIds.starter}`}
+                        >
+                          <Heading>Starter</Heading>
+                          <Text>
+                            Just a basic starter with essential imports
+                          </Text>
+                        </PanelBox>
+                        <PanelBox
+                          as="a"
+                          href={`/develop/${templateFileIds.firewall}`}
+                        >
+                          <Heading>Firewall</Heading>
+                          <Text>
+                            This Hook essentially checks a blacklist of accounts
+                          </Text>
+                        </PanelBox>
+                        <PanelBox
+                          as="a"
+                          href={`/develop/${templateFileIds.notary}`}
+                        >
+                          <Heading>Notary</Heading>
+                          <Text>
+                            Collecting signatures for multi-sign transactions
+                          </Text>
+                        </PanelBox>
+                        <PanelBox
+                          as="a"
+                          href={`/develop/${templateFileIds.carbon}`}
+                        >
+                          <Heading>Carbon</Heading>
+                          <Text>Send a percentage of sum to an address</Text>
+                        </PanelBox>
+                        <PanelBox
+                          as="a"
+                          href={`/develop/${templateFileIds.peggy}`}
+                        >
+                          <Heading>Peggy</Heading>
+                          <Text>An oracle based stable coin hook</Text>
+                        </PanelBox>
+                      </Flex>
+                    </div>
                   </Flex>
                   <DialogClose asChild>
                     <Box

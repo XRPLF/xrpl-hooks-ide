@@ -20,7 +20,7 @@ const DebugStream = () => {
   const { selectedAccount, logs, socket } = useSnapshot(streamState);
   const { accounts } = useSnapshot(state);
 
-  const accountOptions = accounts.map(acc => ({
+  const accountOptions = accounts.map((acc) => ({
     label: acc.name,
     value: acc.address,
   }));
@@ -33,7 +33,7 @@ const DebugStream = () => {
         options={accountOptions}
         hideSelectedOptions
         value={selectedAccount}
-        onChange={acc => (streamState.selectedAccount = acc as any)}
+        onChange={(acc) => (streamState.selectedAccount = acc as any)}
         css={{ width: "100%" }}
       />
     </>
@@ -57,7 +57,6 @@ const DebugStream = () => {
     const jsonData = extracted
       ? JSON.stringify(extracted.result, null, 2)
       : undefined;
-
     return {
       type: "log",
       message,
@@ -73,7 +72,7 @@ const DebugStream = () => {
       socket?.close();
       streamState.socket = ref(
         new WebSocket(
-          `wss://hooks-testnet-debugstream.xrpl-labs.com/${account}`
+          `wss://${process.env.NEXT_PUBLIC_DEBUG_STREAM_URL}/${account}`
         )
       );
     } else if (!account && socket) {
@@ -109,7 +108,17 @@ const DebugStream = () => {
     };
     const onMessage = (event: any) => {
       if (!event.data) return;
-      streamState.logs.push(prepareLog(event.data));
+      const log = prepareLog(event.data);
+      // Filter out account_info and account_objects requests
+      try {
+        const parsed = JSON.parse(log.jsonData);
+        if (parsed.id.includes("hooks-builder-req")) {
+          return;
+        }
+      } catch (err) {
+        // Lets just skip if we cannot parse the message
+      }
+      return streamState.logs.push(log);
     };
 
     socket.addEventListener("open", onOpen);

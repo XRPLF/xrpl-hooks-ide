@@ -1,11 +1,11 @@
 import toast from "react-hot-toast";
 import { useSnapshot } from "valtio";
-import { ArrowSquareOut, Copy, Wallet, X } from "phosphor-react";
+import { ArrowSquareOut, Copy, Trash, Wallet, X } from "phosphor-react";
 import React, { useEffect, useState, FC } from "react";
 import Dinero from "dinero.js";
 
 import Button from "./Button";
-import { addFaucetAccount, deployHook, importAccount } from "../state/actions";
+import { addFaucetAccount, importAccount } from "../state/actions";
 import state from "../state";
 import Box from "./Box";
 import { Container, Heading, Stack, Text, Flex } from ".";
@@ -19,6 +19,7 @@ import {
 } from "./Dialog";
 import { css } from "../stitches.config";
 import { Input } from "./Input";
+import truncate from "../utils/truncate";
 
 const labelStyle = css({
   color: "$mauve10",
@@ -26,6 +27,10 @@ const labelStyle = css({
   fontSize: "10px",
   mb: "$0.5",
 });
+import transactionsData from "../content/transactions.json";
+import { SetHookDialog } from "./SetHookDialog";
+import { addFunds } from "../state/actions/addFaucetAccount";
+import { deleteHook } from "../state/actions/deployHook";
 
 export const AccountDialog = ({
   activeAccountAddress,
@@ -86,6 +91,22 @@ export const AccountDialog = ({
           }}
         >
           <Wallet size="15px" /> {activeAccount?.name}
+          <DialogClose asChild>
+            <Button
+              size="xs"
+              outline
+              css={{ ml: "auto", mr: "$9" }}
+              tabIndex={-1}
+              onClick={() => {
+                const index = state.accounts.findIndex(
+                  (acc) => acc.address === activeAccount?.address
+                );
+                state.accounts.splice(index, 1);
+              }}
+            >
+              Delete Account <Trash size="15px" />
+            </Button>
+          </DialogClose>
         </DialogTitle>
         <DialogDescription as="div" css={{ fontFamily: "$monospace" }}>
           <Stack css={{ display: "flex", flexDirection: "column", gap: "$3" }}>
@@ -163,6 +184,8 @@ export const AccountDialog = ({
                 <Text
                   css={{
                     fontFamily: "$monospace",
+                    display: "flex",
+                    alignItems: "center",
                   }}
                 >
                   {Dinero({
@@ -175,11 +198,26 @@ export const AccountDialog = ({
                       currency: "XRP",
                       currencyDisplay: "name",
                     })}
+                  <Button
+                    css={{
+                      fontFamily: "$monospace",
+                      lineHeight: 2,
+                      mt: "2px",
+                      ml: "$3",
+                    }}
+                    ghost
+                    size="xs"
+                    onClick={() => {
+                      addFunds(activeAccount?.address || "");
+                    }}
+                  >
+                    Add Funds
+                  </Button>
                 </Text>
               </Flex>
               <Flex css={{ marginLeft: "auto" }}>
                 <a
-                  href={`https://hooks-testnet-explorer.xrpl-labs.com/${activeAccount?.address}`}
+                  href={`https://${process.env.NEXT_PUBLIC_EXPLORER_URL}/${activeAccount?.address}`}
                   target="_blank"
                   rel="noreferrer noopener"
                 >
@@ -201,9 +239,25 @@ export const AccountDialog = ({
                     fontFamily: "$monospace",
                   }}
                 >
-                  {activeAccount && activeAccount.hooks.length}
+                  {activeAccount && activeAccount.hooks.length > 0
+                    ? activeAccount.hooks.map((i) => truncate(i, 12)).join(",")
+                    : "–"}
                 </Text>
               </Flex>
+              {activeAccount && activeAccount?.hooks?.length > 0 && (
+                <Flex css={{ marginLeft: "auto" }}>
+                  <Button
+                    size="xs"
+                    outline
+                    css={{ mt: "$3", mr: "$1", ml: "auto" }}
+                    onClick={() => {
+                      deleteHook(activeAccount);
+                    }}
+                  >
+                    Delete Hook <Trash size="15px" />
+                  </Button>
+                </Flex>
+              )}
             </Flex>
           </Stack>
         </DialogDescription>
@@ -233,7 +287,7 @@ const Accounts: FC<AccountProps> = (props) => {
       if (snap.clientStatus === "online") {
         const requests = snap.accounts.map((acc) =>
           snap.client?.send({
-            id: acc.address,
+            id: `hooks-builder-req-info-${acc.address}`,
             command: "account_info",
             account: acc.address,
           })
@@ -253,7 +307,7 @@ const Accounts: FC<AccountProps> = (props) => {
         });
         const objectRequests = snap.accounts.map((acc) => {
           return snap.client?.send({
-            id: `${acc.address}-hooks`,
+            id: `hooks-builder-req-objects-${acc.address}`,
             command: "account_objects",
             account: acc.address,
           });
@@ -265,9 +319,10 @@ const Accounts: FC<AccountProps> = (props) => {
             (acc) => acc.address === address
           );
           if (accountToUpdate) {
-            accountToUpdate.hooks = res.account_objects
-              .filter((ac: any) => ac?.LedgerEntryType === "Hook")
-              .map((oo: any) => oo.HookHash);
+            accountToUpdate.hooks =
+              res.account_objects
+                .find((ac: any) => ac?.LedgerEntryType === "Hook")
+                ?.Hooks?.map((oo: any) => oo.Hook.HookHash) || [];
           }
         });
       }
@@ -276,7 +331,7 @@ const Accounts: FC<AccountProps> = (props) => {
     let fetchAccountInfoInterval: NodeJS.Timer;
     if (snap.clientStatus === "online") {
       fetchAccInfo();
-      fetchAccountInfoInterval = setInterval(() => fetchAccInfo(), 2000);
+      fetchAccountInfoInterval = setInterval(() => fetchAccInfo(), 10000);
     }
 
     return () => {
@@ -338,7 +393,6 @@ const Accounts: FC<AccountProps> = (props) => {
             fontSize: "13px",
             wordWrap: "break-word",
             fontWeight: "$body",
-            fontFamily: "$monospace",
             gap: 0,
             height: "calc(100% - 52px)",
             flexWrap: "nowrap",
@@ -392,29 +446,12 @@ const Accounts: FC<AccountProps> = (props) => {
                 </Box>
                 {!props.hideDeployBtn && (
                   <div
+                    className="hook-deploy-button"
                     onClick={(e) => {
-                      e.preventDefault();
                       e.stopPropagation();
                     }}
                   >
-                    <Button
-                      css={{ ml: "auto" }}
-                      size="xs"
-                      uppercase
-                      isLoading={account.isLoading}
-                      disabled={
-                        account.isLoading ||
-                        !snap.files.filter((file) => file.compiledWatContent)
-                          .length
-                      }
-                      variant="secondary"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deployHook(account);
-                      }}
-                    >
-                      Deploy
-                    </Button>
+                    <SetHookDialog account={account} />
                   </div>
                 )}
               </Flex>
@@ -435,6 +472,11 @@ const Accounts: FC<AccountProps> = (props) => {
     </Box>
   );
 };
+
+export const transactionsOptions = transactionsData.map((tx) => ({
+  value: tx.TransactionType,
+  label: tx.TransactionType,
+}));
 
 const ImportAccountDialog = () => {
   const [value, setValue] = useState("");
