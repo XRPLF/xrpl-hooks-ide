@@ -68,11 +68,11 @@ export const addFaucetAccount = async (showToast: boolean = false) => {
 // fetch initial faucets
 (async function fetchFaucets() {
   if (typeof window !== 'undefined') {
-    if (state.accounts.length < 2) {
+    if (state.accounts.length === 0) {
       await addFaucetAccount();
-      setTimeout(() => {
-        addFaucetAccount();
-      }, 10000);
+      // setTimeout(() => {
+      //   addFaucetAccount();
+      // }, 10000);
     }
   }
 })();
