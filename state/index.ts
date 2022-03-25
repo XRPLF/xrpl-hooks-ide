@@ -121,7 +121,7 @@ if (typeof window !== "undefined") {
     initialAccounts = JSON.parse(localStorageAccounts);
   }
   // filter out old accounts (they do not have version property at all)
-  initialAccounts = initialAccounts.filter(acc => acc.version === '2');
+  // initialAccounts = initialAccounts.filter(acc => acc.version === '2');
 }
 
 // Initialize state

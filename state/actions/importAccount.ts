@@ -24,6 +24,7 @@ export const importAccount = (secret: string) => {
     sequence: 1,
     hooks: [],
     isLoading: false,
+    version: '2'
   });
   return toast.success("Account imported successfully!");
 };
