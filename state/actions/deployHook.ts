@@ -81,7 +81,7 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
   //     }
   //   }
   // });
-  console.log(filteredHookParameters)
+
   if (typeof window !== "undefined") {
     const tx = {
       Account: account.address,
