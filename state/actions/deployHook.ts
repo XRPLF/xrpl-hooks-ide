@@ -15,6 +15,13 @@ const hash = async (string: string) => {
   return hashHex;
 }
 
+function toHex(str: string) {
+  var result = '';
+  for (var i = 0; i < str.length; i++) {
+    result += str.charCodeAt(i).toString(16);
+  }
+  return result.toUpperCase();
+}
 
 function arrayBufferToHex(arrayBuffer?: ArrayBuffer | null) {
   if (!arrayBuffer) {
@@ -64,7 +71,7 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
   ).toUpperCase());
   const hookOnValues: (keyof TTS)[] = data.Invoke.map(tt => tt.value);
   const { HookParameters } = data;
-  const filteredHookParameters = HookParameters.filter(hp => hp.HookParameter.HookParameterName && hp.HookParameter.HookParameterValue);
+  const filteredHookParameters = HookParameters.filter(hp => hp.HookParameter.HookParameterName && hp.HookParameter.HookParameterValue)?.map(aa => ({ HookParameter: { HookParameterName: toHex(aa.HookParameter.HookParameterName || ''), HookParameterValue: toHex(aa.HookParameter.HookParameterValue || '') } }));
   // const filteredHookGrants = HookGrants.filter(hg => hg.HookGrant.Authorize || hg.HookGrant.HookHash).map(hg => {
   //   return {
   //     HookGrant: {
@@ -74,6 +81,7 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
   //     }
   //   }
   // });
+  console.log(filteredHookParameters)
   if (typeof window !== "undefined") {
     const tx = {
       Account: account.address,
