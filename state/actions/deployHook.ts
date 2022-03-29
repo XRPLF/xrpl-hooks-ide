@@ -153,13 +153,18 @@ export const deleteHook = async (account: IAccount & { name?: string }) => {
   if (!state.client) {
     return;
   }
-
+  const currentAccount = state.accounts.find(
+    (acc) => acc.address === account.address
+  );
+  if (currentAccount?.isLoading || !currentAccount?.hooks.length) {
+    return
+  }
   if (typeof window !== "undefined") {
     const tx = {
       Account: account.address,
       TransactionType: "SetHook",
       Sequence: account.sequence,
-      Fee: "1000000",
+      Fee: "100000",
       Hooks: [
         {
           Hook: {
@@ -172,9 +177,7 @@ export const deleteHook = async (account: IAccount & { name?: string }) => {
 
     const keypair = derive.familySeed(account.secret);
     const { signedTransaction } = sign(tx, keypair);
-    const currentAccount = state.accounts.find(
-      (acc) => acc.address === account.address
-    );
+
     if (currentAccount) {
       currentAccount.isLoading = true;
     }
@@ -196,6 +199,7 @@ export const deleteHook = async (account: IAccount & { name?: string }) => {
           type: "success",
           message: `[${submitRes.engine_result}] ${submitRes.engine_result_message} Validated ledger index: ${submitRes.validated_ledger_index}`,
         });
+        currentAccount.hooks = [];
       } else {
         toast.error(`${submitRes.engine_result_message || submitRes.error_exception}`, { id: toastId })
         state.deployLogs.push({
