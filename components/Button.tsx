@@ -171,6 +171,16 @@ export const StyledButton = styled("button", {
         color: "$textMuted",
       },
     },
+    isDisabled: {
+      true: {
+        opacity: 0.6,
+        // pointerEvents: "none",
+        cursor: "auto",
+        "&:hover": {
+          boxShadow: "inherit",
+        },
+      },
+    },
     outline: {
       true: {
         backgroundColor: "transparent",
