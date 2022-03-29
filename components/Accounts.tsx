@@ -249,6 +249,7 @@ export const AccountDialog = ({
                   <Button
                     size="xs"
                     outline
+                    disabled={activeAccount.isLoading}
                     css={{ mt: "$3", mr: "$1", ml: "auto" }}
                     onClick={() => {
                       deleteHook(activeAccount);
