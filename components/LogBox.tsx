@@ -215,6 +215,7 @@ export const Log: FC<ILog> = ({
         )}
         {expanded && jsonData && <Pre block>{jsonData}</Pre>}
       </LogText>
+      <br />
     </>
   );
 };
