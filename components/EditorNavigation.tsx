@@ -25,6 +25,7 @@ import {
 import NewWindow from "react-new-window";
 import { signOut, useSession } from "next-auth/react";
 import { useSnapshot } from "valtio";
+import toast from "react-hot-toast";
 
 import {
   createNewFile,
@@ -48,7 +49,7 @@ import Flex from "./Flex";
 import Stack from "./Stack";
 import Input from "./Input";
 import Text from "./Text";
-import toast from "react-hot-toast";
+import Tooltip from "./Tooltip";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -367,44 +368,65 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
               },
             }}
           >
-            <Button
-              isLoading={snap.zipLoading}
-              onClick={downloadAsZip}
-              outline
-              size="sm"
-              css={{ alignItems: "center" }}
+            <Tooltip content="Download as ZIP">
+              <Button
+                isLoading={snap.zipLoading}
+                onClick={downloadAsZip}
+                outline
+                size="sm"
+                css={{ alignItems: "center" }}
+              >
+                <DownloadSimple size="16px" />
+              </Button>
+            </Tooltip>
+            <Tooltip content="Copy share link to clipboard">
+              <Button
+                outline
+                size="sm"
+                css={{ alignItems: "center" }}
+                onClick={() => {
+                  navigator.clipboard.writeText(
+                    `${window.location.origin}/develop/${snap.gistId}`
+                  );
+                  toast.success("Copied share link to clipboard!");
+                }}
+              >
+                <Share size="16px" />
+              </Button>
+            </Tooltip>
+            <Tooltip
+              content={
+                session && session.user
+                  ? snap.gistOwner === session?.user.username
+                    ? "Sync to Gist"
+                    : "Create as a new Gist"
+                  : "You need to be logged in to sync with Gist"
+              }
             >
-              <DownloadSimple size="16px" />
-            </Button>
-            <Button
-              outline
-              size="sm"
-              css={{ alignItems: "center" }}
-              onClick={() => {
-                navigator.clipboard.writeText(
-                  `${window.location.origin}/develop/${snap.gistId}`
-                );
-                toast.success("Copied share link to clipboard!");
-              }}
-            >
-              <Share size="16px" />
-            </Button>
-            <Button
-              outline
-              size="sm"
-              disabled={!session || !session.user}
-              isLoading={snap.gistLoading}
-              css={{ alignItems: "center" }}
-              onClick={() => {
-                if (snap.gistOwner === session?.user.username) {
-                  syncToGist(session);
-                } else {
-                  setCreateNewAlertOpen(true);
-                }
-              }}
-            >
-              <CloudArrowUp size="16px" />
-            </Button>
+              <Button
+                outline
+                size="sm"
+                isDisabled={!session || !session.user}
+                isLoading={snap.gistLoading}
+                css={{ alignItems: "center" }}
+                onClick={() => {
+                  if (!session || !session.user) {
+                    return;
+                  }
+                  if (snap.gistOwner === session?.user.username) {
+                    syncToGist(session);
+                  } else {
+                    setCreateNewAlertOpen(true);
+                  }
+                }}
+              >
+                {snap.gistOwner === session?.user.username ? (
+                  <CloudArrowUp size="16px" />
+                ) : (
+                  <FilePlus size="16px" />
+                )}
+              </Button>
+            </Tooltip>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
