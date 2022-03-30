@@ -14,8 +14,7 @@ export const templateFileIds = {
     'carbon': 'a9fbcaf1b816b198c7fc0f62962bebf2',
     'doubler': '56b86174aeb70b2b48eee962bad3e355',
     'peggy': 'd21298a37e1550b781682014762a567b',
-    'headers': '9b448e8a55fab11ef5d1274cb59f9cf3'
-
+    'headers': '55f639bce59a49c58c45e663776b5138'
 }
 
 export const apiHeaderFiles = ['hookapi.h', 'sfcodes.h', 'hookmacro.h']

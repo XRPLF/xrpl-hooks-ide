@@ -2,6 +2,7 @@ import { Octokit } from "@octokit/core";
 import Router from "next/router";
 import state from '../index';
 import { templateFileIds } from '../constants';
+import { hookapiH, hookmacroH, sfcodesH } from '../constants/headerTemplates';
 
 
 const octokit = new Octokit();
@@ -24,16 +25,26 @@ export const fetchFiles = (gistId: string) => {
           return res
         }
         // in case of templates, fetch header file(s) and append to res
-        return octokit.request("GET /gists/{gist_id}", { gist_id: templateFileIds.headers }).then(({ data: { files: headerFiles } }) => {
-          const files = { ...res.data.files, ...headerFiles }
-          res.data.files = files
-          return res
-        })
+        const files = {
+          ...res.data.files,
+          'hookapi.h': res.data.files?.['hookapi.h'] || { filename: 'hookapi.h', content: hookapiH, language: 'C' },
+          'hookmacro.h': res.data.files?.['hookmacro.h'] || { filename: 'hookmacro.h', content: hookmacroH, language: 'C' },
+          'sfcodes.h': res.data.files?.['sfcodes.h'] || { filename: 'sfcodes.h', content: sfcodesH, language: 'C' },
+        };
+        res.data.files = files;
+        return res;
+        // If you want to load templates from GIST instad, uncomment the code below and comment the code above.
+        // return octokit.request("GET /gists/{gist_id}", { gist_id: templateFileIds.headers }).then(({ data: { files: headerFiles } }) => {
+        //   const files = { ...res.data.files, ...headerFiles }
+        //   console.log(headerFiles)
+        //   res.data.files = files
+        //   return res
+        // })
       })
       .then((res) => {
         if (res.data.files && Object.keys(res.data.files).length > 0) {
           const files = Object.keys(res.data.files).map((filename) => ({
-            name: res.data.files?.[filename]?.filename || "noname.c",
+            name: res.data.files?.[filename]?.filename || "untitled.c",
             language: res.data.files?.[filename]?.language?.toLowerCase() || "",
             content: res.data.files?.[filename]?.content || "",
           }));
