@@ -26,11 +26,10 @@ export const fetchFiles = (gistId: string) => {
         }
         // in case of templates, fetch header file(s) and append to res
         const files = {
-          ...res.data.files, ...{
-            'hookapi.h': { filename: 'hookapi.h', content: hookapiH, language: 'C' },
-            'hookmacro.h': { filename: 'hookmacro.h', content: hookmacroH, language: 'C' },
-            'sfcodes.h': { filename: 'sfcodes.h', content: sfcodesH, language: 'C' }
-          }
+          ...res.data.files,
+          'hookapi.h': res.data.files?.['hookapi.h'] || { filename: 'hookapi.h', content: hookapiH, language: 'C' },
+          'hookmacro.h': res.data.files?.['hookmacro.h'] || { filename: 'hookmacro.h', content: hookmacroH, language: 'C' },
+          'sfcodes.h': res.data.files?.['sfcodes.h'] || { filename: 'sfcodes.h', content: sfcodesH, language: 'C' },
         };
         res.data.files = files;
         return res;
