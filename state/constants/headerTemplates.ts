@@ -6,7 +6,7 @@ export const hookapiH = `/**
 * Functions are used sparingly because a non-inlining compiler may produce
 * undesirable output.
 *
-* Find documentation here: https://xrpl-hooks.readme.io/reference/
+* Find documentation here: https://xrpl-hooks.readme.io/v2.0/reference/
 */
 
 

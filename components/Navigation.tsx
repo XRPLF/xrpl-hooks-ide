@@ -228,7 +228,7 @@ const Navigation = () => {
                             as="a"
                             rel="noreferrer noopener"
                             target="_blank"
-                            href="https://xrpl-hooks.readme.io/docs"
+                            href="https://xrpl-hooks.readme.io/v2.0/docs"
                           >
                             <ArrowUpRight size="15px" /> Hooks documentation
                           </Text>
@@ -400,7 +400,7 @@ const Navigation = () => {
                 </Button>
               </Link>
             </ButtonGroup>
-            <Link href="https://xrpl-hooks.readme.io/" passHref>
+            <Link href="https://xrpl-hooks.readme.io/v2.0" passHref>
               <a target="_blank" rel="noreferrer noopener">
                 <Button outline>
                   <BookOpen size="15px" />
