@@ -10,7 +10,7 @@ interface ISelect<T = string> {
   value: T;
 }
 
-const streamState = proxy({
+export const streamState = proxy({
   selectedAccount: null as ISelect | null,
   logs: [] as ILog[],
   socket: undefined as WebSocket | undefined,

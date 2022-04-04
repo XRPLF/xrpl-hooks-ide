@@ -18,6 +18,7 @@ import transactionsData from "../../content/transactions.json";
 import state from "../../state";
 import { sendTransaction } from "../../state/actions";
 import { getSplit, saveSplit } from "../../state/actions/persistSplits";
+import { streamState } from "../../components/DebugStream";
 
 const DebugStream = dynamic(() => import("../../components/DebugStream"), {
   ssr: false,
@@ -182,6 +183,11 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
     setTxIsLoading(false);
   }, []);
 
+  const handleSetAccount = useCallback((acc: typeof accountOptions[0]) => {
+    setSelectedAccount(acc)
+    streamState.selectedAccount = acc
+  }, [])
+
   const usualFields = ["TransactionType", "Amount", "Account", "Destination"];
   const otherFields = Object.keys(txFields).filter(
     (k) => !usualFields.includes(k)
@@ -239,7 +245,7 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
               css={{ width: "70%" }}
               options={accountOptions}
               value={selectedAccount}
-              onChange={(acc) => setSelectedAccount(acc as any)}
+              onChange={acc => handleSetAccount(acc as any)}
             />
           </Flex>
           {txFields.Amount !== undefined && (
