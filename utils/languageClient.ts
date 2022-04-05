@@ -1,5 +1,5 @@
 import { MessageConnection } from "@codingame/monaco-jsonrpc";
-import { MonacoLanguageClient, ErrorAction, CloseAction, createConnection } from "@codingame/monaco-languageclient";
+import { CloseAction, createConnection, ErrorAction, MonacoLanguageClient } from "@codingame/monaco-languageclient";
 import Router from "next/router";
 import normalizeUrl from "normalize-url";
 import ReconnectingWebSocket from "reconnecting-websocket";
@@ -37,7 +37,7 @@ export function createUrl(path: string): string {
   return normalizeUrl(`${protocol}://${location.host}${location.pathname}${path}`);
 }
 
-export function createWebSocket(url: string) {
+export function createWebSocket(url: string): ReconnectingWebSocket {
   const socketOptions = {
     maxReconnectionDelay: 10000,
     minReconnectionDelay: 1000,

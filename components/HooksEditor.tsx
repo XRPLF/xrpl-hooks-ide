@@ -124,6 +124,7 @@ const HooksEditor = () => {
       setMarkers(monacoRef.current);
     }
   }, [snap.active]);
+
   return (
     <Box
       css={{
@@ -165,7 +166,8 @@ const HooksEditor = () => {
                 mimetypes: ["text/plain"],
               });
               MonacoServices.install(monaco);
-              const webSocket = createWebSocket(
+
+              const webSocket: ReconnectingWebSocket = createWebSocket(
                 process.env.NEXT_PUBLIC_LANGUAGE_SERVER_API_ENDPOINT || ""
               );
               subscriptionRef.current = webSocket;
