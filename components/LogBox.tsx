@@ -1,22 +1,17 @@
-import {
-  useRef,
-  useLayoutEffect,
-  ReactNode,
-  FC,
-  useState,
-  useCallback,
-} from "react";
-import { Notepad, Prohibit } from "phosphor-react";
-import useStayScrolled from "react-stay-scrolled";
 import NextLink from "next/link";
-
-import Container from "./Container";
-import LogText from "./LogText";
-import state, { ILog } from "../state";
-import { Pre, Link, Heading, Button, Text, Flex, Box } from ".";
+import { Notepad, Prohibit } from "phosphor-react";
+import {
+  FC, ReactNode, useCallback, useLayoutEffect, useRef, useState
+} from "react";
+import useStayScrolled from "react-stay-scrolled";
 import regexifyString from "regexify-string";
 import { useSnapshot } from "valtio";
+import { Box, Button, Flex, Heading, Link, Pre, Text } from ".";
+import state, { ILog } from "../state";
 import { AccountDialog } from "./Accounts";
+import Container from "./Container";
+import LogText from "./LogText";
+
 
 interface ILogBox {
   title: string;
@@ -160,7 +155,7 @@ export const Log: FC<ILog> = ({
 
   const enrichAccounts = useCallback(
     (str?: string): ReactNode => {
-      if (!str || !accounts.length) return null;
+      if (!str) return null;
 
       const pattern = `(${accounts.map((acc) => acc.address).join("|")})`;
       const res = regexifyString({
