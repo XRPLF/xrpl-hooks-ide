@@ -38,6 +38,11 @@ type TxFields = Omit<
 >;
 type OtherFields = (keyof Omit<TxFields, "Destination">)[];
 
+interface AccountOption {
+  label: string;
+  value: string;
+}
+
 interface Props {
   header?: string;
 }
@@ -45,7 +50,7 @@ interface Props {
 const Transaction: FC<Props> = ({ header, ...props }) => {
   const snap = useSnapshot(state);
 
-  const transactionsOptions = transactionsData.map((tx) => ({
+  const transactionsOptions = transactionsData.map(tx => ({
     value: tx.TransactionType,
     label: tx.TransactionType,
   }));
@@ -53,23 +58,24 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
     typeof transactionsOptions[0] | null
   >(null);
 
-  const accountOptions = snap.accounts.map((acc) => ({
+  const accountOptions: AccountOption[] = snap.accounts.map(acc => ({
     label: acc.name,
     value: acc.address,
   }));
-  const [selectedAccount, setSelectedAccount] = useState<
-    typeof accountOptions[0] | null
-  >(null);
 
-  const destAccountOptions = snap.accounts
-    .map((acc) => ({
+  const [selectedAccount, setSelectedAccount] = useState<AccountOption | null>(
+    null
+  );
+
+  const destAccountOptions: AccountOption[] = snap.accounts
+    .map(acc => ({
       label: acc.name,
       value: acc.address,
     }))
-    .filter((acc) => acc.value !== selectedAccount?.value);
-  const [selectedDestAccount, setSelectedDestAccount] = useState<
-    typeof destAccountOptions[0] | null
-  >(null);
+    .filter(acc => acc.value !== selectedAccount?.value);
+  
+  const [selectedDestAccount, setSelectedDestAccount] =
+    useState<AccountOption | null>(null);
 
   const [txIsLoading, setTxIsLoading] = useState(false);
   const [txIsDisabled, setTxIsDisabled] = useState(false);
@@ -78,7 +84,7 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
   useEffect(() => {
     const transactionType = selectedTransaction?.value;
     const account = snap.accounts.find(
-      (acc) => acc.address === selectedAccount?.value
+      acc => acc.address === selectedAccount?.value
     );
     if (!account || !transactionType || txIsLoading) {
       setTxIsDisabled(true);
@@ -89,7 +95,7 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
 
   useEffect(() => {
     let _txFields: TxFields | undefined = transactionsData.find(
-      (tx) => tx.TransactionType === selectedTransaction?.value
+      tx => tx.TransactionType === selectedTransaction?.value
     );
     if (!_txFields) return setTxFields({});
     _txFields = { ..._txFields } as TxFields;
@@ -106,7 +112,7 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
 
   const submitTest = useCallback(async () => {
     const account = snap.accounts.find(
-      (acc) => acc.address === selectedAccount?.value
+      acc => acc.address === selectedAccount?.value
     );
     const TransactionType = selectedTransaction?.value;
     if (!account || !TransactionType || txIsDisabled) return;
@@ -117,7 +123,7 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
       let options = { ...txFields };
 
       options.Destination = selectedDestAccount?.value;
-      (Object.keys(options) as (keyof TxFields)[]).forEach((field) => {
+      (Object.keys(options) as (keyof TxFields)[]).forEach(field => {
         let _value = options[field];
         // convert currency
         if (typeof _value === "object" && _value.type === "currency") {
@@ -183,14 +189,14 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
     setTxIsLoading(false);
   }, []);
 
-  const handleSetAccount = useCallback((acc: typeof accountOptions[0]) => {
-    setSelectedAccount(acc)
-    streamState.selectedAccount = acc
-  }, [])
+  const handleSetAccount = (acc: AccountOption) => {
+    setSelectedAccount(acc);
+    streamState.selectedAccount = acc;
+  };
 
   const usualFields = ["TransactionType", "Amount", "Account", "Destination"];
   const otherFields = Object.keys(txFields).filter(
-    (k) => !usualFields.includes(k)
+    k => !usualFields.includes(k)
   ) as OtherFields;
   return (
     <Box css={{ position: "relative", height: "calc(100% - 28px)" }} {...props}>
@@ -223,7 +229,7 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
               hideSelectedOptions
               css={{ width: "70%" }}
               value={selectedTransaction}
-              onChange={(tt) => setSelectedTransaction(tt as any)}
+              onChange={(tt: any) => setSelectedTransaction(tt)}
             />
           </Flex>
           <Flex
@@ -245,7 +251,7 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
               css={{ width: "70%" }}
               options={accountOptions}
               value={selectedAccount}
-              onChange={acc => handleSetAccount(acc as any)}
+              onChange={(acc: any) => handleSetAccount(acc)} // TODO make react-select have correct types for acc
             />
           </Flex>
           {txFields.Amount !== undefined && (
@@ -264,7 +270,7 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
               </Text>
               <Input
                 value={txFields.Amount.value}
-                onChange={(e) =>
+                onChange={e =>
                   setTxFields({
                     ...txFields,
                     Amount: { type: "currency", value: e.target.value },
@@ -295,11 +301,11 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
                 options={destAccountOptions}
                 value={selectedDestAccount}
                 isClearable
-                onChange={(acc) => setSelectedDestAccount(acc as any)}
+                onChange={(acc: any) => setSelectedDestAccount(acc)}
               />
             </Flex>
           )}
-          {otherFields.map((field) => {
+          {otherFields.map(field => {
             let _value = txFields[field];
             let value = typeof _value === "object" ? _value.value : _value;
             value =
@@ -325,7 +331,7 @@ const Transaction: FC<Props> = ({ header, ...props }) => {
                 </Text>
                 <Input
                   value={value}
-                  onChange={(e) =>
+                  onChange={e =>
                     setTxFields({
                       ...txFields,
                       [field]:
@@ -382,7 +388,7 @@ const Test = () => {
         gutterSize={4}
         gutterAlign="center"
         style={{ height: "calc(100vh - 60px)" }}
-        onDragEnd={(e) => saveSplit("testVertical", e)}
+        onDragEnd={e => saveSplit("testVertical", e)}
       >
         <Flex
           row
@@ -404,21 +410,19 @@ const Test = () => {
               width: "100%",
               height: "100%",
             }}
-            onDragEnd={(e) => saveSplit("testHorizontal", e)}
+            onDragEnd={e => saveSplit("testHorizontal", e)}
           >
             <Box css={{ width: "55%", px: "$2" }}>
               <Tabs
                 keepAllAlive
                 forceDefaultExtension
                 defaultExtension=".json"
-                onCreateNewTab={(name) =>
-                  setTabHeaders(tabHeaders.concat(name))
-                }
-                onCloseTab={(index) =>
+                onCreateNewTab={name => setTabHeaders(tabHeaders.concat(name))}
+                onCloseTab={index =>
                   setTabHeaders(tabHeaders.filter((_, idx) => idx !== index))
                 }
               >
-                {tabHeaders.map((header) => (
+                {tabHeaders.map(header => (
                   <Tab key={header} header={header}>
                     <Transaction header={header} />
                   </Tab>
