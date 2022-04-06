@@ -2,8 +2,6 @@ import { Octokit } from "@octokit/core";
 import Router from "next/router";
 import state from '../index';
 import { templateFileIds } from '../constants';
-import { hookapiH, hookmacroH, sfcodesH } from '../constants/headerTemplates';
-
 
 const octokit = new Octokit();
 
@@ -20,18 +18,29 @@ export const fetchFiles = (gistId: string) => {
 
     octokit
       .request("GET /gists/{gist_id}", { gist_id: gistId })
-      .then(res => {
+      .then(async res => {
         if (!Object.values(templateFileIds).includes(gistId)) {
           return res
         }
         // in case of templates, fetch header file(s) and append to res
+        let resHeaderJson;
+        try {
+          const resHeader = await fetch(`${process.env.NEXT_PUBLIC_COMPILE_API_BASE_URL}/api/header-files`);
+          if (resHeader.ok) {
+            resHeaderJson = await resHeader.json();
+          }
+        } catch (err) {
+          console.log(err)
+        }
+
         const files = {
           ...res.data.files,
-          'hookapi.h': res.data.files?.['hookapi.h'] || { filename: 'hookapi.h', content: hookapiH, language: 'C' },
-          'hookmacro.h': res.data.files?.['hookmacro.h'] || { filename: 'hookmacro.h', content: hookmacroH, language: 'C' },
-          'sfcodes.h': res.data.files?.['sfcodes.h'] || { filename: 'sfcodes.h', content: sfcodesH, language: 'C' },
+          'hookapi.h': res.data.files?.['hookapi.h'] || { filename: 'hookapi.h', content: resHeaderJson.hookapi, language: 'C' },
+          'hookmacro.h': res.data.files?.['hookmacro.h'] || { filename: 'hookmacro.h', content: resHeaderJson.hookmacro, language: 'C' },
+          'sfcodes.h': res.data.files?.['sfcodes.h'] || { filename: 'sfcodes.h', content: resHeaderJson.sfcodes, language: 'C' },
         };
         res.data.files = files;
+
         return res;
         // If you want to load templates from GIST instad, uncomment the code below and comment the code above.
         // return octokit.request("GET /gists/{gist_id}", { gist_id: templateFileIds.headers }).then(({ data: { files: headerFiles } }) => {
