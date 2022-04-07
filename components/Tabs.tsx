@@ -29,7 +29,7 @@ interface TabProps {
   children: ReactNode;
 }
 
-// TODO customise strings shown
+// TODO customise messages shown
 interface Props {
   activeIndex?: number;
   activeHeader?: string;
@@ -107,7 +107,7 @@ export const Tabs = ({
     setActive(tabs.length);
 
     onCreateNewTab?.(_tabname);
-  }, [tabname, defaultExtension, validateTabname, onCreateNewTab, tabs.length]);
+  }, [tabname, defaultExtension, forceDefaultExtension, validateTabname, tabs.length, onCreateNewTab]);
 
   const handleCloseTab = useCallback(
     (idx: number) => {
