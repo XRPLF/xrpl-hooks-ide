@@ -18,6 +18,7 @@ export const transactionsState = proxy({
             state: defaultTransaction,
         },
     ],
+    activeHeader: "test1.json"
 });
 
 /**

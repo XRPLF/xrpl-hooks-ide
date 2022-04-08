@@ -40,6 +40,7 @@ interface Props {
   forceDefaultExtension?: boolean;
   onCreateNewTab?: (name: string) => any;
   onCloseTab?: (index: number, header?: string) => any;
+  onChangeActive?: (index: number, header?: string) => any;
 }
 
 export const Tab = (props: TabProps) => null;
@@ -52,11 +53,12 @@ export const Tabs = ({
   keepAllAlive = false,
   onCreateNewTab,
   onCloseTab,
+  onChangeActive,
   defaultExtension = "",
   forceDefaultExtension,
 }: Props) => {
   const [active, setActive] = useState(activeIndex || 0);
-  const tabs: TabProps[] = children.map((elem) => elem.props);
+  const tabs: TabProps[] = children.map(elem => elem.props);
 
   const [isNewtabDialogOpen, setIsNewtabDialogOpen] = useState(false);
   const [tabname, setTabname] = useState("");
@@ -68,8 +70,9 @@ export const Tabs = ({
 
   useEffect(() => {
     if (activeHeader) {
-      const idx = tabs.findIndex((tab) => tab.header === activeHeader);
-      setActive(idx);
+      const idx = tabs.findIndex(tab => tab.header === activeHeader);
+      if (idx !== -1) setActive(idx);
+      else setActive(0);
     }
   }, [activeHeader, tabs]);
 
@@ -80,12 +83,20 @@ export const Tabs = ({
 
   const validateTabname = useCallback(
     (tabname: string): { error: string | null } => {
-      if (tabs.find((tab) => tab.header === tabname)) {
+      if (tabs.find(tab => tab.header === tabname)) {
         return { error: "Name already exists." };
       }
       return { error: null };
     },
     [tabs]
+  );
+
+  const handleActiveChange = useCallback(
+    (idx: number, header?: string) => {
+      setActive(idx);
+      onChangeActive?.(idx, header);
+    },
+    [onChangeActive]
   );
 
   const handleCreateTab = useCallback(() => {
@@ -103,11 +114,20 @@ export const Tabs = ({
 
     setIsNewtabDialogOpen(false);
     setTabname("");
-    // switch to new tab?
-    setActive(tabs.length);
 
     onCreateNewTab?.(_tabname);
-  }, [tabname, defaultExtension, forceDefaultExtension, validateTabname, tabs.length, onCreateNewTab]);
+
+    // switch to new tab?
+    handleActiveChange(tabs.length, _tabname);
+  }, [
+    tabname,
+    defaultExtension,
+    forceDefaultExtension,
+    validateTabname,
+    onCreateNewTab,
+    handleActiveChange,
+    tabs.length,
+  ]);
 
   const handleCloseTab = useCallback(
     (idx: number) => {
@@ -138,8 +158,8 @@ export const Tabs = ({
               key={tab.header}
               role="tab"
               tabIndex={idx}
-              onClick={() => setActive(idx)}
-              onKeyPress={() => setActive(idx)}
+              onClick={() => handleActiveChange(idx, tab.header)}
+              onKeyPress={() => handleActiveChange(idx, tab.header)}
               outline={active !== idx}
               size="sm"
               css={{
@@ -195,8 +215,8 @@ export const Tabs = ({
                   <Label>Tabname</Label>
                   <Input
                     value={tabname}
-                    onChange={(e) => setTabname(e.target.value)}
-                    onKeyPress={(e) => {
+                    onChange={e => setTabname(e.target.value)}
+                    onKeyPress={e => {
                       if (e.key === "Enter") {
                         handleCreateTab();
                       }

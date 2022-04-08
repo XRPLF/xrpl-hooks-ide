@@ -5,7 +5,7 @@ import { Box, Container, Flex, Tab, Tabs } from "../../components";
 import Transaction from "../../components/Transaction";
 import state from "../../state";
 import { getSplit, saveSplit } from "../../state/actions/persistSplits";
-import { transactionsState, modifyTransaction } from '../../state';
+import { transactionsState, modifyTransaction } from "../../state";
 
 const DebugStream = dynamic(() => import("../../components/DebugStream"), {
   ssr: false,
@@ -20,7 +20,7 @@ const Accounts = dynamic(() => import("../../components/Accounts"), {
 
 const Test = () => {
   const { transactionLogs } = useSnapshot(state);
-  const { transactions } = useSnapshot(transactionsState);
+  const { transactions, activeHeader } = useSnapshot(transactionsState);
   return (
     <Container css={{ px: 0 }}>
       <Split
@@ -55,13 +55,17 @@ const Test = () => {
           >
             <Box css={{ width: "55%", px: "$2" }}>
               <Tabs
+                activeHeader={activeHeader}
+                // TODO make header a required field
+                onChangeActive={(idx, header) => {
+                  if (header) transactionsState.activeHeader = header;
+                }}
                 keepAllAlive
                 forceDefaultExtension
                 defaultExtension=".json"
                 onCreateNewTab={header => modifyTransaction(header, {})}
-                onCloseTab={
-                  (idx, header) =>
-                    header && modifyTransaction(header, undefined) // TODO header should be a required field
+                onCloseTab={(idx, header) =>
+                  header && modifyTransaction(header, undefined)
                 }
               >
                 {transactions.map(({ header, state }) => (
