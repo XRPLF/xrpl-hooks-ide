@@ -1,11 +1,11 @@
 import dynamic from "next/dynamic";
 import Split from "react-split";
-import { proxy, useSnapshot } from "valtio";
+import { useSnapshot } from "valtio";
 import { Box, Container, Flex, Tab, Tabs } from "../../components";
-import Transaction, { TransactionState } from "../../components/Transaction";
+import Transaction from "../../components/Transaction";
 import state from "../../state";
 import { getSplit, saveSplit } from "../../state/actions/persistSplits";
-import { deepEqual } from "../../utils/object";
+import { transactionsState, modifyTransaction } from '../../state';
 
 const DebugStream = dynamic(() => import("../../components/DebugStream"), {
   ssr: false,
@@ -18,64 +18,9 @@ const Accounts = dynamic(() => import("../../components/Accounts"), {
   ssr: false,
 });
 
-const defaultTransaction: TransactionState = {
-  selectedTransaction: null,
-  selectedAccount: null,
-  selectedDestAccount: null,
-  txIsLoading: false,
-  txIsDisabled: false,
-  txFields: {},
-};
-
-const testState = proxy({
-  transactions: [
-    {
-      header: "test1.json",
-      state: defaultTransaction,
-    },
-  ],
-});
-
-/**
- * Simple transaction state changer
- * @param header Unique key and tab name for the transaction tab
- * @param partialTx partial transaction state, `{}` resets the state and `undefined` deletes the transaction
- */
-const modifyTransaction = (
-  header: string,
-  partialTx?: Partial<TransactionState>
-) => {
-  const tx = testState.transactions.find(tx => tx.header === header);
-
-  if (partialTx === undefined) {
-    testState.transactions = testState.transactions.filter(
-      tx => tx.header !== header
-    );
-    return;
-  }
-
-  if (!tx) {
-    testState.transactions.push({
-      header,
-      state: {
-        ...defaultTransaction,
-        ...partialTx,
-      },
-    });
-    return;
-  }
-
-  Object.keys(partialTx).forEach(k => {
-    // Typescript mess here, but is definetly safe!
-    const s = tx.state as any;
-    const p = partialTx as any;
-    if (!deepEqual(s[k], p[k])) s[k] = p[k];
-  });
-};
-
 const Test = () => {
   const { transactionLogs } = useSnapshot(state);
-  const { transactions } = useSnapshot(testState);
+  const { transactions } = useSnapshot(transactionsState);
   return (
     <Container css={{ px: 0 }}>
       <Split
