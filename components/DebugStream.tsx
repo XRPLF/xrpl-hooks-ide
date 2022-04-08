@@ -140,10 +140,10 @@ const DebugStream = () => {
       tx => tx.header === activeTxTab
     )?.state.selectedAccount;
 
-    if (account && account.value !== selectedAccount?.value)
+    if (account && account.value !== streamState.selectedAccount?.value)
       streamState.selectedAccount = account;
-  }, [activeTxTab, selectedAccount?.value]);
-  
+  }, [activeTxTab]);
+
   return (
     <LogBox
       enhanced
