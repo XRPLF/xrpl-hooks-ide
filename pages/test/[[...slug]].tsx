@@ -21,6 +21,7 @@ const Accounts = dynamic(() => import("../../components/Accounts"), {
 const Test = () => {
   const { transactionLogs } = useSnapshot(state);
   const { transactions, activeHeader } = useSnapshot(transactionsState);
+
   return (
     <Container css={{ px: 0 }}>
       <Split
@@ -73,7 +74,6 @@ const Test = () => {
                     <Transaction
                       state={state}
                       header={header}
-                      setState={pTx => modifyTransaction(header, pTx)}
                     />
                   </Tab>
                 ))}

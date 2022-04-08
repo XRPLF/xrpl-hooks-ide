@@ -2,7 +2,7 @@ import { Play } from "phosphor-react";
 import { FC, useCallback, useEffect } from "react";
 import { useSnapshot } from "valtio";
 import transactionsData from "../content/transactions.json";
-import state from "../state";
+import state, { modifyTransaction } from "../state";
 import { sendTransaction } from "../state/actions";
 import Box from "./Box";
 import Button from "./Button";
@@ -35,9 +35,8 @@ export interface TransactionState {
 }
 
 export interface TransactionProps {
-  header?: string;
+  header: string;
   state: TransactionState;
-  setState: (p?: Partial<TransactionState>) => void;
 }
 
 const Transaction: FC<TransactionProps> = ({
@@ -50,10 +49,16 @@ const Transaction: FC<TransactionProps> = ({
     txIsDisabled,
     txIsLoading,
   },
-  setState,
   ...props
 }) => {
   const { accounts } = useSnapshot(state);
+
+  const setState = useCallback(
+    (pTx?: Partial<TransactionState>) => {
+      modifyTransaction(header, pTx);
+    },
+    [header]
+  );
 
   const transactionsOptions = transactionsData.map(tx => ({
     value: tx.TransactionType,
