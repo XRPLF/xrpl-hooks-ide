@@ -4,7 +4,7 @@ export { default as Container } from "./Container";
 export { default as Heading } from "./Heading";
 export { default as Stack } from "./Stack";
 export { default as Text } from "./Text";
-export { default as Input } from "./Input";
+export { default as Input, Label } from "./Input";
 export { default as Select } from "./Select";
 export * from "./Tabs";
 export * from "./AlertDialog";

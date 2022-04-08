@@ -19,6 +19,7 @@
     "@radix-ui/react-dialog": "^0.1.1",
     "@radix-ui/react-dropdown-menu": "^0.1.1",
     "@radix-ui/react-id": "^0.1.1",
+    "@radix-ui/react-label": "^0.1.5",
     "@radix-ui/react-tooltip": "^0.1.7",
     "@stitches/react": "^1.2.6-0",
     "base64-js": "^1.5.1",

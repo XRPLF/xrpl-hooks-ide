@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from "react";
 import type { ReactNode, ReactElement } from "react";
-import { Box, Button, Flex, Input, Stack, Text } from ".";
+import { Box, Button, Flex, Input, Label, Stack, Text } from ".";
 import {
   Dialog,
   DialogTrigger,
@@ -128,7 +128,7 @@ export const Tabs = ({
             gap: "$3",
             flex: 1,
             flexWrap: "nowrap",
-            marginBottom: "-1px",
+            marginBottom: "$2",
             width: "100%",
             overflow: "auto",
           }}
@@ -192,7 +192,7 @@ export const Tabs = ({
               <DialogContent>
                 <DialogTitle>Create new tab</DialogTitle>
                 <DialogDescription>
-                  <label>Tabname</label>
+                  <Label>Tabname</Label>
                   <Input
                     value={tabname}
                     onChange={(e) => setTabname(e.target.value)}

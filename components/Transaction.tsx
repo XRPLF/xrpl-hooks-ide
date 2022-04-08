@@ -54,7 +54,6 @@ const Transaction: FC<TransactionProps> = ({
   ...props
 }) => {
   const { accounts } = useSnapshot(state);
-  console.log("Transaction");
 
   const transactionsOptions = transactionsData.map(tx => ({
     value: tx.TransactionType,
@@ -92,7 +91,7 @@ const Transaction: FC<TransactionProps> = ({
     if (!_txFields) return setState({ txFields: {} });
     _txFields = { ..._txFields } as TxFields;
 
-    if (!_txFields.Destination) setState({ selectedDestAccount: null })
+    if (!_txFields.Destination) setState({ selectedDestAccount: null });
     // @ts-ignore
     delete _txFields.TransactionType;
     // @ts-ignore
@@ -266,7 +265,7 @@ const Transaction: FC<TransactionProps> = ({
                     },
                   })
                 }
-                css={{ width: "70%", flex: "inherit", height: "$9" }}
+                css={{ width: "70%", flex: "inherit" }}
               />
             </Flex>
           )}
@@ -332,7 +331,7 @@ const Transaction: FC<TransactionProps> = ({
                       },
                     })
                   }
-                  css={{ width: "70%", flex: "inherit", height: "$9" }}
+                  css={{ width: "70%", flex: "inherit" }}
                 />
               </Flex>
             );

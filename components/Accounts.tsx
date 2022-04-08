@@ -18,7 +18,7 @@ import {
   DialogTrigger,
 } from "./Dialog";
 import { css } from "../stitches.config";
-import { Input } from "./Input";
+import { Input, Label } from "./Input";
 import truncate from "../utils/truncate";
 
 const labelStyle = css({
@@ -491,7 +491,7 @@ const ImportAccountDialog = () => {
       <DialogContent>
         <DialogTitle>Import account</DialogTitle>
         <DialogDescription>
-          <label>Add account secret</label>
+          <Label>Add account secret</Label>
           <Input
             name="secret"
             type="password"

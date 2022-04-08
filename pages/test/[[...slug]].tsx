@@ -76,7 +76,6 @@ const modifyTransaction = (
 const Test = () => {
   const { transactionLogs } = useSnapshot(state);
   const { transactions } = useSnapshot(testState);
-  console.log("Test");
   return (
     <Container css={{ px: 0 }}>
       <Split
