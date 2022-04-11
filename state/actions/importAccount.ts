@@ -16,7 +16,11 @@ export const importAccount = (secret: string) => {
   try {
     account = derive.familySeed(secret);
   } catch (err: any) {
-    toast.error(err.message)
+    if (err?.message) {
+      toast.error(err.message)
+    } else {
+      toast.error('Error occured while importing account')
+    }
     return;
   }
   if (!account || !account.secret.familySeed) {
