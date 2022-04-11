@@ -1,5 +1,5 @@
 import toast from "react-hot-toast";
-import { derive } from "xrpl-accountlib";
+import { derive, XRPL_Account } from "xrpl-accountlib";
 
 import state from '../index';
 import { names } from './addFaucetAccount';
@@ -12,8 +12,18 @@ export const importAccount = (secret: string) => {
   if (state.accounts.find((acc) => acc.secret === secret)) {
     return toast.error("Account already added!");
   }
-  const account = derive.familySeed(secret);
-  if (!account.secret.familySeed) {
+  let account: XRPL_Account | null = null;
+  try {
+    account = derive.familySeed(secret);
+  } catch (err: any) {
+    if (err?.message) {
+      toast.error(err.message)
+    } else {
+      toast.error('Error occured while importing account')
+    }
+    return;
+  }
+  if (!account || !account.secret.familySeed) {
     return toast.error(`Couldn't create account!`);
   }
   state.accounts.push({
