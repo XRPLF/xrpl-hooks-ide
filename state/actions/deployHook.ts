@@ -66,9 +66,7 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
   if (!state.client) {
     return;
   }
-  const HookNamespace = await hash(arrayBufferToHex(
-    state.files?.[state.active]?.compiledContent
-  ).toUpperCase());
+  const HookNamespace = (await hash(data.HookNamespace)).toUpperCase();
   const hookOnValues: (keyof TTS)[] = data.Invoke.map(tt => tt.value);
   const { HookParameters } = data;
   const filteredHookParameters = HookParameters.filter(hp => hp.HookParameter.HookParameterName && hp.HookParameter.HookParameterValue)?.map(aa => ({ HookParameter: { HookParameterName: toHex(aa.HookParameter.HookParameterName || ''), HookParameterValue: toHex(aa.HookParameter.HookParameterValue || '') } }));
