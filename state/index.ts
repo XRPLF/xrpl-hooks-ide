@@ -41,7 +41,8 @@ export interface ILog {
   type: "error" | "warning" | "log" | "success";
   message: string;
   jsonData?: any,
-  timestamp?: string;
+  timestring?: string;
+  timestamp?: number;
   link?: string;
   linkText?: string;
   defaultCollapsed?: boolean

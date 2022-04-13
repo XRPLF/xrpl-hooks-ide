@@ -10,10 +10,17 @@ interface ISelect<T = string> {
   value: T;
 }
 
-export const streamState = proxy({
+export interface IStreamState {
+  selectedAccount: ISelect | null;
+  status: "idle" | "opened" | "closed";
+  logs: ILog[];
+  socket?: WebSocket;
+}
+
+export const streamState = proxy<IStreamState>({
   selectedAccount: null as ISelect | null,
+  status: "idle",
   logs: [] as ILog[],
-  socket: undefined as WebSocket | undefined,
 });
 
 const DebugStream = () => {
@@ -40,33 +47,6 @@ const DebugStream = () => {
     </>
   );
 
-  const prepareLog = useCallback((str: any): ILog => {
-    if (typeof str !== "string") throw Error("Unrecognized debug log stream!");
-
-    const match = str.match(/([\s\S]+(?:UTC|ISO|GMT[+|-]\d+))\ ?([\s\S]*)/m);
-    const [_, tm, msg] = match || [];
-
-    const extracted = extractJSON(msg);
-    const timestamp = isNaN(Date.parse(tm || ""))
-      ? tm
-      : new Date(tm).toLocaleTimeString();
-
-    const message = !extracted
-      ? msg
-      : msg.slice(0, extracted.start) + msg.slice(extracted.end + 1);
-
-    const jsonData = extracted
-      ? JSON.stringify(extracted.result, null, 2)
-      : undefined;
-    return {
-      type: "log",
-      message,
-      timestamp,
-      jsonData,
-      defaultCollapsed: true,
-    };
-  }, []);
-
   useEffect(() => {
     const account = selectedAccount?.value;
     if (account && (!socket || !socket.url.endsWith(account))) {
@@ -82,6 +62,44 @@ const DebugStream = () => {
     }
   }, [selectedAccount?.value, socket]);
 
+  const onMount = useCallback(async () => {
+    // deliberately using `proxy` values and not the `useSnapshot` ones to have no dep list
+    const acc = streamState.selectedAccount;
+    const status = streamState.status;
+    const lst = streamState.logs[streamState.logs.length - 1]?.timestamp;
+
+    if (status === "opened" && acc) {
+      // fetch the missing ones
+      try {
+        const url = `https://${process.env.NEXT_PUBLIC_DEBUG_STREAM_URL}/recent/${acc?.value}`;
+
+        // TODO Remove after api sets cors properly
+        const res = await fetch("/api/proxy", {
+          method: "POST",
+          body: JSON.stringify({ url }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!res.ok) return;
+
+        const body = await res.json();
+
+        Object.entries(body.logs)
+          .filter(([time, log]) => +time >= (lst || Infinity))
+          .forEach(([time, log]) => pushLog(log));
+        
+      } catch (error) {
+        console.warn(error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    onMount();
+  }, [onMount]);
+
   useEffect(() => {
     const account = selectedAccount?.value;
     const socket = streamState.socket;
@@ -89,37 +107,25 @@ const DebugStream = () => {
 
     const onOpen = () => {
       streamState.logs = [];
-      streamState.logs.push({
+      streamState.status = "opened";
+      pushLog(`Debug stream opened for account ${account}`, {
         type: "success",
-        message: `Debug stream opened for account ${account}`,
       });
     };
     const onError = () => {
-      streamState.logs.push({
+      pushLog("Something went wrong! Check your connection and try again.", {
         type: "error",
-        message: "Something went wrong! Check your connection and try again.",
       });
     };
     const onClose = (e: CloseEvent) => {
-      streamState.logs.push({
+      pushLog(`Connection was closed. [code: ${e.code}]`, {
         type: "error",
-        message: `Connection was closed. [code: ${e.code}]`,
       });
       streamState.selectedAccount = null;
+      streamState.status = "closed";
     };
     const onMessage = (event: any) => {
-      if (!event.data) return;
-      const log = prepareLog(event.data);
-      // Filter out account_info and account_objects requests
-      try {
-        const parsed = JSON.parse(log.jsonData);
-        if (parsed?.id?._Request?.includes("hooks-builder-req")) {
-          return;
-        }
-      } catch (err) {
-        // Lets just skip if we cannot parse the message
-      }
-      return streamState.logs.push(log);
+      pushLog(event.data);
     };
 
     socket.addEventListener("open", onOpen);
@@ -133,7 +139,7 @@ const DebugStream = () => {
       socket.removeEventListener("message", onMessage);
       socket.removeEventListener("error", onError);
     };
-  }, [prepareLog, selectedAccount?.value, socket]);
+  }, [selectedAccount?.value, socket]);
 
   useEffect(() => {
     const account = transactionsState.transactions.find(
@@ -156,3 +162,45 @@ const DebugStream = () => {
 };
 
 export default DebugStream;
+
+export const pushLog = (
+  str: any,
+  opts: { type?: ILog["type"] } = {}
+): ILog | undefined => {
+  if (!str) return;
+  if (typeof str !== "string") throw Error("Unrecognized debug log stream!");
+
+  const timestamp = Date.now();
+
+  const match = str.match(/([\s\S]+(?:UTC|ISO|GMT[+|-]\d+))?\ ?([\s\S]*)/m);
+  const [_, tm, msg] = match || [];
+
+  const ts = Date.parse(tm || "");
+  const timestring = isNaN(ts) ? tm : new Date(tm).toLocaleTimeString();
+
+  const extracted = extractJSON(msg);
+  const message = !extracted
+    ? msg
+    : msg.slice(0, extracted.start) + msg.slice(extracted.end + 1);
+
+  const jsonData = extracted
+    ? JSON.stringify(extracted.result, null, 2)
+    : undefined;
+
+  if (extracted?.result?.id?._Request?.includes("hooks-builder-req")) {
+    return;
+  }
+
+  const { type = "log" } = opts;
+  const log: ILog = {
+    type,
+    message,
+    timestring,
+    jsonData,
+    timestamp,
+    defaultCollapsed: true,
+  };
+
+  if (log) streamState.logs.push(log);
+  return log;
+};

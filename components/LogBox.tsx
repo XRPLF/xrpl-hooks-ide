@@ -147,7 +147,7 @@ const LogBox: FC<ILogBox> = ({
 
 export const Log: FC<ILog> = ({
   type,
-  timestamp: timestamp,
+  timestring,
   message: _message,
   link,
   linkText,
@@ -197,9 +197,9 @@ export const Log: FC<ILog> = ({
         activeAccountAddress={dialogAccount}
       />
       <LogText variant={type}>
-        {timestamp && (
+        {timestring && (
           <Text muted monospace>
-            {timestamp}{" "}
+            {timestring}{" "}
           </Text>
         )}
         <Pre>{message} </Pre>
