@@ -4,6 +4,7 @@ import { Select } from ".";
 import state, { ILog, transactionsState } from "../state";
 import { extractJSON } from "../utils/json";
 import LogBox from "./LogBox";
+import { parse } from "date-format-parse";
 
 interface ISelect<T = string> {
   label: string;
@@ -66,7 +67,6 @@ const DebugStream = () => {
     // deliberately using `proxy` values and not the `useSnapshot` ones to have no dep list
     const acc = streamState.selectedAccount;
     const status = streamState.status;
-    const lst = streamState.logs[streamState.logs.length - 1]?.timestamp;
 
     if (status === "opened" && acc) {
       // fetch the missing ones
@@ -86,10 +86,12 @@ const DebugStream = () => {
 
         const body = await res.json();
 
-        Object.entries(body.logs)
-          .filter(([time, log]) => +time >= (lst || Infinity))
-          .forEach(([time, log]) => pushLog(log));
-        
+        if (!body?.logs.length) return
+        streamState.logs = [];
+        pushLog(`Debug stream opened for account ${acc.value}`, {
+          type: "success",
+        });
+        Object.values(body.logs).forEach(log => pushLog(log));
       } catch (error) {
         console.warn(error);
       }
@@ -165,18 +167,19 @@ export default DebugStream;
 
 export const pushLog = (
   str: any,
-  opts: { type?: ILog["type"] } = {}
+  opts: Partial<Pick<ILog, "type">> = {}
 ): ILog | undefined => {
   if (!str) return;
   if (typeof str !== "string") throw Error("Unrecognized debug log stream!");
 
-  const timestamp = Date.now();
-
   const match = str.match(/([\s\S]+(?:UTC|ISO|GMT[+|-]\d+))?\ ?([\s\S]*)/m);
   const [_, tm, msg] = match || [];
 
-  const ts = Date.parse(tm || "");
-  const timestring = isNaN(ts) ? tm : new Date(tm).toLocaleTimeString();
+  const timestamp =
+    Date.parse(tm || "") ||
+    parse(tm, "YYYY-MMM-DD HH:MM:ss.SSSSSSSSS").valueOf() ||
+    Date.now();
+  const timestring = new Date(timestamp).toLocaleTimeString();
 
   const extracted = extractJSON(msg);
   const message = !extracted
@@ -197,7 +200,6 @@ export const pushLog = (
     message,
     timestring,
     jsonData,
-    timestamp,
     defaultCollapsed: true,
   };
 

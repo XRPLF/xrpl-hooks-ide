@@ -40,9 +40,9 @@ export interface IAccount {
 export interface ILog {
   type: "error" | "warning" | "log" | "success";
   message: string;
+  key?: string;
   jsonData?: any,
   timestring?: string;
-  timestamp?: number;
   link?: string;
   linkText?: string;
   defaultCollapsed?: boolean
