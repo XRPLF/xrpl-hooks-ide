@@ -36,6 +36,7 @@ export type SetHookData = {
     value: keyof TTS;
     label: string;
   }[];
+  HookNamespace: string;
   HookParameters: {
     HookParameter: {
       HookParameterName: string;
@@ -57,7 +58,7 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
     register,
     handleSubmit,
     control,
-    // formState: { errors },
+    formState: { errors },
   } = useForm<SetHookData>();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -128,6 +129,20 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
                     />
                   )}
                 />
+              </Box>
+              <Box css={{ width: "100%" }}>
+                <label>Hook Namespace</label>
+                <Input
+                  {...register("HookNamespace", { required: true })}
+                  defaultValue={
+                    snap.files?.[snap.active]?.name?.split(".")?.[0] || ""
+                  }
+                />
+                {errors.HookNamespace?.type === "required" && (
+                  <Box css={{ display: "inline", color: "$red11" }}>
+                    Namespace is required
+                  </Box>
+                )}
               </Box>
               <Box css={{ width: "100%" }}>
                 <label style={{ marginBottom: "10px", display: "block" }}>
