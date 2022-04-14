@@ -4,7 +4,6 @@ import { Select } from ".";
 import state, { ILog, transactionsState } from "../state";
 import { extractJSON } from "../utils/json";
 import LogBox from "./LogBox";
-import { parse } from "date-format-parse";
 
 interface ISelect<T = string> {
   label: string;
@@ -86,7 +85,7 @@ const DebugStream = () => {
 
         const body = await res.json();
 
-        if (!body?.logs.length) return
+        if (!body?.logs.length) return;
         streamState.logs = [];
         pushLog(`Debug stream opened for account ${acc.value}`, {
           type: "success",
@@ -175,11 +174,8 @@ export const pushLog = (
   const match = str.match(/([\s\S]+(?:UTC|ISO|GMT[+|-]\d+))?\ ?([\s\S]*)/m);
   const [_, tm, msg] = match || [];
 
-  const timestamp =
-    Date.parse(tm || "") ||
-    parse(tm, "YYYY-MMM-DD HH:MM:ss.SSSSSSSSS").valueOf() ||
-    Date.now();
-  const timestring = new Date(timestamp).toLocaleTimeString();
+  const timestamp = Date.parse(tm || "") || undefined;
+  const timestring = !timestamp ? tm : new Date(timestamp).toLocaleTimeString();
 
   const extracted = extractJSON(msg);
   const message = !extracted

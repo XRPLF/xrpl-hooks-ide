@@ -23,7 +23,6 @@
     "@radix-ui/react-tooltip": "^0.1.7",
     "@stitches/react": "^1.2.6-0",
     "base64-js": "^1.5.1",
-    "date-format-parse": "^0.2.7",
     "dinero.js": "^1.9.1",
     "file-saver": "^2.0.5",
     "filesize": "^8.0.7",
