@@ -28,18 +28,19 @@ export const fetchFiles = (gistId: string) => {
           const resHeader = await fetch(`${process.env.NEXT_PUBLIC_COMPILE_API_BASE_URL}/api/header-files`);
           if (resHeader.ok) {
             resHeaderJson = await resHeader.json();
+            const files = {
+              ...res.data.files,
+              'hookapi.h': res.data.files?.['hookapi.h'] || { filename: 'hookapi.h', content: resHeaderJson.hookapi, language: 'C' },
+              'hookmacro.h': res.data.files?.['hookmacro.h'] || { filename: 'hookmacro.h', content: resHeaderJson.hookmacro, language: 'C' },
+              'sfcodes.h': res.data.files?.['sfcodes.h'] || { filename: 'sfcodes.h', content: resHeaderJson.sfcodes, language: 'C' },
+            };
+            res.data.files = files;
           }
         } catch (err) {
           console.log(err)
         }
 
-        const files = {
-          ...res.data.files,
-          'hookapi.h': res.data.files?.['hookapi.h'] || { filename: 'hookapi.h', content: resHeaderJson.hookapi, language: 'C' },
-          'hookmacro.h': res.data.files?.['hookmacro.h'] || { filename: 'hookmacro.h', content: resHeaderJson.hookmacro, language: 'C' },
-          'sfcodes.h': res.data.files?.['sfcodes.h'] || { filename: 'sfcodes.h', content: resHeaderJson.sfcodes, language: 'C' },
-        };
-        res.data.files = files;
+
 
         return res;
         // If you want to load templates from GIST instad, uncomment the code below and comment the code above.
