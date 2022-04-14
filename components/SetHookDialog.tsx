@@ -61,7 +61,11 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
     control,
     watch,
     formState: { errors },
-  } = useForm<SetHookData>();
+  } = useForm<SetHookData>({
+    defaultValues: {
+      HookNamespace: snap.files?.[snap.active]?.name?.split(".")?.[0] || "",
+    },
+  });
   const { fields, append, remove } = useFieldArray({
     control,
     name: "HookParameters", // unique name for your Field Array
@@ -75,8 +79,16 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
   //   name: "HookGrants", // unique name for your Field Array
   // });
   const [hashedNamespace, setHashedNamespace] = useState("");
-  const namespace = watch("HookNamespace");
+  const namespace = watch(
+    "HookNamespace",
+    snap.files?.[snap.active]?.name?.split(".")?.[0] || ""
+  );
   const calculateHashedValue = useCallback(async () => {
+    console.log(
+      "-->",
+      namespace,
+      snap.files?.[snap.active]?.name?.split(".")?.[0]
+    );
     const hashedVal = await sha256(namespace);
     setHashedNamespace(hashedVal.toUpperCase());
   }, [namespace]);
@@ -144,9 +156,10 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
                 />
               </Box>
               <Box css={{ width: "100%" }}>
-                <label>Hook Namespace</label>
+                <label>Hook Namespace Seed</label>
                 <Input
                   {...register("HookNamespace", { required: true })}
+                  autoComplete={"off"}
                   defaultValue={
                     snap.files?.[snap.active]?.name?.split(".")?.[0] || ""
                   }
