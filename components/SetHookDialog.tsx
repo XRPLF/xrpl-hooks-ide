@@ -84,11 +84,6 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
     snap.files?.[snap.active]?.name?.split(".")?.[0] || ""
   );
   const calculateHashedValue = useCallback(async () => {
-    console.log(
-      "-->",
-      namespace,
-      snap.files?.[snap.active]?.name?.split(".")?.[0]
-    );
     const hashedVal = await sha256(namespace);
     setHashedNamespace(hashedVal.toUpperCase());
   }, [namespace]);
