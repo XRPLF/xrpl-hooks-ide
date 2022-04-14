@@ -86,18 +86,20 @@ const DebugStream = () => {
 
         const body = await res.json();
 
-        if (!body?.logs.length) return;
+        if (!body?.logs) return;
 
         const start = streamState.statusChangeTimestamp || 0;
         streamState.logs = [];
         pushLog(`Debug stream opened for account ${acc.value}`, {
           type: "success",
         });
-        Object.entries(body.logs)
+        
+        const logs = Object.entries(body.logs)
           .filter(([tm]) => +tm >= start)
-          .forEach(([tm, log]) => pushLog(log));
+
+        logs.forEach(([tm, log]) => pushLog(log));
       } catch (error) {
-        console.warn(error);
+        console.error(error);
       }
     }
   }, []);
