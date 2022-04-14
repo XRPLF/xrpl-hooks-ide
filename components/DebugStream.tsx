@@ -13,6 +13,7 @@ interface ISelect<T = string> {
 export interface IStreamState {
   selectedAccount: ISelect | null;
   status: "idle" | "opened" | "closed";
+  statusChangeTimestamp?: number;
   logs: ILog[];
   socket?: WebSocket;
 }
@@ -86,11 +87,15 @@ const DebugStream = () => {
         const body = await res.json();
 
         if (!body?.logs.length) return;
+
+        const start = streamState.statusChangeTimestamp || 0;
         streamState.logs = [];
         pushLog(`Debug stream opened for account ${acc.value}`, {
           type: "success",
         });
-        Object.values(body.logs).forEach(log => pushLog(log));
+        Object.entries(body.logs)
+          .filter(([tm]) => +tm >= start)
+          .forEach(([tm, log]) => pushLog(log));
       } catch (error) {
         console.warn(error);
       }
@@ -109,6 +114,7 @@ const DebugStream = () => {
     const onOpen = () => {
       streamState.logs = [];
       streamState.status = "opened";
+      streamState.statusChangeTimestamp = Date.now();
       pushLog(`Debug stream opened for account ${account}`, {
         type: "success",
       });
@@ -124,6 +130,7 @@ const DebugStream = () => {
       });
       streamState.selectedAccount = null;
       streamState.status = "closed";
+      streamState.statusChangeTimestamp = Date.now();
     };
     const onMessage = (event: any) => {
       pushLog(event.data);
