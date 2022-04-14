@@ -1,9 +1,10 @@
-import { derive, sign } from "xrpl-accountlib";
 import toast from "react-hot-toast";
-
-import state, { IAccount } from "../index";
-import calculateHookOn, { TTS } from "../../utils/hookOnCalculator";
+import { derive, sign } from "xrpl-accountlib";
+import { AnyJson } from "xrpl-client";
 import { SetHookData } from "../../components/SetHookDialog";
+import calculateHookOn, { TTS } from "../../utils/hookOnCalculator";
+import state, { IAccount } from "../index";
+
 
 export const sha256 = async (string: string) => {
   const utf8 = new TextEncoder().encode(string);
@@ -51,19 +52,22 @@ function arrayBufferToHex(arrayBuffer?: ArrayBuffer | null) {
  * hex string, signs the transaction and deploys it to
  * Hooks testnet.
  */
-export const deployHook = async (account: IAccount & { name?: string }, data: SetHookData) => {
+export const deployHook = async (account: IAccount & { name?: string }, data: SetHookData): Promise<AnyJson | undefined> => {
   if (
     !state.files ||
     state.files.length === 0 ||
     !state.files?.[state.active]?.compiledContent
   ) {
+    console.log("ebin1")
     return;
   }
 
   if (!state.files?.[state.active]?.compiledContent) {
+    console.log("ebin2")
     return;
   }
   if (!state.client) {
+    console.log("ebin3")
     return;
   }
   const HookNamespace = (await sha256(data.HookNamespace)).toUpperCase();
@@ -134,6 +138,7 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
         });
       }
     } catch (err) {
+      console.log("Ebin")
       console.log(err);
       state.deployLogs.push({
         type: "error",

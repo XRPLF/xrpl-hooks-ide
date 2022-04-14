@@ -33,8 +33,6 @@ export const addFaucetAccount = async (showToast: boolean = false) => {
     return toast.error("You can only have maximum 6 accounts");
   }
   if (typeof window !== 'undefined') {
-
-
     const toastId = showToast ? toast.loading("Creating account") : "";
     const res = await fetch(`${window.location.origin}/api/faucet`, {
       method: "POST",
@@ -92,5 +90,4 @@ export const addFunds = async (address: string) => {
       currAccount.xrp = (Number(currAccount.xrp) + (json.xrp * 1000000)).toString();
     }
   }
-
 }

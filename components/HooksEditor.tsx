@@ -1,28 +1,29 @@
-import React, { useEffect, useRef } from "react";
-import { useSnapshot, ref } from "valtio";
+import { listen } from "@codingame/monaco-jsonrpc";
+import { MonacoServices } from "@codingame/monaco-languageclient";
 import Editor, { loader } from "@monaco-editor/react";
+import uniqBy from "lodash.uniqby";
 import type monaco from "monaco-editor";
-import { ArrowBendLeftUp } from "phosphor-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/router";
-import uniqBy from "lodash.uniqby";
-
-import Box from "./Box";
-import Container from "./Container";
-import dark from "../theme/editor/amy.json";
-import light from "../theme/editor/xcode_default.json";
+import { ArrowBendLeftUp } from "phosphor-react";
+import React, { useEffect, useRef } from "react";
+import toast from "react-hot-toast";
+import ReconnectingWebSocket from "reconnecting-websocket";
+import { ref, useSnapshot } from "valtio";
+import state from "../state";
 import { saveFile } from "../state/actions";
 import { apiHeaderFiles } from "../state/constants";
-import state from "../state";
-
+import dark from "../theme/editor/amy.json";
+import light from "../theme/editor/xcode_default.json";
+import { createLanguageClient, createWebSocket } from "../utils/languageClient";
+import docs from "../xrpl-hooks-docs/docs";
+import Box from "./Box";
+import Container from "./Container";
 import EditorNavigation from "./EditorNavigation";
 import Text from "./Text";
-import { MonacoServices } from "@codingame/monaco-languageclient";
-import { createLanguageClient, createWebSocket } from "../utils/languageClient";
-import { listen } from "@codingame/monaco-jsonrpc";
-import ReconnectingWebSocket from "reconnecting-websocket";
 
-import docs from "../xrpl-hooks-docs/docs";
+
+
 
 loader.config({
   paths: {
@@ -123,6 +124,7 @@ const HooksEditor = () => {
       setMarkers(monacoRef.current);
     }
   }, [snap.active]);
+
   return (
     <Box
       css={{
@@ -155,7 +157,7 @@ const HooksEditor = () => {
               );
             }
 
-            // create the web socket
+            // create the websocket
             if (!subscriptionRef.current) {
               monaco.languages.register({
                 id: "c",
@@ -164,11 +166,12 @@ const HooksEditor = () => {
                 mimetypes: ["text/plain"],
               });
               MonacoServices.install(monaco);
-              const webSocket = createWebSocket(
+
+              const webSocket: ReconnectingWebSocket = createWebSocket(
                 process.env.NEXT_PUBLIC_LANGUAGE_SERVER_API_ENDPOINT || ""
               );
               subscriptionRef.current = webSocket;
-              // listen when the web socket is opened
+              // listen when the websocket is opened
               listen({
                 webSocket: webSocket as WebSocket,
                 onConnection: (connection) => {
@@ -180,9 +183,14 @@ const HooksEditor = () => {
                       // disposable.stop();
                       disposable.dispose();
                     } catch (err) {
-                      console.log("err", err);
+                      toast.error('Connection to language server lost!')
+                      console.error("Couldn't dispose the language server connection! ", err);
                     }
                   });
+                  connection.onDispose(() => {
+                    toast.error('Connection to language server lost!')
+                  })
+                  // TODO: Check if we need to listen to more connection events
                 },
               });
             }
