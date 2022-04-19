@@ -93,9 +93,8 @@ const DebugStream = () => {
         pushLog(`Debug stream opened for account ${acc.value}`, {
           type: "success",
         });
-        
-        const logs = Object.entries(body.logs)
-          .filter(([tm]) => +tm >= start)
+
+        const logs = Object.entries(body.logs).filter(([tm]) => +tm >= start);
 
         logs.forEach(([tm, log]) => pushLog(log));
       } catch (error) {
@@ -160,13 +159,18 @@ const DebugStream = () => {
       streamState.selectedAccount = account;
   }, [activeTxTab]);
 
+  const clearLog = () => {
+    streamState.logs = [];
+    streamState.statusChangeTimestamp = Date.now();
+  };
+
   return (
     <LogBox
       enhanced
       renderNav={renderNav}
       title="Debug stream"
       logs={logs}
-      clearLog={() => (streamState.logs = [])}
+      clearLog={clearLog}
     />
   );
 };
