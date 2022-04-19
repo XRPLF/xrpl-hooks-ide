@@ -226,6 +226,22 @@ const HooksEditor = () => {
               }
             });
 
+            // Hacky way to hide Peek menu
+            editor.onContextMenu((e) => {
+              const host =
+                document.querySelector<HTMLElement>(".shadow-root-host");
+
+              const contextMenuItems =
+                host?.shadowRoot?.querySelectorAll("li.action-item");
+              contextMenuItems?.forEach((k) => {
+                // If menu item contains "Peek" lets hide it
+                if (k.querySelector(".action-label")?.textContent === "Peek") {
+                  // @ts-expect-error
+                  k["style"].display = "none";
+                }
+              });
+            });
+
             validateWritability(editor);
           }}
           theme={theme === "dark" ? "dark" : "light"}

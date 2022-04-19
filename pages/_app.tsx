@@ -18,7 +18,7 @@ import en from "javascript-time-ago/locale/en.json";
 import { useSnapshot } from "valtio";
 
 TimeAgo.setDefaultLocale(en.locale);
-TimeAgo.addLocale(en)
+TimeAgo.addLocale(en);
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const router = useRouter();

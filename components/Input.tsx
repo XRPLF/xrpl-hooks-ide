@@ -60,6 +60,8 @@ export const Input = styled("input", {
   },
   "&:read-only": {
     backgroundColor: "$mauve2",
+    color: "$text",
+    opacity: 0.8,
     "&:focus": {
       boxShadow: "inset 0px 0px 0px 1px $colors$mauve7",
     },
