@@ -52,6 +52,7 @@ const Select = forwardRef<any, Props>((props, ref) => {
         control: (provided, state) => {
           return {
             ...provided,
+            minHeight: 0,
             border: "0px",
             backgroundColor: colors.mauve4,
             boxShadow: `0 0 0 1px ${
@@ -118,32 +119,6 @@ const Select = forwardRef<any, Props>((props, ref) => {
           };
         },
       }}
-      // theme={(theme) => ({
-      //   ...theme,
-      //   spacing: {
-      //     ...theme.spacing,
-      //     controlHeight: 30,
-      //   },
-      //   colors: {
-      //     primary: colors.selected,
-      //     primary25: colors.active,
-      //     primary50: colors.primary,
-      //     primary75: colors.primary,
-      //     danger: colors.primary,
-      //     dangerLight: colors.primary,
-      //     neutral0: colors.background,
-      //     neutral5: colors.primary,
-      //     neutral10: colors.primary,
-      //     neutral20: colors.outline,
-      //     neutral30: colors.primary,
-      //     neutral40: colors.primary,
-      //     neutral50: colors.placeholder,
-      //     neutral60: colors.primary,
-      //     neutral70: colors.primary,
-      //     neutral80: colors.searchText,
-      //     neutral90: colors.primary,
-      //   },
-      // })}
       {...props}
     />
   );

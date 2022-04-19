@@ -47,7 +47,7 @@ import {
 } from "./Dialog";
 import Flex from "./Flex";
 import Stack from "./Stack";
-import Input from "./Input";
+import { Input, Label } from "./Input";
 import Text from "./Text";
 import Tooltip from "./Tooltip";
 import {
@@ -222,7 +222,7 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
                 <DialogContent>
                   <DialogTitle>Create new file</DialogTitle>
                   <DialogDescription>
-                    <label>Filename</label>
+                    <Label>Filename</Label>
                     <Input
                       value={filename}
                       onChange={(e) => setFilename(e.target.value)}
@@ -524,7 +524,7 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
         <DialogContent>
           <DialogTitle>Editor settings</DialogTitle>
           <DialogDescription>
-            <label>Tab size</label>
+            <Label>Tab size</Label>
             <Input
               type="number"
               min="1"

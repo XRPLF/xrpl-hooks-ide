@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { proxy, ref, useSnapshot } from "valtio";
 import { Select } from ".";
-import state, { ILog } from "../state";
+import state, { ILog, transactionsState } from "../state";
 import { extractJSON } from "../utils/json";
 import LogBox from "./LogBox";
 
@@ -10,7 +10,7 @@ interface ISelect<T = string> {
   value: T;
 }
 
-const streamState = proxy({
+export const streamState = proxy({
   selectedAccount: null as ISelect | null,
   logs: [] as ILog[],
   socket: undefined as WebSocket | undefined,
@@ -18,9 +18,10 @@ const streamState = proxy({
 
 const DebugStream = () => {
   const { selectedAccount, logs, socket } = useSnapshot(streamState);
+  const { activeHeader: activeTxTab } = useSnapshot(transactionsState);
   const { accounts } = useSnapshot(state);
 
-  const accountOptions = accounts.map((acc) => ({
+  const accountOptions = accounts.map(acc => ({
     label: acc.name,
     value: acc.address,
   }));
@@ -33,7 +34,7 @@ const DebugStream = () => {
         options={accountOptions}
         hideSelectedOptions
         value={selectedAccount}
-        onChange={(acc) => (streamState.selectedAccount = acc as any)}
+        onChange={acc => (streamState.selectedAccount = acc as any)}
         css={{ width: "100%" }}
       />
     </>
@@ -133,6 +134,16 @@ const DebugStream = () => {
       socket.removeEventListener("error", onError);
     };
   }, [prepareLog, selectedAccount?.value, socket]);
+
+  useEffect(() => {
+    const account = transactionsState.transactions.find(
+      tx => tx.header === activeTxTab
+    )?.state.selectedAccount;
+
+    if (account && account.value !== streamState.selectedAccount?.value)
+      streamState.selectedAccount = account;
+  }, [activeTxTab]);
+
   return (
     <LogBox
       enhanced

@@ -11,7 +11,7 @@ import {
   DialogClose,
   DialogTrigger,
 } from "./Dialog";
-import { Input } from "./Input";
+import { Input, Label } from "./Input";
 import {
   Controller,
   SubmitHandler,
@@ -132,7 +132,7 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
           <DialogDescription as="div">
             <Stack css={{ width: "100%", flex: 1 }}>
               <Box css={{ width: "100%" }}>
-                <label>Invoke on transactions</label>
+                <Label>Invoke on transactions</Label>
                 <Controller
                   name="Invoke"
                   control={control}
@@ -151,7 +151,7 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
                 />
               </Box>
               <Box css={{ width: "100%" }}>
-                <label>Hook Namespace Seed</label>
+                <Label>Hook Namespace Seed</Label>
                 <Input
                   {...register("HookNamespace", { required: true })}
                   autoComplete={"off"}
@@ -165,14 +165,14 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
                   </Box>
                 )}
                 <Box css={{ mt: "$3" }}>
-                  <label>Hook Namespace (sha256)</label>
+                  <Label>Hook Namespace (sha256)</Label>
                   <Input readOnly value={hashedNamespace} />
                 </Box>
               </Box>
               <Box css={{ width: "100%" }}>
-                <label style={{ marginBottom: "10px", display: "block" }}>
+                <Label style={{ marginBottom: "10px", display: "block" }}>
                   Hook parameters
-                </label>
+                </Label>
                 <Stack>
                   {fields.map((field, index) => (
                     <Stack key={field.id}>
