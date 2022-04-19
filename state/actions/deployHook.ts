@@ -69,7 +69,7 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
   const HookNamespace = (await sha256(data.HookNamespace)).toUpperCase();
   const hookOnValues: (keyof TTS)[] = data.Invoke.map(tt => tt.value);
   const { HookParameters } = data;
-  const filteredHookParameters = HookParameters.filter(hp => hp.HookParameter.HookParameterName && hp.HookParameter.HookParameterValue)?.map(aa => ({ HookParameter: { HookParameterName: toHex(aa.HookParameter.HookParameterName || ''), HookParameterValue: toHex(aa.HookParameter.HookParameterValue || '') } }));
+  const filteredHookParameters = HookParameters.filter(hp => hp.HookParameter.HookParameterName && hp.HookParameter.HookParameterValue)?.map(aa => ({ HookParameter: { HookParameterName: toHex(aa.HookParameter.HookParameterName || ''), HookParameterValue: aa.HookParameter.HookParameterValue || '' } }));
   // const filteredHookGrants = HookGrants.filter(hg => hg.HookGrant.Authorize || hg.HookGrant.HookHash).map(hg => {
   //   return {
   //     HookGrant: {
