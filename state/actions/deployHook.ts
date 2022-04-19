@@ -5,7 +5,7 @@ import state, { IAccount } from "../index";
 import calculateHookOn, { TTS } from "../../utils/hookOnCalculator";
 import { SetHookData } from "../../components/SetHookDialog";
 
-const hash = async (string: string) => {
+export const sha256 = async (string: string) => {
   const utf8 = new TextEncoder().encode(string);
   const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -66,9 +66,7 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
   if (!state.client) {
     return;
   }
-  const HookNamespace = await hash(arrayBufferToHex(
-    state.files?.[state.active]?.compiledContent
-  ).toUpperCase());
+  const HookNamespace = (await sha256(data.HookNamespace)).toUpperCase();
   const hookOnValues: (keyof TTS)[] = data.Invoke.map(tt => tt.value);
   const { HookParameters } = data;
   const filteredHookParameters = HookParameters.filter(hp => hp.HookParameter.HookParameterName && hp.HookParameter.HookParameterValue)?.map(aa => ({ HookParameter: { HookParameterName: toHex(aa.HookParameter.HookParameterName || ''), HookParameterValue: toHex(aa.HookParameter.HookParameterValue || '') } }));
