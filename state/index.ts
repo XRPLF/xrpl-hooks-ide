@@ -39,7 +39,7 @@ export interface IAccount {
 
 export interface ILog {
   type: "error" | "warning" | "log" | "success";
-  message: string;
+  message: string | JSX.Element;
   key?: string;
   jsonData?: any,
   timestring?: string;
