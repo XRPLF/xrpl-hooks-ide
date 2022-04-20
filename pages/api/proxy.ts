@@ -6,7 +6,6 @@ export default async function handler(
 ) {
     try {
         const { url, opts } = req.body
-        console.log(url)
         const r = await fetch(url, opts);
         if (!r.ok) throw (r.statusText)
 
