@@ -80,7 +80,7 @@ export const deployHook = async (
   )?.map(aa => ({
     HookParameter: {
       HookParameterName: toHex(aa.HookParameter.HookParameterName || ""),
-      HookParameterValue: toHex(aa.HookParameter.HookParameterValue || ""),
+      HookParameterValue: aa.HookParameter.HookParameterValue || "",
     },
   }));
   // const filteredHookGrants = HookGrants.filter(hg => hg.HookGrant.Authorize || hg.HookGrant.HookHash).map(hg => {
