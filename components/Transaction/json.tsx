@@ -1,5 +1,5 @@
 import Editor, { loader } from "@monaco-editor/react";
-import { FC, useMemo } from 'react';
+import { FC } from 'react';
 import { useTheme } from "next-themes";
 
 import dark from "../../theme/editor/amy.json";
@@ -14,26 +14,20 @@ loader.config({
 });
 
 interface JsonProps {
-  prepareOptions?: () => any
+  value?: string
+  header?: string
 }
 
-export const TxJson: FC<JsonProps> = ({ prepareOptions }) => {
+export const TxJson: FC<JsonProps> = ({ value, header }) => {
   const { editorSettings } = useSnapshot(state);
-
   const { theme } = useTheme();
 
-  const value = useMemo(() => {
-    return JSON.stringify(
-      prepareOptions?.() || {},
-      null,
-      editorSettings.tabSize
-    );
-  }, [editorSettings.tabSize, prepareOptions])
-
+  const path = `file:///${header}`
   return (
     <Editor
       className="hooks-editor"
       language={"json"}
+      path={path}
       height="calc(100% - 45px)"
       beforeMount={monaco => {
         monaco.editor.defineTheme("dark", dark as any);

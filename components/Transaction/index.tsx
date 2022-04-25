@@ -1,5 +1,5 @@
 import { Play } from "phosphor-react";
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import { useSnapshot } from "valtio";
 import state from "../../state";
 import {
@@ -24,7 +24,7 @@ const Transaction: FC<TransactionProps> = ({
   state: txState,
   ...props
 }) => {
-  const { accounts } = useSnapshot(state);
+  const { accounts, editorSettings } = useSnapshot(state);
   const {
     selectedAccount,
     selectedDestAccount,
@@ -95,10 +95,18 @@ const Transaction: FC<TransactionProps> = ({
     setState({});
   }, [setState]);
 
+  const value = useMemo(() => {
+    return JSON.stringify(
+      prepareOptions?.() || {},
+      null,
+      editorSettings.tabSize
+    );
+  }, [editorSettings.tabSize, prepareOptions]);
+
   return (
     <Box css={{ position: "relative", height: "calc(100% - 28px)" }} {...props}>
       {viewType === "json" ? (
-        <TxJson prepareOptions={prepareOptions} />
+        <TxJson value={value} header={header} />
       ) : (
         <TxUI state={txState} setState={setState} />
       )}
