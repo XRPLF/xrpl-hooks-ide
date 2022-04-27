@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import dark from "../../theme/editor/amy.json";
 import light from "../../theme/editor/xcode_default.json";
 import { useSnapshot } from "valtio";
-import state, { TransactionState } from "../../state";
+import state, { parseJSON, prepareState, TransactionState } from "../../state";
 import Text from "../Text";
 import Flex from "../Flex";
 import { Link } from "..";
@@ -20,25 +20,23 @@ interface JsonProps {
   value?: string;
   header?: string;
   setState: (pTx?: Partial<TransactionState> | undefined) => void;
+  state: TransactionState;
 }
 
-function parseJSON(str: string): any | undefined {
-  try {
-    const parsed = JSON.parse(str);
-    return typeof parsed === "object" ? parsed : undefined;
-  } catch (error) {
-    return undefined;
-  }
-}
-
-export const TxJson: FC<JsonProps> = ({ value = "", header, setState }) => {
+export const TxJson: FC<JsonProps> = ({
+  value = "",
+  state: txState,
+  header,
+  setState,
+}) => {
   const { editorSettings } = useSnapshot(state);
+  const { editorValue = value } = txState;
   const { theme } = useTheme();
-  const [editorValue, setEditorValue] = useState(value);
   const [hasUnsaved, setHasUnsaved] = useState(false);
 
   useEffect(() => {
-    setEditorValue(value);
+    setState({ editorValue: value });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   useEffect(() => {
@@ -47,79 +45,14 @@ export const TxJson: FC<JsonProps> = ({ value = "", header, setState }) => {
   }, [editorValue, value]);
 
   const saveState = (value: string) => {
-    const options = parseJSON(value);
-    if (!options) return alert("Cannot save dirty editor");
-
-    const { Account, TransactionType, Destination, ...rest } = options;
-    let tx: Partial<TransactionState> = {};
-
-    if (Account) {
-      const acc = state.accounts.find(acc => acc.address === Account);
-      if (acc) {
-        tx.selectedAccount = {
-          label: acc.name,
-          value: acc.address,
-        };
-      } else {
-        tx.selectedAccount = {
-          label: Account,
-          value: Account,
-        };
-      }
-    } else {
-      tx.selectedAccount = null;
-    }
-
-    if (TransactionType) {
-      tx.selectedTransaction = {
-        label: TransactionType,
-        value: TransactionType,
-      };
-    } else {
-      tx.selectedTransaction = null;
-    }
-
-    if (Destination) {
-      const dest = state.accounts.find(acc => acc.address === Destination);
-      if (dest) {
-        tx.selectedDestAccount = {
-          label: dest.name,
-          value: dest.address,
-        };
-      } else {
-        tx.selectedDestAccount = {
-          label: Destination,
-          value: Destination,
-        };
-      }
-    }
-
-    Object.keys(rest).forEach(field => {
-      const value = rest[field];
-      console.log({ field, value });
-      if (field === "Amount") {
-        rest[field] = {
-          type: "currency",
-          value: +value / 1000000, // TODO handle object currencies
-        };
-      } else if (typeof value === "object") {
-        rest[field] = {
-          type: "json",
-          value,
-        };
-      }
-    });
-
-    tx.txFields = rest;
-    tx.editorSavedValue = null;
-
-    setState(tx);
+    const tx = prepareState(value);
+    if (tx) setState(tx);
   };
 
   const discardChanges = () => {
     let discard = confirm("Are you sure to discard these changes");
     if (discard) {
-      setEditorValue(value);
+      setState({ editorValue: value });
     }
   };
 
@@ -135,7 +68,7 @@ export const TxJson: FC<JsonProps> = ({ value = "", header, setState }) => {
     if (!discard) {
       setState({ viewType: "json", editorSavedValue: value });
     } else {
-      setEditorValue(value);
+      setState({ editorValue: value });
     }
   };
 
@@ -156,7 +89,7 @@ export const TxJson: FC<JsonProps> = ({ value = "", header, setState }) => {
           monaco.editor.defineTheme("light", light as any);
         }}
         value={editorValue}
-        onChange={val => setEditorValue(val || "")}
+        onChange={val => setState({ editorValue: val })}
         onMount={(editor, monaco) => {
           editor.updateOptions({
             minimap: { enabled: false },

@@ -1,6 +1,7 @@
 import { proxy } from 'valtio';
 import { deepEqual } from '../utils/object';
 import transactionsData from "../content/transactions.json";
+import state from '.';
 
 export type SelectOption = {
     value: string;
@@ -15,7 +16,8 @@ export interface TransactionState {
     txIsDisabled: boolean;
     txFields: TxFields;
     viewType: 'json' | 'ui',
-    editorSavedValue: null | string
+    editorSavedValue: null | string,
+    editorValue?: string
 }
 
 
@@ -68,14 +70,15 @@ export const modifyTransaction = (
     }
 
     if (!tx) {
+        const state = {
+            ...defaultTransaction,
+            ...partialTx,
+        }
         transactionsState.transactions.push({
             header,
-            state: {
-                ...defaultTransaction,
-                ...partialTx,
-            },
+            state,
         });
-        return;
+        return state;
     }
 
     if (opts.replaceState) {
@@ -84,7 +87,7 @@ export const modifyTransaction = (
             ...partialTx,
         }
         tx.state = repTx
-        return
+        return repTx
     }
 
     Object.keys(partialTx).forEach(k => {
@@ -93,8 +96,11 @@ export const modifyTransaction = (
         const p = partialTx as any;
         if (!deepEqual(s[k], p[k])) s[k] = p[k];
     });
+
+    return tx.state
 };
 
+// state to tx options
 export const prepareTransaction = (data: any) => {
     let options = { ...data };
 
@@ -132,6 +138,87 @@ export const prepareTransaction = (data: any) => {
     });
 
     return options
+}
+
+// editor value to state
+export const prepareState = (value?: string) => {
+    const options = parseJSON(value);
+    if (!options) return alert("Cannot save dirty editor");
+
+    const { Account, TransactionType, Destination, ...rest } = options;
+    let tx: Partial<TransactionState> = {};
+
+    if (Account) {
+        const acc = state.accounts.find(acc => acc.address === Account);
+        if (acc) {
+            tx.selectedAccount = {
+                label: acc.name,
+                value: acc.address,
+            };
+        } else {
+            tx.selectedAccount = {
+                label: Account,
+                value: Account,
+            };
+        }
+    } else {
+        tx.selectedAccount = null;
+    }
+
+    if (TransactionType) {
+        tx.selectedTransaction = {
+            label: TransactionType,
+            value: TransactionType,
+        };
+    } else {
+        tx.selectedTransaction = null;
+    }
+
+    if (Destination) {
+        const dest = state.accounts.find(acc => acc.address === Destination);
+        if (dest) {
+            tx.selectedDestAccount = {
+                label: dest.name,
+                value: dest.address,
+            };
+        } else {
+            tx.selectedDestAccount = {
+                label: Destination,
+                value: Destination,
+            };
+        }
+    }
+
+    Object.keys(rest).forEach(field => {
+        const value = rest[field];
+        console.log({ field, value });
+        if (field === "Amount") {
+            rest[field] = {
+                type: "currency",
+                value: +value / 1000000, // TODO handle object currencies
+            };
+        } else if (typeof value === "object") {
+            rest[field] = {
+                type: "json",
+                value,
+            };
+        }
+    });
+
+    tx.txFields = rest;
+    tx.editorSavedValue = null;
+
+    return tx
+}
+
+export const parseJSON = (str?: string | null): any | undefined => {
+    if (!str) return undefined
+    try {
+        const parsed = JSON.parse(str);
+        return typeof parsed === "object" ? parsed : undefined;
+    } catch (error) {
+        return undefined;
+    }
 }
 
 export { transactionsData }

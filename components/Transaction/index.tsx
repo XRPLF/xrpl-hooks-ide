@@ -4,6 +4,7 @@ import { useSnapshot } from "valtio";
 import state from "../../state";
 import {
   modifyTransaction,
+  prepareState,
   prepareTransaction,
   TransactionState,
 } from "../../state/transactions";
@@ -27,39 +28,43 @@ const Transaction: FC<TransactionProps> = ({
   const { accounts, editorSettings } = useSnapshot(state);
   const {
     selectedAccount,
-    selectedDestAccount,
     selectedTransaction,
-    txFields,
     txIsDisabled,
     txIsLoading,
     viewType,
     editorSavedValue,
+    editorValue,
   } = txState;
 
   const setState = useCallback(
     (pTx?: Partial<TransactionState>) => {
-      modifyTransaction(header, pTx);
+      return modifyTransaction(header, pTx);
     },
     [header]
   );
 
-  const prepareOptions = useCallback(() => {
-    const TransactionType = selectedTransaction?.value;
-    const Destination = selectedDestAccount?.value;
-    const Account = selectedAccount?.value;
+  const prepareOptions = useCallback(
+    (state: TransactionState = txState) => {
+      const {
+        selectedTransaction,
+        selectedDestAccount,
+        selectedAccount,
+        txFields,
+      } = state;
 
-    return prepareTransaction({
-      ...txFields,
-      TransactionType,
-      Destination,
-      Account,
-    });
-  }, [
-    selectedAccount?.value,
-    selectedDestAccount?.value,
-    selectedTransaction?.value,
-    txFields,
-  ]);
+      const TransactionType = selectedTransaction?.value;
+      const Destination = selectedDestAccount?.value;
+      const Account = selectedAccount?.value;
+
+      return prepareTransaction({
+        ...txFields,
+        TransactionType,
+        Destination,
+        Account,
+      });
+    },
+    [txState]
+  );
 
   useEffect(() => {
     const transactionType = selectedTransaction?.value;
@@ -72,6 +77,15 @@ const Transaction: FC<TransactionProps> = ({
   }, [txIsLoading, selectedTransaction, selectedAccount, accounts, setState]);
 
   const submitTest = useCallback(async () => {
+    let st: TransactionState | undefined;
+    if (viewType === "json") {
+      // save the editor state first
+      const pst = prepareState(editorValue);
+      if (!pst) return;
+
+      st = setState(pst);
+    }
+
     const account = accounts.find(
       acc => acc.address === selectedAccount?.value
     );
@@ -80,7 +94,7 @@ const Transaction: FC<TransactionProps> = ({
 
     setState({ txIsLoading: true });
     try {
-      const options = prepareOptions();
+      const options = prepareOptions(st);
       const logPrefix = header ? `${header.split(".")[0]}: ` : undefined;
 
       await sendTransaction(account, options, { logPrefix });
@@ -92,12 +106,14 @@ const Transaction: FC<TransactionProps> = ({
     }
     setState({ txIsLoading: false });
   }, [
+    viewType,
+    editorValue,
     accounts,
     selectedTransaction?.value,
     txIsDisabled,
     setState,
-    prepareOptions,
     selectedAccount?.value,
+    prepareOptions,
     header,
   ]);
 
@@ -115,7 +131,12 @@ const Transaction: FC<TransactionProps> = ({
   return (
     <Box css={{ position: "relative", height: "calc(100% - 28px)" }} {...props}>
       {viewType === "json" ? (
-        <TxJson value={jsonValue} header={header} setState={setState} />
+        <TxJson
+          value={jsonValue}
+          header={header}
+          state={txState}
+          setState={setState}
+        />
       ) : (
         <TxUI state={txState} setState={setState} />
       )}
