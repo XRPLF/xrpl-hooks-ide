@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import Container from "../Container";
 import Flex from "../Flex";
 import Input from "../Input";
@@ -27,13 +27,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
     selectedDestAccount,
     selectedTransaction,
     txFields,
-    txIsLoading,
   } = txState;
-
-  const handleSetAccount = (acc: SelectOption) => {
-    setState({ selectedAccount: acc });
-    streamState.selectedAccount = acc;
-  };
 
   const transactionsOptions = transactionsData.map(tx => ({
     value: tx.TransactionType,
@@ -52,22 +46,11 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
     }))
     .filter(acc => acc.value !== selectedAccount?.value);
 
-  useEffect(() => {
-    const transactionType = selectedTransaction?.value;
-    const account = accounts.find(
-      acc => acc.address === selectedAccount?.value
-    );
-    if (!account || !transactionType || txIsLoading) {
-      setState({ txIsDisabled: true });
-    } else {
-      setState({ txIsDisabled: false });
-    }
-  }, [txIsLoading, selectedTransaction, selectedAccount, accounts, setState]);
-
-  useEffect(() => {
+  const resetOptions = (tt: string) => {
     const txFields: TxFields | undefined = transactionsData.find(
-      tx => tx.TransactionType === selectedTransaction?.value
+      tx => tx.TransactionType === tt
     );
+
     if (!txFields) return setState({ txFields: {} });
 
     const _txFields = Object.keys(txFields)
@@ -79,7 +62,17 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
 
     if (!_txFields.Destination) setState({ selectedDestAccount: null });
     setState({ txFields: _txFields });
-  }, [setState, selectedTransaction]);
+  };
+
+  const handleSetAccount = (acc: SelectOption) => {
+    setState({ selectedAccount: acc });
+    streamState.selectedAccount = acc;
+  };
+
+  const handleChangeTxType = (tt: SelectOption) => {
+    setState({ selectedTransaction: tt });
+    resetOptions(tt.value);
+  };
 
   const usualFields = ["TransactionType", "Amount", "Account", "Destination"];
 
@@ -117,7 +110,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
             hideSelectedOptions
             css={{ width: "70%" }}
             value={selectedTransaction}
-            onChange={(tx: any) => setState({ selectedTransaction: tx })}
+            onChange={(tt: any) => handleChangeTxType(tt)}
           />
         </Flex>
         <Flex
@@ -197,11 +190,18 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
         )}
         {otherFields.map(field => {
           let _value = txFields[field];
-          let value = typeof _value === "object" ? _value.value : _value;
-          value =
-            typeof value === "object"
-              ? JSON.stringify(value)
-              : value?.toLocaleString();
+
+          let value: string | undefined;
+          if (typeof _value === "object") {
+            if (_value.type === "json" && typeof _value.value === "object") {
+              value = JSON.stringify(_value.value);
+            } else {
+              value = _value.value.toString();
+            }
+          } else {
+            value = _value?.toString();
+          }
+
           let isCurrency =
             typeof _value === "object" && _value.type === "currency";
           return (
@@ -221,7 +221,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
               </Text>
               <Input
                 value={value}
-                onChange={e =>
+                onChange={e => {
                   setState({
                     txFields: {
                       ...txFields,
@@ -230,8 +230,8 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
                           ? { ..._value, value: e.target.value }
                           : e.target.value,
                     },
-                  })
-                }
+                  });
+                }}
                 css={{ width: "70%", flex: "inherit" }}
               />
             </Flex>

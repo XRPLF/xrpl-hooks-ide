@@ -14,6 +14,8 @@ export interface TransactionState {
     txIsLoading: boolean;
     txIsDisabled: boolean;
     txFields: TxFields;
+    viewType: 'json' | 'ui',
+    editorSavedValue: null | string
 }
 
 
@@ -31,6 +33,8 @@ export const defaultTransaction: TransactionState = {
     txIsLoading: false,
     txIsDisabled: false,
     txFields: {},
+    viewType: 'ui',
+    editorSavedValue: null
 };
 
 export const transactionsState = proxy({
@@ -46,11 +50,13 @@ export const transactionsState = proxy({
 /**
  * Simple transaction state changer
  * @param header Unique key and tab name for the transaction tab
- * @param partialTx partial transaction state, `{}` resets the state and `undefined` deletes the transaction
+ * @param partialTx partial transaction state, `undefined` deletes the transaction
+ * 
  */
 export const modifyTransaction = (
     header: string,
-    partialTx?: Partial<TransactionState>
+    partialTx?: Partial<TransactionState>,
+    opts: { replaceState?: boolean } = {}
 ) => {
     const tx = transactionsState.transactions.find(tx => tx.header === header);
 
@@ -72,9 +78,13 @@ export const modifyTransaction = (
         return;
     }
 
-    if (deepEqual(partialTx, {})) {
-        tx.state = { ...defaultTransaction }
-        console.log({ tx: tx.state, is: tx.state === defaultTransaction })
+    if (opts.replaceState) {
+        const repTx: TransactionState = {
+            ...defaultTransaction,
+            ...partialTx,
+        }
+        tx.state = repTx
+        return
     }
 
     Object.keys(partialTx).forEach(k => {
@@ -109,7 +119,8 @@ export const prepareTransaction = (data: any) => {
                 } catch (error) {
                     const message = `Input error for json field '${field}': ${error instanceof Error ? error.message : ""
                         }`;
-                    throw Error(message);
+                    console.error(message)
+                    options[field] = _value.value
                 }
             }
         }

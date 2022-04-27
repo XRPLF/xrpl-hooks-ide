@@ -1,5 +1,5 @@
 import { Play } from "phosphor-react";
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo } from "react";
 import { useSnapshot } from "valtio";
 import state from "../../state";
 import {
@@ -32,9 +32,9 @@ const Transaction: FC<TransactionProps> = ({
     txFields,
     txIsDisabled,
     txIsLoading,
+    viewType,
+    editorSavedValue,
   } = txState;
-
-  const [viewType, setViewType] = useState<"ui" | "json">("ui");
 
   const setState = useCallback(
     (pTx?: Partial<TransactionState>) => {
@@ -60,6 +60,16 @@ const Transaction: FC<TransactionProps> = ({
     selectedTransaction?.value,
     txFields,
   ]);
+
+  useEffect(() => {
+    const transactionType = selectedTransaction?.value;
+    const account = selectedAccount?.value;
+    if (!account || !transactionType || txIsLoading) {
+      setState({ txIsDisabled: true });
+    } else {
+      setState({ txIsDisabled: false });
+    }
+  }, [txIsLoading, selectedTransaction, selectedAccount, accounts, setState]);
 
   const submitTest = useCallback(async () => {
     const account = accounts.find(
@@ -92,21 +102,20 @@ const Transaction: FC<TransactionProps> = ({
   ]);
 
   const resetState = useCallback(() => {
-    setState({});
-  }, [setState]);
+    modifyTransaction(header, { viewType }, { replaceState: true });
+  }, [header, viewType]);
 
-  const value = useMemo(() => {
-    return JSON.stringify(
-      prepareOptions?.() || {},
-      null,
-      editorSettings.tabSize
-    );
-  }, [editorSettings.tabSize, prepareOptions]);
+  const jsonValue = useMemo(
+    () =>
+      editorSavedValue ||
+      JSON.stringify(prepareOptions?.() || {}, null, editorSettings.tabSize),
+    [editorSavedValue, editorSettings.tabSize, prepareOptions]
+  );
 
   return (
     <Box css={{ position: "relative", height: "calc(100% - 28px)" }} {...props}>
       {viewType === "json" ? (
-        <TxJson value={value} header={header} />
+        <TxJson value={jsonValue} header={header} setState={setState} />
       ) : (
         <TxUI state={txState} setState={setState} />
       )}
@@ -122,7 +131,11 @@ const Transaction: FC<TransactionProps> = ({
         }}
       >
         <Button
-          onClick={() => setViewType(viewType === "ui" ? "json" : "ui")}
+          onClick={() => {
+            if (viewType === "ui") {
+              setState({ editorSavedValue: null, viewType: "json" });
+            } else setState({ viewType: "ui" });
+          }}
           outline
         >
           {viewType === "ui" ? "VIEW AS JSON" : "EXIT JSON VIEW"}
