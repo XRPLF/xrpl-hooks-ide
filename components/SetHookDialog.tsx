@@ -193,7 +193,7 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
                         )}
                       />
                       <Input
-                        placeholder="Parameter value"
+                        placeholder="Value (hex-quoted)"
                         {...register(
                           `HookParameters.${index}.HookParameter.HookParameterValue`
                         )}

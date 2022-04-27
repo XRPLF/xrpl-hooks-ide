@@ -351,6 +351,7 @@ const Transaction: FC<TransactionProps> = ({
           left: 0,
           bottom: 0,
           width: "100%",
+          mb: "$1"
         }}
       >
         <Button outline>VIEW AS JSON</Button>
