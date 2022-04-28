@@ -159,7 +159,7 @@ const Transaction: FC<TransactionProps> = ({
           }}
           outline
         >
-          {viewType === "ui" ? "VIEW AS JSON" : "EXIT JSON VIEW"}
+          {viewType === "ui" ? "EDIT AS JSON" : "EXIT JSON MODE"}
         </Button>
         <Flex row>
           <Button onClick={resetState} outline css={{ mr: "$3" }}>
