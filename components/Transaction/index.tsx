@@ -89,19 +89,24 @@ const Transaction: FC<TransactionProps> = ({
     const account = accounts.find(
       acc => acc.address === selectedAccount?.value
     );
-    const TransactionType = selectedTransaction?.value;
-    if (!account || !TransactionType || txIsDisabled) return;
+    if (txIsDisabled) return;
 
     setState({ txIsLoading: true });
+    const logPrefix = header ? `${header.split(".")[0]}: ` : undefined;
     try {
+      if (!account) {
+        throw Error("Account must be selected from imported accounts!");
+      }
       const options = prepareOptions(st);
-      const logPrefix = header ? `${header.split(".")[0]}: ` : undefined;
 
       await sendTransaction(account, options, { logPrefix });
     } catch (error) {
       console.error(error);
       if (error instanceof Error) {
-        state.transactionLogs.push({ type: "error", message: error.message });
+        state.transactionLogs.push({
+          type: "error",
+          message: `${logPrefix}${error.message}`,
+        });
       }
     }
     setState({ txIsLoading: false });
@@ -109,7 +114,6 @@ const Transaction: FC<TransactionProps> = ({
     viewType,
     editorValue,
     accounts,
-    selectedTransaction?.value,
     txIsDisabled,
     setState,
     selectedAccount?.value,
