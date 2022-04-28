@@ -60,16 +60,25 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
     handleSubmit,
     control,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<SetHookData>({
     defaultValues: {
-      HookNamespace: snap.files?.[snap.active]?.name?.split(".")?.[0] || "",
+      HookNamespace: snap.files?.[snap.activeWat]?.name?.split(".")?.[0] || "",
     },
   });
   const { fields, append, remove } = useFieldArray({
     control,
     name: "HookParameters", // unique name for your Field Array
   });
+
+  // Update value if activeWat changes
+  useEffect(() => {
+    setValue(
+      "HookNamespace",
+      snap.files?.[snap.activeWat]?.name?.split(".")?.[0] || ""
+    );
+  }, [snap.activeWat, snap.files, setValue]);
   // const {
   //   fields: grantFields,
   //   append: grantAppend,
@@ -156,7 +165,7 @@ export const SetHookDialog: React.FC<{ account: IAccount }> = ({ account }) => {
                   {...register("HookNamespace", { required: true })}
                   autoComplete={"off"}
                   defaultValue={
-                    snap.files?.[snap.active]?.name?.split(".")?.[0] || ""
+                    snap.files?.[snap.activeWat]?.name?.split(".")?.[0] || ""
                   }
                 />
                 {errors.HookNamespace?.type === "required" && (
