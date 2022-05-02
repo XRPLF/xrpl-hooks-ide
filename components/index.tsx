@@ -7,7 +7,7 @@ export { default as Text } from "./Text";
 export { default as Input, Label } from "./Input";
 export { default as Select } from "./Select";
 export * from "./Tabs";
-export * from "./AlertDialog";
+export * from "./AlertDialog/primitive";
 export { default as Box } from "./Box";
 export { default as Button } from "./Button";
 export { default as Pre } from "./Pre";

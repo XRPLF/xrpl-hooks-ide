@@ -1,7 +1,7 @@
 import React from "react";
 import { blackA } from "@radix-ui/colors";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
-import { styled, keyframes } from "../stitches.config";
+import { styled, keyframes } from "../../stitches.config";
 
 const overlayShow = keyframes({
   "0%": { opacity: 0 },
