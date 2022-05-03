@@ -5,7 +5,6 @@ import type monaco from "monaco-editor";
 import { ArrowBendLeftUp } from "phosphor-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/router";
-import uniqBy from "lodash.uniqby";
 
 import Box from "./Box";
 import Container from "./Container";
@@ -45,7 +44,17 @@ const setMarkers = (monacoE: typeof monaco) => {
   // Get all the markers that are active at the moment,
   // Also if same error is there twice, we can show the content
   // only once (that's why we're using uniqBy)
-  const markers = uniqBy(
+  const markers = monacoE.editor
+    .getModelMarkers({})
+    // Filter out the markers that are hooks specific
+    .filter(
+      (marker) =>
+        typeof marker?.code === "string" &&
+        // Take only markers that starts with "hooks-"
+        marker?.code?.includes("hooks-")
+    );
+
+  console.log(
     monacoE.editor
       .getModelMarkers({})
       // Filter out the markers that are hooks specific
@@ -54,8 +63,7 @@ const setMarkers = (monacoE: typeof monaco) => {
           typeof marker?.code === "string" &&
           // Take only markers that starts with "hooks-"
           marker?.code?.includes("hooks-")
-      ),
-    "code"
+      )
   );
 
   // Get the active model (aka active file you're editing)
