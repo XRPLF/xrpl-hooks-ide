@@ -76,40 +76,6 @@ export const PopoverContent = StyledContent;
 export const PopoverArrow = StyledArrow;
 export const PopoverClose = StyledClose;
 
-// const PopoverDemo = () => (
-//   <Popover>
-//     <PopoverContent sideOffset={5}>
-//       <Flex css={{ flexDirection: "column", gap: 10 }}>
-//         <Text bold css={{ marginBottom: 10 }}>
-//           Dimensions
-//         </Text>
-//         <Fieldset>
-//           <Label htmlFor="width">Width</Label>
-//           <Input id="width" defaultValue="100%" />
-//         </Fieldset>
-//         <Fieldset>
-//           <Label htmlFor="maxWidth">Max. width</Label>
-//           <Input id="maxWidth" defaultValue="300px" />
-//         </Fieldset>
-//         <Fieldset>
-//           <Label htmlFor="height">Height</Label>
-//           <Input id="height" defaultValue="25px" />
-//         </Fieldset>
-//         <Fieldset>
-//           <Label htmlFor="maxHeight">Max. height</Label>
-//           <Input id="maxHeight" defaultValue="none" />
-//         </Fieldset>
-//       </Flex>
-//       <PopoverArrow />
-//       <PopoverClose aria-label="Close">
-//         <Cross2Icon />
-//       </PopoverClose>
-//     </PopoverContent>
-//   </Popover>
-// );
-
-// export default PopoverDemo;
-
 interface IPopover {
   content: string | ReactNode;
   open?: boolean;
