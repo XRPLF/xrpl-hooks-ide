@@ -1,15 +1,17 @@
+import { Label } from "@radix-ui/react-label";
 import type { NextPage } from "next";
 import dynamic from "next/dynamic";
-import { Play } from "phosphor-react";
+import { Gear, Play } from "phosphor-react";
 import Hotkeys from "react-hot-keys";
 import Split from "react-split";
 import { useSnapshot } from "valtio";
+import { ButtonGroup, Flex, Input } from "../../components";
 import Box from "../../components/Box";
 import Button from "../../components/Button";
+import Popover from "../../components/Popover";
 import state from "../../state";
 import { compileCode } from "../../state/actions";
 import { getSplit, saveSplit } from "../../state/actions/persistSplits";
-
 
 const HooksEditor = dynamic(() => import("../../components/HooksEditor"), {
   ssr: false,
@@ -18,6 +20,66 @@ const HooksEditor = dynamic(() => import("../../components/HooksEditor"), {
 const LogBox = dynamic(() => import("../../components/LogBox"), {
   ssr: false,
 });
+
+const CompilerSettings = () => {
+  const snap = useSnapshot(state);
+  return (
+    <Flex css={{ minWidth: 200, flexDirection: "column" }}>
+      <Label>Optimization level</Label>
+      <ButtonGroup css={{ mt: "$2", fontFamily: "$monospace" }}>
+        <Button
+          css={{ fontFamily: "$monospace" }}
+          outline={snap.compileOptions !== "-O0"}
+          onClick={() => (state.compileOptions = "-O0")}
+        >
+          -O0
+        </Button>
+        <Button
+          css={{ fontFamily: "$monospace" }}
+          outline={snap.compileOptions !== "-O1"}
+          onClick={() => (state.compileOptions = "-O1")}
+        >
+          -O1
+        </Button>
+        <Button
+          css={{ fontFamily: "$monospace" }}
+          outline={snap.compileOptions !== "-O2"}
+          onClick={() => (state.compileOptions = "-O2")}
+        >
+          -O2
+        </Button>
+        <Button
+          css={{ fontFamily: "$monospace" }}
+          outline={snap.compileOptions !== "-O3"}
+          onClick={() => (state.compileOptions = "-O3")}
+        >
+          -O3
+        </Button>
+        <Button
+          css={{ fontFamily: "$monospace" }}
+          outline={snap.compileOptions !== "-O4"}
+          onClick={() => (state.compileOptions = "-O4")}
+        >
+          -O4
+        </Button>
+        <Button
+          css={{ fontFamily: "$monospace" }}
+          outline={snap.compileOptions !== "-Os"}
+          onClick={() => (state.compileOptions = "-Os")}
+        >
+          -Os
+        </Button>
+        <Button
+          css={{ fontFamily: "$monospace" }}
+          outline={snap.compileOptions !== "-Oz"}
+          onClick={() => (state.compileOptions = "-Oz")}
+        >
+          -Oz
+        </Button>
+      </ButtonGroup>
+    </Flex>
+  );
+};
 
 const Home: NextPage = () => {
   const snap = useSnapshot(state);
@@ -42,12 +104,7 @@ const Home: NextPage = () => {
               !snap.compiling && snap.files.length && compileCode(snap.active)
             }
           >
-            <Button
-              variant="primary"
-              uppercase
-              disabled={!snap.files.length}
-              isLoading={snap.compiling}
-              onClick={() => compileCode(snap.active)}
+            <Flex
               css={{
                 position: "absolute",
                 bottom: "$4",
@@ -55,11 +112,25 @@ const Home: NextPage = () => {
                 alignItems: "center",
                 display: "flex",
                 cursor: "pointer",
+                gap: "$2",
               }}
             >
-              <Play weight="bold" size="16px" />
-              Compile to Wasm
-            </Button>
+              <Button
+                variant="primary"
+                uppercase
+                disabled={!snap.files.length}
+                isLoading={snap.compiling}
+                onClick={() => compileCode(snap.active)}
+              >
+                <Play weight="bold" size="16px" />
+                Compile to Wasm
+              </Button>
+              <Popover content={<CompilerSettings />}>
+                <Button variant="primary" css={{ px: "10px" }}>
+                  <Gear size="16px" />
+                </Button>
+              </Popover>
+            </Flex>
           </Hotkeys>
         )}
       </main>
