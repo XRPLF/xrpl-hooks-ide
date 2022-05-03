@@ -4,6 +4,7 @@ import { Octokit } from "@octokit/core";
 import Router from "next/router";
 
 import state from '../index';
+import { saveAllFiles } from "./saveFile";
 
 const octokit = new Octokit();
 
@@ -12,6 +13,7 @@ export const syncToGist = async (
   session?: Session | null,
   createNewGist?: boolean
 ) => {
+  saveAllFiles();
   let files: Record<string, { filename: string; content: string }> = {};
   state.gistLoading = true;
 
