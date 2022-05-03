@@ -69,13 +69,6 @@ const CompilerSettings = () => {
         >
           -Os
         </Button>
-        <Button
-          css={{ fontFamily: "$monospace" }}
-          outline={snap.compileOptions !== "-Oz"}
-          onClick={() => (state.compileOptions = "-Oz")}
-        >
-          -Oz
-        </Button>
       </ButtonGroup>
     </Flex>
   );
