@@ -74,6 +74,7 @@ export interface IState {
   mainModalOpen: boolean;
   mainModalShowed: boolean;
   accounts: IAccount[];
+  compileOptions: '-O0' | '-O1' | '-O2' | '-O3' | '-O4' | '-Os' | '-Oz';
 }
 
 // let localStorageState: null | string = null;
@@ -103,6 +104,7 @@ let initialState: IState = {
   mainModalOpen: false,
   mainModalShowed: false,
   accounts: [],
+  compileOptions: '-O0'
 };
 
 let localStorageAccounts: string | null = null;
