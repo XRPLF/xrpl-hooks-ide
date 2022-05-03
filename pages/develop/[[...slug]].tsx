@@ -5,7 +5,7 @@ import { Gear, Play } from "phosphor-react";
 import Hotkeys from "react-hot-keys";
 import Split from "react-split";
 import { useSnapshot } from "valtio";
-import { ButtonGroup, Flex, Input } from "../../components";
+import { ButtonGroup, Flex } from "../../components";
 import Box from "../../components/Box";
 import Button from "../../components/Button";
 import Popover from "../../components/Popover";
