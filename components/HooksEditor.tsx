@@ -54,18 +54,6 @@ const setMarkers = (monacoE: typeof monaco) => {
         marker?.code?.includes("hooks-")
     );
 
-  console.log(
-    monacoE.editor
-      .getModelMarkers({})
-      // Filter out the markers that are hooks specific
-      .filter(
-        (marker) =>
-          typeof marker?.code === "string" &&
-          // Take only markers that starts with "hooks-"
-          marker?.code?.includes("hooks-")
-      )
-  );
-
   // Get the active model (aka active file you're editing)
   // const model = monacoE.editor?.getModel(
   //   monacoE.Uri.parse(`file:///work/c/${state.files?.[state.active]?.name}`)
