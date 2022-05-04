@@ -105,11 +105,10 @@ export const modifyTransaction = (
 export const prepareTransaction = (data: any) => {
     let options = { ...data };
 
-    // options.Destination = selectedDestAccount?.value;
     (Object.keys(options)).forEach(field => {
         let _value = options[field];
         // convert currency
-        if (typeof _value === "object" && _value.type === "currency") {
+        if (_value && typeof _value === "object" && _value.type === "currency") {
             if (+_value.value) {
                 options[field] = (+_value.value * 1000000 + "") as any;
             } else {
@@ -117,7 +116,7 @@ export const prepareTransaction = (data: any) => {
             }
         }
         // handle type: `json`
-        if (typeof _value === "object" && _value.type === "json") {
+        if (_value && typeof _value === "object" && _value.type === "json") {
             if (typeof _value.value === "object") {
                 options[field] = _value.value as any;
             } else {
@@ -133,7 +132,7 @@ export const prepareTransaction = (data: any) => {
         }
 
         // delete unneccesary fields
-        if (!options[field]) {
+        if (options[field] === undefined) {
             delete options[field];
         }
     });
@@ -180,24 +179,28 @@ export const prepareState = (value?: string) => {
         tx.selectedTransaction = null;
     }
 
-    if (Destination) {
+    if (Destination !== undefined) {
         const dest = state.accounts.find(acc => acc.address === Destination);
+        rest.Destination = null
         if (dest) {
             tx.selectedDestAccount = {
                 label: dest.name,
                 value: dest.address,
             };
-        } else {
+        }
+        else if (Destination) {
             tx.selectedDestAccount = {
                 label: Destination,
                 value: Destination,
             };
         }
+        else {
+            tx.selectedDestAccount = null
+        }
     }
 
     Object.keys(rest).forEach(field => {
         const value = rest[field];
-        console.log({ field, value });
         if (field === "Amount") {
             rest[field] = {
                 type: "currency",

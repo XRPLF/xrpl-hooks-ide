@@ -52,9 +52,11 @@ const Transaction: FC<TransactionProps> = ({
         txFields,
       } = state;
 
-      const TransactionType = selectedTransaction?.value;
-      const Destination = selectedDestAccount?.value;
-      const Account = selectedAccount?.value;
+      const TransactionType = selectedTransaction?.value || null;
+      const Destination =
+        selectedDestAccount?.value ||
+        ("Destination" in txFields ? null : undefined);
+      const Account = selectedAccount?.value || null;
 
       return prepareTransaction({
         ...txFields,
@@ -98,6 +100,10 @@ const Transaction: FC<TransactionProps> = ({
         throw Error("Account must be selected from imported accounts!");
       }
       const options = prepareOptions(st);
+
+      if (options.Destination === null) {
+        throw Error("Destination account cannot be null")
+      }
 
       await sendTransaction(account, options, { logPrefix });
     } catch (error) {
