@@ -2,6 +2,7 @@ import { proxy } from 'valtio';
 import { deepEqual } from '../utils/object';
 import transactionsData from "../content/transactions.json";
 import state from '.';
+import { showAlert } from "../state/actions/showAlert";
 
 export type SelectOption = {
     value: string;
@@ -143,7 +144,12 @@ export const prepareTransaction = (data: any) => {
 // editor value to state
 export const prepareState = (value?: string) => {
     const options = parseJSON(value);
-    if (!options) return alert("Cannot save dirty editor");
+    if (!options) {
+        showAlert("Error!", {
+            body: "Cannot save editor with malformed transaction."
+        })
+        return
+    };
 
     const { Account, TransactionType, Destination, ...rest } = options;
     let tx: Partial<TransactionState> = {};

@@ -16,7 +16,8 @@ export interface AlertState {
   title?: string;
   body?: ReactNode;
   cancelText?: string;
-  confirmNode?: ReactNode;
+  confirmText?: string;
+  confirmPrefix?: ReactNode;
   onConfirm?: () => any;
   onCancel?: () => any;
 }
@@ -31,7 +32,8 @@ const Alert: FC = () => {
     isOpen,
     body,
     cancelText,
-    confirmNode = "Ok",
+    confirmText = "Ok",
+    confirmPrefix,
     onCancel,
     onConfirm,
   } = useSnapshot(alertState);
@@ -44,10 +46,10 @@ const Alert: FC = () => {
         <AlertDialogTitle>{title}</AlertDialogTitle>
         <AlertDialogDescription>{body}</AlertDialogDescription>
         <Flex css={{ justifyContent: "flex-end", gap: "$3" }}>
-          {cancelText && (
+          {(cancelText || onCancel) && (
             <AlertDialogCancel asChild>
               <Button css={{ minWidth: "$16" }} outline onClick={onCancel}>
-                {cancelText}
+                {cancelText || "Cancel"}
               </Button>
             </AlertDialogCancel>
           )}
@@ -60,7 +62,8 @@ const Alert: FC = () => {
                 alertState.isOpen = false;
               }}
             >
-              {confirmNode}
+              {confirmPrefix}
+              {confirmText}
             </Button>
           </AlertDialogAction>
         </Flex>

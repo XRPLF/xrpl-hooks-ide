@@ -6,8 +6,6 @@ import Transaction from "../../components/Transaction";
 import state from "../../state";
 import { getSplit, saveSplit } from "../../state/actions/persistSplits";
 import { transactionsState, modifyTransaction } from "../../state";
-import { useEffect } from 'react';
-import { showAlert } from '../../state/actions/showAlert';
 
 const DebugStream = dynamic(() => import("../../components/DebugStream"), {
   ssr: false,

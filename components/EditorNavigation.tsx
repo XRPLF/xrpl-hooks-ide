@@ -89,11 +89,8 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
         </>
       ),
       cancelText: "Cancel",
-      confirmNode: (
-        <>
-          <FilePlus size="15px" /> Create new Gist
-        </>
-      ),
+      confirmText: "Create new Gist",
+      confirmPrefix: <FilePlus size="15px" />,
       onConfirm: () => syncToGist(session, true),
     });
   };

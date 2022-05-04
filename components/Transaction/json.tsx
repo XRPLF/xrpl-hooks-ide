@@ -9,6 +9,7 @@ import state, { parseJSON, prepareState, TransactionState } from "../../state";
 import Text from "../Text";
 import Flex from "../Flex";
 import { Link } from "..";
+import { showAlert } from "../../state/actions/showAlert";
 
 loader.config({
   paths: {
@@ -50,10 +51,11 @@ export const TxJson: FC<JsonProps> = ({
   };
 
   const discardChanges = () => {
-    let discard = confirm("Are you sure to discard these changes");
-    if (discard) {
-      setState({ editorValue: value });
-    }
+    showAlert("Confirm", {
+      body: "Are you sure to discard these changes?",
+      confirmText: "Yes",
+      onConfirm: () => setState({ editorValue: value }),
+    });
   };
 
   const onExit = (value: string) => {
@@ -62,14 +64,12 @@ export const TxJson: FC<JsonProps> = ({
       saveState(value);
       return;
     }
-    const discard = confirm(
-      `Malformed Transaction in ${header}, would you like to discard these changes?`
-    );
-    if (!discard) {
-      setState({ viewType: "json", editorSavedValue: value });
-    } else {
-      setState({ editorValue: value });
-    }
+    showAlert("Error!", {
+      body: `Malformed Transaction in ${header}, would you like to discard these changes?`,
+      confirmText: "Discard",
+      onConfirm: () => setState({ editorValue: value }),
+      onCancel: () => setState({ viewType: "json", editorSavedValue: value }),
+    });
   };
 
   const path = `file:///${header}`;

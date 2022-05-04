@@ -75,7 +75,7 @@ const StyledDescription = styled(AlertDialogPrimitive.Description, {
   marginBottom: 20,
   color: "$mauve11",
   lineHeight: 1.5,
-  fontSize: "$sm",
+  fontSize: "$md",
 });
 
 // Exports
