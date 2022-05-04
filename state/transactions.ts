@@ -27,8 +27,6 @@ export type TxFields = Omit<
     "Account" | "Sequence" | "TransactionType"
 >;
 
-export type OtherFields = (keyof Omit<TxFields, "Destination">)[];
-
 export const defaultTransaction: TransactionState = {
     selectedTransaction: null,
     selectedAccount: null,
@@ -107,8 +105,8 @@ export const prepareTransaction = (data: any) => {
 
     (Object.keys(options)).forEach(field => {
         let _value = options[field];
-        // convert currency
-        if (_value && typeof _value === "object" && _value.type === "currency") {
+        // convert xrp
+        if (_value && typeof _value === "object" && _value.type === "xrp") {
             if (+_value.value) {
                 options[field] = (+_value.value * 1000000 + "") as any;
             } else {
@@ -141,7 +139,7 @@ export const prepareTransaction = (data: any) => {
 }
 
 // editor value to state
-export const prepareState = (value?: string) => {
+export const prepareState = (value: string, txState: TransactionState) => {
     const options = parseJSON(value);
     if (!options) {
         showAlert("Error!", {
@@ -152,6 +150,7 @@ export const prepareState = (value?: string) => {
 
     const { Account, TransactionType, Destination, ...rest } = options;
     let tx: Partial<TransactionState> = {};
+    const { txFields } = txState
 
     if (Account) {
         const acc = state.accounts.find(acc => acc.address === Account);
@@ -179,7 +178,7 @@ export const prepareState = (value?: string) => {
         tx.selectedTransaction = null;
     }
 
-    if (Destination !== undefined) {
+    if (txFields.Destination !== undefined) {
         const dest = state.accounts.find(acc => acc.address === Destination);
         rest.Destination = null
         if (dest) {
@@ -201,10 +200,12 @@ export const prepareState = (value?: string) => {
 
     Object.keys(rest).forEach(field => {
         const value = rest[field];
-        if (field === "Amount") {
+        const origValue = txFields[field as keyof TxFields]
+        const isXrp = typeof value !== 'object' && origValue && typeof origValue === 'object' && origValue.type === 'xrp'
+        if (isXrp) {
             rest[field] = {
-                type: "currency",
-                value: +value / 1000000, // TODO handle object currencies
+                type: "xrp",
+                value: +value / 1000000, // TODO maybe use bigint?
             };
         } else if (typeof value === "object") {
             rest[field] = {

@@ -9,7 +9,6 @@ import {
   TransactionState,
   transactionsData,
   TxFields,
-  OtherFields,
 } from "../../state/transactions";
 import { useSnapshot } from "valtio";
 import state from "../../state";
@@ -74,11 +73,11 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
     resetOptions(tt.value);
   };
 
-  const usualFields = ["TransactionType", "Amount", "Account", "Destination"];
+  const specialFields = ["TransactionType", "Account", "Destination"];
 
   const otherFields = Object.keys(txFields).filter(
-    k => !usualFields.includes(k)
-  ) as OtherFields;
+    k => !specialFields.includes(k)
+  ) as [keyof TxFields];
 
   return (
     <Container
@@ -135,34 +134,6 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
             onChange={(acc: any) => handleSetAccount(acc)} // TODO make react-select have correct types for acc
           />
         </Flex>
-        {txFields.Amount !== undefined && (
-          <Flex
-            row
-            fluid
-            css={{
-              justifyContent: "flex-end",
-              alignItems: "center",
-              mb: "$3",
-              pr: "1px",
-            }}
-          >
-            <Text muted css={{ mr: "$3" }}>
-              Amount (XRP):{" "}
-            </Text>
-            <Input
-              value={txFields.Amount.value}
-              onChange={e =>
-                setState({
-                  txFields: {
-                    ...txFields,
-                    Amount: { type: "currency", value: e.target.value },
-                  },
-                })
-              }
-              css={{ width: "70%", flex: "inherit" }}
-            />
-          </Flex>
-        )}
         {txFields.Destination !== undefined && (
           <Flex
             row
@@ -202,8 +173,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
             value = _value?.toString();
           }
 
-          let isCurrency =
-            typeof _value === "object" && _value.type === "currency";
+          let isXrp = typeof _value === "object" && _value.type === "xrp";
           return (
             <Flex
               key={field}
@@ -217,7 +187,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
               }}
             >
               <Text muted css={{ mr: "$3" }}>
-                {field + (isCurrency ? " (XRP)" : "")}:{" "}
+                {field + (isXrp ? " (XRP)" : "")}:{" "}
               </Text>
               <Input
                 value={value}

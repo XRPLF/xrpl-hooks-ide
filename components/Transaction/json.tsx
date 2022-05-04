@@ -45,8 +45,8 @@ export const TxJson: FC<JsonProps> = ({
     else setHasUnsaved(true);
   }, [editorValue, value]);
 
-  const saveState = (value: string) => {
-    const tx = prepareState(value);
+  const saveState = (value: string, txState: TransactionState) => {
+    const tx = prepareState(value, txState);
     if (tx) setState(tx);
   };
 
@@ -61,7 +61,7 @@ export const TxJson: FC<JsonProps> = ({
   const onExit = (value: string) => {
     const options = parseJSON(value);
     if (options) {
-      saveState(value);
+      saveState(value, txState);
       return;
     }
     showAlert("Error!", {
@@ -106,7 +106,7 @@ export const TxJson: FC<JsonProps> = ({
       {hasUnsaved && (
         <Text muted small css={{ position: "absolute", bottom: 0, right: 0 }}>
           This file has unsaved changes.{" "}
-          <Link onClick={() => saveState(editorValue)}>save</Link>{" "}
+          <Link onClick={() => saveState(editorValue, txState)}>save</Link>{" "}
           <Link onClick={discardChanges}>discard</Link>
         </Text>
       )}

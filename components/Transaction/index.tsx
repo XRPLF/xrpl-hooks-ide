@@ -82,7 +82,7 @@ const Transaction: FC<TransactionProps> = ({
     let st: TransactionState | undefined;
     if (viewType === "json") {
       // save the editor state first
-      const pst = prepareState(editorValue);
+      const pst = prepareState(editorValue || '', txState);
       if (!pst) return;
 
       st = setState(pst);
@@ -116,16 +116,7 @@ const Transaction: FC<TransactionProps> = ({
       }
     }
     setState({ txIsLoading: false });
-  }, [
-    viewType,
-    editorValue,
-    accounts,
-    txIsDisabled,
-    setState,
-    selectedAccount?.value,
-    prepareOptions,
-    header,
-  ]);
+  }, [viewType, accounts, txIsDisabled, setState, header, editorValue, txState, selectedAccount?.value, prepareOptions]);
 
   const resetState = useCallback(() => {
     modifyTransaction(header, { viewType }, { replaceState: true });

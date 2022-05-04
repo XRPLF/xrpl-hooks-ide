@@ -28,7 +28,7 @@
     "TransactionType": "CheckCash",
     "Amount": {
       "value": "100",
-      "type": "currency"
+      "type": "xrp"
     },
     "CheckID": "838766BA2B995C00744175F69A1B11E32C3DBC40E64801A4056FCBD657F57334",
     "Fee": "12"
@@ -62,7 +62,7 @@
     "TransactionType": "EscrowCreate",
     "Amount": {
       "value": "100",
-      "type": "currency"
+      "type": "xrp"
     },
     "Destination": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
     "CancelAfter": 533257958,
@@ -100,7 +100,7 @@
     "TokenID": "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
     "Amount": {
       "value": "100",
-      "type": "currency"
+      "type": "xrp"
     },
     "Flags": 1
   },
@@ -123,7 +123,7 @@
     "TakerGets": "6000000",
     "Amount": {
       "value": "100",
-      "type": "currency"
+      "type": "xrp"
     }
   },
   {
@@ -132,7 +132,7 @@
     "Destination": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
     "Amount": {
       "value": "100",
-      "type": "currency"
+      "type": "xrp"
     },
     "Fee": "12",
     "Flags": 2147483648,
@@ -143,7 +143,7 @@
     "TransactionType": "PaymentChannelCreate",
     "Amount": {
       "value": "100",
-      "type": "currency"
+      "type": "xrp"
     },
     "Destination": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
     "SettleDelay": 86400,
@@ -158,7 +158,7 @@
     "Channel": "C1AE6DDDEEC05CF2978C0BAD6FE302948E9533691DC749DCDD3B9E5992CA6198",
     "Amount": {
       "value": "200",
-      "type": "currency"
+      "type": "xrp"
     },
     "Expiration": 543171558
   },
@@ -214,7 +214,7 @@
     "LastLedgerSequence": 8007750,
     "Amount": {
       "value": "100",
-      "type": "currency"
+      "type": "xrp"
     },
     "Sequence": 12
   }
