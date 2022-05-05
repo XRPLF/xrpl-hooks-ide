@@ -1,15 +1,22 @@
-import Editor, { loader } from "@monaco-editor/react";
-import { FC, useEffect, useState } from "react";
+import Editor, { loader, useMonaco } from "@monaco-editor/react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 
 import dark from "../../theme/editor/amy.json";
 import light from "../../theme/editor/xcode_default.json";
 import { useSnapshot } from "valtio";
-import state, { parseJSON, prepareState, TransactionState } from "../../state";
+import state, {
+  prepareState,
+  transactionsData,
+  TransactionState,
+} from "../../state";
 import Text from "../Text";
 import Flex from "../Flex";
 import { Link } from "..";
 import { showAlert } from "../../state/actions/showAlert";
+import { parseJSON } from "../../utils/json";
+import { extractSchemaProps } from "../../utils/schema";
+import amountSchema from "../../content/amount-schema.json";
 
 loader.config({
   paths: {
@@ -30,8 +37,8 @@ export const TxJson: FC<JsonProps> = ({
   header,
   setState,
 }) => {
-  const { editorSettings } = useSnapshot(state);
-  const { editorValue = value } = txState;
+  const { editorSettings, accounts } = useSnapshot(state);
+  const { editorValue = value, selectedTransaction } = txState;
   const { theme } = useTheme();
   const [hasUnsaved, setHasUnsaved] = useState(false);
 
@@ -73,6 +80,82 @@ export const TxJson: FC<JsonProps> = ({
   };
 
   const path = `file:///${header}`;
+  const monaco = useMonaco();
+
+  const getSchemas = useCallback((): any[] => {
+    const tt = selectedTransaction?.value;
+    const txObj = transactionsData.find(td => td.TransactionType === tt);
+
+    let genericSchemaProps: any;
+    if (txObj) {
+      genericSchemaProps = extractSchemaProps(txObj);
+    } else {
+      genericSchemaProps = transactionsData.reduce(
+        (cumm, td) => ({
+          ...cumm,
+          ...extractSchemaProps(td),
+        }),
+        {}
+      );
+    }
+
+    return [
+      {
+        uri: "file:///main-schema.json", // id of the first schema
+        fileMatch: ["**.json"], // associate with our model
+        schema: {
+          title: header,
+          type: "object",
+          required: ["TransactionType", "Account"],
+          properties: {
+            ...genericSchemaProps,
+            TransactionType: {
+              title: "Transaction Type",
+              enum: transactionsData.map(td => td.TransactionType),
+            },
+            Account: {
+              $ref: "file:///account-schema.json",
+            },
+            Destination: {
+              anyOf: [
+                {
+                  $ref: "file:///account-schema.json",
+                },
+                {
+                  type: "string",
+                  title: "Destination Account",
+                },
+              ],
+            },
+            Amount: {
+              $ref: "file:///amount-schema.json",
+            },
+          },
+        },
+      },
+      {
+        uri: "file:///account-schema.json",
+        schema: {
+          type: "string",
+          title: "Account type",
+          enum: accounts.map(acc => acc.address),
+        },
+      },
+      {
+        ...amountSchema,
+      },
+    ];
+  }, [accounts, header, selectedTransaction?.value]);
+
+  useEffect(() => {
+    if (!monaco) return;
+    console.log("monaco render");
+    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+      validate: true,
+      schemas: getSchemas(),
+    });
+  }, [getSchemas, monaco]);
+
   return (
     <Flex
       fluid
@@ -98,8 +181,16 @@ export const TxJson: FC<JsonProps> = ({
             dragAndDrop: true,
             fontSize: 14,
           });
+
+          // register onExit cb
           const model = editor.getModel();
           model?.onWillDispose(() => onExit(model.getValue()));
+
+          // set json defaults
+          monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+            validate: true,
+            schemas: getSchemas(),
+          });
         }}
         theme={theme === "dark" ? "dark" : "light"}
       />

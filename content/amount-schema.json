@@ -1,0 +1,50 @@
+{
+  "uri": "file:///amount-schema.json",
+  "title": "Amount",
+  "description": "Specify xrp in drops and tokens as objects.",
+  "schema": {
+    "anyOf": [
+      {
+        "type": [
+          "number",
+          "string"
+        ],
+        "exclusiveMinimum": 0,
+        "maximum": "100000000000000000"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "currency": {
+            "description": "Arbitrary currency code for the token. Cannot be XRP."
+          },
+          "value": {
+            "type": [
+              "string",
+              "number"
+            ],
+            "description": "Quoted decimal representation of the amount of the token."
+          },
+          "issuer": {
+            "type": "string",
+            "description": "Generally, the account that issues this token. In special cases, this can refer to the account that holds the token instead."
+          }
+        }
+      }
+    ],
+    "defaultSnippets": [
+      {
+        "label": "Xrp",
+        "body": "1000000"
+      },
+      {
+        "label": "Token",
+        "body": {
+          "currency": "${1:13.1}",
+          "value": "${2:FOO}",
+          "description": "${3:rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpns}"
+        }
+      }
+    ]
+  }
+}

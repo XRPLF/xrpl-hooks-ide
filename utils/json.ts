@@ -19,3 +19,13 @@ export const extractJSON = (str?: string) => {
         firstOpen = str.indexOf('{', firstOpen + 1);
     } while (firstOpen != -1);
 }
+
+export const parseJSON = (str?: string | null): any | undefined => {
+    if (!str) return undefined
+    try {
+        const parsed = JSON.parse(str);
+        return typeof parsed === "object" ? parsed : undefined;
+    } catch (error) {
+        return undefined;
+    }
+}

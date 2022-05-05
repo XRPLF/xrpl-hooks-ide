@@ -164,16 +164,16 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
 
           let value: string | undefined;
           if (typeof _value === "object") {
-            if (_value.type === "json" && typeof _value.value === "object") {
-              value = JSON.stringify(_value.value);
+            if (_value.$type === "json" && typeof _value.$value === "object") {
+              value = JSON.stringify(_value.$value);
             } else {
-              value = _value.value.toString();
+              value = _value.$value.toString();
             }
           } else {
             value = _value?.toString();
           }
 
-          let isXrp = typeof _value === "object" && _value.type === "xrp";
+          let isXrp = typeof _value === "object" && _value.$type === "xrp";
           return (
             <Flex
               key={field}
@@ -197,7 +197,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
                       ...txFields,
                       [field]:
                         typeof _value === "object"
-                          ? { ..._value, value: e.target.value }
+                          ? { ..._value, $value: e.target.value }
                           : e.target.value,
                     },
                   });

@@ -3,6 +3,7 @@ import { deepEqual } from '../utils/object';
 import transactionsData from "../content/transactions.json";
 import state from '.';
 import { showAlert } from "../state/actions/showAlert";
+import { parseJSON } from '../utils/json';
 
 export type SelectOption = {
     value: string;
@@ -106,25 +107,25 @@ export const prepareTransaction = (data: any) => {
     (Object.keys(options)).forEach(field => {
         let _value = options[field];
         // convert xrp
-        if (_value && typeof _value === "object" && _value.type === "xrp") {
-            if (+_value.value) {
-                options[field] = (+_value.value * 1000000 + "") as any;
+        if (_value && typeof _value === "object" && _value.$type === "xrp") {
+            if (+_value.$value) {
+                options[field] = (+_value.$value * 1000000 + "") as any;
             } else {
                 options[field] = undefined; // 👇 💀
             }
         }
         // handle type: `json`
-        if (_value && typeof _value === "object" && _value.type === "json") {
-            if (typeof _value.value === "object") {
-                options[field] = _value.value as any;
+        if (_value && typeof _value === "object" && _value.$type === "json") {
+            if (typeof _value.$value === "object") {
+                options[field] = _value.$value as any;
             } else {
                 try {
-                    options[field] = JSON.parse(_value.value);
+                    options[field] = JSON.parse(_value.$value);
                 } catch (error) {
                     const message = `Input error for json field '${field}': ${error instanceof Error ? error.message : ""
                         }`;
                     console.error(message)
-                    options[field] = _value.value
+                    options[field] = _value.$value
                 }
             }
         }
@@ -201,16 +202,16 @@ export const prepareState = (value: string, txState: TransactionState) => {
     Object.keys(rest).forEach(field => {
         const value = rest[field];
         const origValue = txFields[field as keyof TxFields]
-        const isXrp = typeof value !== 'object' && origValue && typeof origValue === 'object' && origValue.type === 'xrp'
+        const isXrp = typeof value !== 'object' && origValue && typeof origValue === 'object' && origValue.$type === 'xrp'
         if (isXrp) {
             rest[field] = {
-                type: "xrp",
-                value: +value / 1000000, // TODO maybe use bigint?
+                $type: "xrp",
+                $value: +value / 1000000, // TODO maybe use bigint?
             };
         } else if (typeof value === "object") {
             rest[field] = {
-                type: "json",
-                value,
+                $type: "json",
+                $value: value,
             };
         }
     });
@@ -219,16 +220,6 @@ export const prepareState = (value: string, txState: TransactionState) => {
     tx.editorSavedValue = null;
 
     return tx
-}
-
-export const parseJSON = (str?: string | null): any | undefined => {
-    if (!str) return undefined
-    try {
-        const parsed = JSON.parse(str);
-        return typeof parsed === "object" ? parsed : undefined;
-    } catch (error) {
-        return undefined;
-    }
 }
 
 export { transactionsData }
