@@ -149,7 +149,6 @@ export const TxJson: FC<JsonProps> = ({
 
   useEffect(() => {
     if (!monaco) return;
-    console.log("monaco render");
     monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
       validate: true,
       schemas: getSchemas(),

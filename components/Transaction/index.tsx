@@ -76,7 +76,7 @@ const Transaction: FC<TransactionProps> = ({
     } else {
       setState({ txIsDisabled: false });
     }
-  }, [txIsLoading, selectedTransaction, selectedAccount, accounts, setState]);
+  }, [selectedAccount?.value, selectedTransaction?.value, setState, txIsLoading]);
 
   const submitTest = useCallback(async () => {
     let st: TransactionState | undefined;
