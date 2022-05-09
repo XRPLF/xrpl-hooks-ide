@@ -1,4 +1,5 @@
 import { Label } from "@radix-ui/react-label";
+import { Switch, SwitchThumb } from "../../components/Switch";
 import type { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { Gear, Play } from "phosphor-react";
@@ -24,52 +25,67 @@ const LogBox = dynamic(() => import("../../components/LogBox"), {
 const CompilerSettings = () => {
   const snap = useSnapshot(state);
   return (
-    <Flex css={{ minWidth: 200, flexDirection: "column" }}>
-      <Label>Optimization level</Label>
-      <ButtonGroup css={{ mt: "$2", fontFamily: "$monospace" }}>
-        <Button
-          css={{ fontFamily: "$monospace" }}
-          outline={snap.compileOptions !== "-O0"}
-          onClick={() => (state.compileOptions = "-O0")}
+    <Flex css={{ minWidth: 200, flexDirection: "column", gap: "$5" }}>
+      <Box>
+        <Label>Optimization level</Label>
+        <ButtonGroup css={{ mt: "$2", fontFamily: "$monospace" }}>
+          <Button
+            css={{ fontFamily: "$monospace" }}
+            outline={snap.compileOptions.optimisationLevel !== "-O0"}
+            onClick={() => (state.compileOptions.optimisationLevel = "-O0")}
+          >
+            -O0
+          </Button>
+          <Button
+            css={{ fontFamily: "$monospace" }}
+            outline={snap.compileOptions.optimisationLevel !== "-O1"}
+            onClick={() => (state.compileOptions.optimisationLevel = "-O1")}
+          >
+            -O1
+          </Button>
+          <Button
+            css={{ fontFamily: "$monospace" }}
+            outline={snap.compileOptions.optimisationLevel !== "-O2"}
+            onClick={() => (state.compileOptions.optimisationLevel = "-O2")}
+          >
+            -O2
+          </Button>
+          <Button
+            css={{ fontFamily: "$monospace" }}
+            outline={snap.compileOptions.optimisationLevel !== "-O3"}
+            onClick={() => (state.compileOptions.optimisationLevel = "-O3")}
+          >
+            -O3
+          </Button>
+          <Button
+            css={{ fontFamily: "$monospace" }}
+            outline={snap.compileOptions.optimisationLevel !== "-O4"}
+            onClick={() => (state.compileOptions.optimisationLevel = "-O4")}
+          >
+            -O4
+          </Button>
+          <Button
+            css={{ fontFamily: "$monospace" }}
+            outline={snap.compileOptions.optimisationLevel !== "-Os"}
+            onClick={() => (state.compileOptions.optimisationLevel = "-Os")}
+          >
+            -Os
+          </Button>
+        </ButtonGroup>
+      </Box>
+      <Flex css={{ flexDirection: "column" }}>
+        <Label>Clean code</Label>
+        <Switch
+          css={{ mt: "$2" }}
+          checked={snap.compileOptions.strip}
+          onCheckedChange={(checked) => {
+            console.log(checked);
+            state.compileOptions.strip = checked;
+          }}
         >
-          -O0
-        </Button>
-        <Button
-          css={{ fontFamily: "$monospace" }}
-          outline={snap.compileOptions !== "-O1"}
-          onClick={() => (state.compileOptions = "-O1")}
-        >
-          -O1
-        </Button>
-        <Button
-          css={{ fontFamily: "$monospace" }}
-          outline={snap.compileOptions !== "-O2"}
-          onClick={() => (state.compileOptions = "-O2")}
-        >
-          -O2
-        </Button>
-        <Button
-          css={{ fontFamily: "$monospace" }}
-          outline={snap.compileOptions !== "-O3"}
-          onClick={() => (state.compileOptions = "-O3")}
-        >
-          -O3
-        </Button>
-        <Button
-          css={{ fontFamily: "$monospace" }}
-          outline={snap.compileOptions !== "-O4"}
-          onClick={() => (state.compileOptions = "-O4")}
-        >
-          -O4
-        </Button>
-        <Button
-          css={{ fontFamily: "$monospace" }}
-          outline={snap.compileOptions !== "-Os"}
-          onClick={() => (state.compileOptions = "-Os")}
-        >
-          -Os
-        </Button>
-      </ButtonGroup>
+          <SwitchThumb />
+        </Switch>
+      </Flex>
     </Flex>
   );
 };
