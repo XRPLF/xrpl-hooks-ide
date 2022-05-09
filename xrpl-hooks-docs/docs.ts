@@ -3,6 +3,7 @@ import hooksAccountConvBufLen from "./md/hooks-account-conv-buf-len.md";
 import hooksAccountConvPure from "./md/hooks-account-conv-pure.md";
 import hooksArrayBufLen from "./md/hooks-array-buf-len.md";
 import hooksBurdenPrereq from "./md/hooks-burden-prereq.md";
+import hooksControlStringArg from "./md/hooks-control-string-arg.md";
 import hooksDetailBufLen from "./md/hooks-detail-buf-len.md";
 import hooksDetailPrereq from "./md/hooks-detail-prereq.md";
 import hooksEmitBufLen from "./md/hooks-emit-buf-len.md";
@@ -29,12 +30,14 @@ import hooksParamBufLen from "./md/hooks-param-buf-len.md";
 import hooksParamSetBufLen from "./md/hooks-param-set-buf-len.md";
 import hooksRaddrConvBufLen from "./md/hooks-raddr-conv-buf-len.md";
 import hooksRaddrConvPure from "./md/hooks-raddr-conv-pure.md";
+import hooksReleaseDefine from "./md/hooks-release-define.md";
 import hooksReserveLimit from "./md/hooks-reserve-limit.md";
 import hooksSlotHashBufLen from "./md/hooks-slot-hash-buf-len.md";
 import hooksSlotKeyletBufLen from "./md/hooks-slot-keylet-buf-len.md";
 import hooksSlotLimit from "./md/hooks-slot-limit.md";
 import hooksSlotSubLimit from "./md/hooks-slot-sub-limit.md";
 import hooksSlotTypeLimit from "./md/hooks-slot-type-limit.md";
+import hooksSkipHashBufLen from "./md/hooks-skip-hash-buf-len.md";
 import hooksStateBufLen from "./md/hooks-state-buf-len.md";
 import hooksTransactionHashBufLen from "./md/hooks-transaction-hash-buf-len.md";
 import hooksTransactionSlotLimit from "./md/hooks-transaction-slot-limit.md";
@@ -49,6 +52,7 @@ const docs: { [key: string]: string; } = {
   "hooks-account-conv-pure": hooksAccountConvPure,
   "hooks-array-buf-len": hooksArrayBufLen,
   "hooks-burden-prereq": hooksBurdenPrereq,
+  "hooks-control-string-arg": hooksControlStringArg,
   "hooks-detail-buf-len": hooksDetailBufLen,
   "hooks-detail-prereq": hooksDetailPrereq,
   "hooks-emit-buf-len": hooksEmitBufLen,
@@ -75,12 +79,14 @@ const docs: { [key: string]: string; } = {
   "hooks-param-set-buf-len": hooksParamSetBufLen,
   "hooks-raddr-conv-buf-len": hooksRaddrConvBufLen,
   "hooks-raddr-conv-pure": hooksRaddrConvPure,
+  "hooks-release-define": hooksReleaseDefine,
   "hooks-reserve-limit": hooksReserveLimit,
   "hooks-slot-hash-buf-len": hooksSlotHashBufLen,
   "hooks-slot-keylet-buf-len": hooksSlotKeyletBufLen,
   "hooks-slot-limit": hooksSlotLimit,
   "hooks-slot-sub-limit": hooksSlotSubLimit,
   "hooks-slot-type-limit": hooksSlotTypeLimit,
+  "hooks-skip-hash-buf-len": hooksSkipHashBufLen,
   "hooks-state-buf-len": hooksStateBufLen,
   "hooks-transaction-hash-buf-len": hooksTransactionHashBufLen,
   "hooks-transaction-slot-limit": hooksTransactionSlotLimit,
