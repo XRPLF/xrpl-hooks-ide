@@ -15,3 +15,13 @@ export const saveFile = (showToast: boolean = true) => {
     toast.success("Saved successfully", { position: "bottom-center" });
   }
 };
+
+export const saveAllFiles = () => {
+  const editorModels = state.editorCtx?.getModels();
+  state.files.forEach(file => {
+    const currentModel = editorModels?.find(model => model.uri.path.endsWith('/' + file.name))
+    if (currentModel) {
+      file.content = currentModel?.getValue() || '';
+    }
+  })
+}
