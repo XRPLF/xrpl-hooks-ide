@@ -27,6 +27,7 @@ const StyledContent = styled(PopoverPrimitive.Content, {
   fontSize: 12,
   lineHeight: 1,
   color: "$text",
+  backgroundColor: "$background",
   boxShadow:
     "0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2)",
   "@media (prefers-reduced-motion: no-preference)": {
@@ -43,7 +44,7 @@ const StyledContent = styled(PopoverPrimitive.Content, {
   ".dark &": {
     backgroundColor: "$mauve5",
     boxShadow:
-      "0px 10px 38px -10px rgba(22, 23, 24, 0.85), 0px 10px 20px -15px rgba(22, 23, 24, 0.6)",
+      "0px 5px 38px -2px rgba(22, 23, 24, 1), 0px 10px 20px 0px rgba(22, 23, 24, 1)",
   },
 });
 
@@ -83,12 +84,15 @@ interface IPopover {
   onOpenChange?: (open: boolean) => void;
 }
 
-const Popover: React.FC<IPopover> = ({
+const Popover: React.FC<
+  IPopover & React.ComponentProps<typeof PopoverContent>
+> = ({
   children,
   content,
   open,
   defaultOpen = false,
   onOpenChange,
+  ...rest
 }) => (
   <PopoverRoot
     open={open}
@@ -96,8 +100,8 @@ const Popover: React.FC<IPopover> = ({
     onOpenChange={onOpenChange}
   >
     <PopoverTrigger asChild>{children}</PopoverTrigger>
-    <PopoverContent sideOffset={5}>
-      {content} <PopoverArrow />
+    <PopoverContent sideOffset={5} {...rest}>
+      {content} <PopoverArrow offset={5} className="arrow" />
     </PopoverContent>
   </PopoverRoot>
 );

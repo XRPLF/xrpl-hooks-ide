@@ -1,4 +1,5 @@
 import { Label } from "@radix-ui/react-label";
+import { Switch, SwitchThumb } from "../../components/Switch";
 import type { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { Gear, Play } from "phosphor-react";
@@ -12,6 +13,7 @@ import Popover from "../../components/Popover";
 import state from "../../state";
 import { compileCode } from "../../state/actions";
 import { getSplit, saveSplit } from "../../state/actions/persistSplits";
+import { styled } from "../../stitches.config";
 
 const HooksEditor = dynamic(() => import("../../components/HooksEditor"), {
   ssr: false,
@@ -21,55 +23,177 @@ const LogBox = dynamic(() => import("../../components/LogBox"), {
   ssr: false,
 });
 
+const OptimizationText = () => (
+  <span>
+    Specify which optimization level to use for compiling. For example -O0 means
+    “no optimization”: this level compiles the fastest and generates the most
+    debuggable code. -O2 means moderate level of optimization which enables most
+    optimizations. Read more about the options from{" "}
+    <a
+      className="link"
+      rel="noopener noreferrer"
+      target="_blank"
+      href="https://clang.llvm.org/docs/CommandGuide/clang.html#cmdoption-o0"
+    >
+      clang documentation
+    </a>
+    .
+  </span>
+);
+
+const StyledOptimizationText = styled(OptimizationText, {
+  color: "$mauve12 !important",
+  fontSize: "200px",
+  "span a.link": {
+    color: "red",
+  },
+});
+
 const CompilerSettings = () => {
   const snap = useSnapshot(state);
   return (
-    <Flex css={{ minWidth: 200, flexDirection: "column" }}>
-      <Label>Optimization level</Label>
-      <ButtonGroup css={{ mt: "$2", fontFamily: "$monospace" }}>
-        <Button
-          css={{ fontFamily: "$monospace" }}
-          outline={snap.compileOptions !== "-O0"}
-          onClick={() => (state.compileOptions = "-O0")}
+    <Flex css={{ minWidth: 200, flexDirection: "column", gap: "$5" }}>
+      <Box>
+        <Label
+          style={{
+            flexDirection: "row",
+            display: "flex",
+          }}
         >
-          -O0
-        </Button>
-        <Button
-          css={{ fontFamily: "$monospace" }}
-          outline={snap.compileOptions !== "-O1"}
-          onClick={() => (state.compileOptions = "-O1")}
+          Optimization level{" "}
+          <Popover
+            css={{
+              maxWidth: "240px",
+              lineHeight: "1.3",
+              a: {
+                color: "$purple11",
+              },
+              ".dark &": {
+                backgroundColor: "$black !important",
+
+                ".arrow": {
+                  fill: "$colors$black",
+                },
+              },
+            }}
+            content={<StyledOptimizationText />}
+          >
+            <Flex
+              css={{
+                position: "relative",
+                top: "-1px",
+                ml: "$1",
+                backgroundColor: "$mauve8",
+                borderRadius: "$full",
+                cursor: "pointer",
+                width: "16px",
+                height: "16px",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              ?
+            </Flex>
+          </Popover>
+        </Label>
+        <ButtonGroup css={{ mt: "$2", fontFamily: "$monospace" }}>
+          <Button
+            css={{ fontFamily: "$monospace" }}
+            outline={snap.compileOptions.optimizationLevel !== "-O0"}
+            onClick={() => (state.compileOptions.optimizationLevel = "-O0")}
+          >
+            -O0
+          </Button>
+          <Button
+            css={{ fontFamily: "$monospace" }}
+            outline={snap.compileOptions.optimizationLevel !== "-O1"}
+            onClick={() => (state.compileOptions.optimizationLevel = "-O1")}
+          >
+            -O1
+          </Button>
+          <Button
+            css={{ fontFamily: "$monospace" }}
+            outline={snap.compileOptions.optimizationLevel !== "-O2"}
+            onClick={() => (state.compileOptions.optimizationLevel = "-O2")}
+          >
+            -O2
+          </Button>
+          <Button
+            css={{ fontFamily: "$monospace" }}
+            outline={snap.compileOptions.optimizationLevel !== "-O3"}
+            onClick={() => (state.compileOptions.optimizationLevel = "-O3")}
+          >
+            -O3
+          </Button>
+          <Button
+            css={{ fontFamily: "$monospace" }}
+            outline={snap.compileOptions.optimizationLevel !== "-O4"}
+            onClick={() => (state.compileOptions.optimizationLevel = "-O4")}
+          >
+            -O4
+          </Button>
+          <Button
+            css={{ fontFamily: "$monospace" }}
+            outline={snap.compileOptions.optimizationLevel !== "-Os"}
+            onClick={() => (state.compileOptions.optimizationLevel = "-Os")}
+          >
+            -Os
+          </Button>
+        </ButtonGroup>
+      </Box>
+      <Box css={{ flexDirection: "column" }}>
+        <Label
+          style={{
+            flexDirection: "row",
+            display: "flex",
+          }}
         >
-          -O1
-        </Button>
-        <Button
-          css={{ fontFamily: "$monospace" }}
-          outline={snap.compileOptions !== "-O2"}
-          onClick={() => (state.compileOptions = "-O2")}
+          Clean WASM{" "}
+          <Popover
+            css={{
+              maxWidth: "240px",
+              lineHeight: "1.3",
+              a: {
+                color: "$purple11",
+              },
+              ".dark &": {
+                backgroundColor: "$black !important",
+
+                ".arrow": {
+                  fill: "$colors$black",
+                },
+              },
+            }}
+            content="Cleaner removes unwanted compiler-provided exports and functions from a wasm binary to make it (more) suitable for being used as a Hook"
+          >
+            <Flex
+              css={{
+                position: "relative",
+                top: "-1px",
+                mx: "$1",
+                backgroundColor: "$mauve8",
+                borderRadius: "$full",
+                cursor: "pointer",
+                width: "16px",
+                height: "16px",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              ?
+            </Flex>
+          </Popover>
+        </Label>
+        <Switch
+          css={{ mt: "$2" }}
+          checked={snap.compileOptions.strip}
+          onCheckedChange={(checked) => {
+            state.compileOptions.strip = checked;
+          }}
         >
-          -O2
-        </Button>
-        <Button
-          css={{ fontFamily: "$monospace" }}
-          outline={snap.compileOptions !== "-O3"}
-          onClick={() => (state.compileOptions = "-O3")}
-        >
-          -O3
-        </Button>
-        <Button
-          css={{ fontFamily: "$monospace" }}
-          outline={snap.compileOptions !== "-O4"}
-          onClick={() => (state.compileOptions = "-O4")}
-        >
-          -O4
-        </Button>
-        <Button
-          css={{ fontFamily: "$monospace" }}
-          outline={snap.compileOptions !== "-Os"}
-          onClick={() => (state.compileOptions = "-Os")}
-        >
-          -Os
-        </Button>
-      </ButtonGroup>
+          <SwitchThumb />
+        </Switch>
+      </Box>
     </Flex>
   );
 };

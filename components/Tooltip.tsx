@@ -45,11 +45,11 @@ const StyledContent = styled(TooltipPrimitive.Content, {
   },
   ".dark &": {
     boxShadow:
-      "0px 0px 10px 2px rgba(255,255,255,.15), hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px",
+      "0px 0px 10px 2px rgba(0,0,0,.45), hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px",
   },
   ".light &": {
     boxShadow:
-      "0px 0px 10px 2px rgba(0,0,0,.15), hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px",
+      "0px 0px 10px 2px rgba(0,0,0,.25), hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px",
   },
 });
 
@@ -64,12 +64,15 @@ interface ITooltip {
   onOpenChange?: (open: boolean) => void;
 }
 
-const Tooltip: React.FC<ITooltip> = ({
+const Tooltip: React.FC<
+  React.ComponentProps<typeof StyledContent> & ITooltip
+> = ({
   children,
   content,
   open,
   defaultOpen = false,
   onOpenChange,
+  ...rest
 }) => {
   return (
     <TooltipPrimitive.Root
@@ -78,8 +81,8 @@ const Tooltip: React.FC<ITooltip> = ({
       onOpenChange={onOpenChange}
     >
       <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
-      <StyledContent side="bottom" align="center">
-        {content}
+      <StyledContent side="bottom" align="center" {...rest}>
+        <div dangerouslySetInnerHTML={{ __html: content }} />
         <StyledArrow offset={5} width={11} height={5} />
       </StyledContent>
     </TooltipPrimitive.Root>

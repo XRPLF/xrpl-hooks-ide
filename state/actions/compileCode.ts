@@ -35,10 +35,11 @@ export const compileCode = async (activeId: number) => {
       body: JSON.stringify({
         output: "wasm",
         compress: true,
+        strip: state.compileOptions.strip,
         files: [
           {
             type: "c",
-            options: state.compileOptions || '-O0',
+            options: state.compileOptions.optimizationLevel || '-O0',
             name: state.files[activeId].name,
             src: state.files[activeId].content,
           },
