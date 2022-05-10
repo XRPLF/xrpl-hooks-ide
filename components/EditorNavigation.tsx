@@ -50,15 +50,8 @@ import Stack from "./Stack";
 import { Input, Label } from "./Input";
 import Text from "./Text";
 import Tooltip from "./Tooltip";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "./AlertDialog";
 import { styled } from "../stitches.config";
+import { showAlert } from "../state/actions/showAlert";
 
 const ErrorText = styled(Text, {
   color: "$error",
@@ -68,7 +61,6 @@ const ErrorText = styled(Text, {
 
 const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
   const snap = useSnapshot(state);
-  const [createNewAlertOpen, setCreateNewAlertOpen] = useState(false);
   const [editorSettingsOpen, setEditorSettingsOpen] = useState(false);
   const [isNewfileDialogOpen, setIsNewfileDialogOpen] = useState(false);
   const [newfileError, setNewfileError] = useState<string | null>(null);
@@ -87,13 +79,29 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
     setNewfileError(null);
   }, [filename, setNewfileError]);
 
+  const showNewGistAlert = () => {
+    showAlert("Are you sure?", {
+      body: (
+        <>
+          This action will create new <strong>public</strong> Github Gist from
+          your current saved files. You can delete gist anytime from your GitHub
+          Gists page.
+        </>
+      ),
+      cancelText: "Cancel",
+      confirmText: "Create new Gist",
+      confirmPrefix: <FilePlus size="15px" />,
+      onConfirm: () => syncToGist(session, true),
+    });
+  };
+
   const validateFilename = useCallback(
     (filename: string): { error: string | null } => {
       // check if filename already exists
       if (!filename) {
         return { error: "You need to add filename" };
       }
-      if (snap.files.find((file) => file.name === filename)) {
+      if (snap.files.find(file => file.name === filename)) {
         return { error: "Filename already exists." };
       }
 
@@ -225,8 +233,8 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
                     <Label>Filename</Label>
                     <Input
                       value={filename}
-                      onChange={(e) => setFilename(e.target.value)}
-                      onKeyPress={(e) => {
+                      onChange={e => setFilename(e.target.value)}
+                      onKeyPress={e => {
                         if (e.key === "Enter") {
                           handleConfirm();
                         }
@@ -416,7 +424,7 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
                   if (snap.gistOwner === session?.user.username) {
                     syncToGist(session);
                   } else {
-                    setCreateNewAlertOpen(true);
+                    showNewGistAlert();
                   }
                 }}
               >
@@ -466,7 +474,7 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
                 <DropdownMenuItem
                   disabled={status !== "authenticated"}
                   onClick={() => {
-                    setCreateNewAlertOpen(true);
+                    showNewGistAlert();
                   }}
                 >
                   <FilePlus size="16px" /> Create as a new Gist
@@ -486,34 +494,6 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
           ) : null}
         </Container>
       </Flex>
-      <AlertDialog
-        open={createNewAlertOpen}
-        onOpenChange={(value) => setCreateNewAlertOpen(value)}
-      >
-        <AlertDialogContent>
-          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action will create new <strong>public</strong> Github Gist from
-            your current saved files. You can delete gist anytime from your
-            GitHub Gists page.
-          </AlertDialogDescription>
-          <Flex css={{ justifyContent: "flex-end", gap: "$3" }}>
-            <AlertDialogCancel asChild>
-              <Button outline>Cancel</Button>
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  syncToGist(session, true);
-                }}
-              >
-                <FilePlus size="15px" /> Create new Gist
-              </Button>
-            </AlertDialogAction>
-          </Flex>
-        </AlertDialogContent>
-      </AlertDialog>
 
       <Dialog open={editorSettingsOpen} onOpenChange={setEditorSettingsOpen}>
         <DialogTrigger asChild>
@@ -529,8 +509,8 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
               type="number"
               min="1"
               value={editorSettings.tabSize}
-              onChange={(e) =>
-                setEditorSettings((curr) => ({
+              onChange={e =>
+                setEditorSettings(curr => ({
                   ...curr,
                   tabSize: Number(e.target.value),
                 }))

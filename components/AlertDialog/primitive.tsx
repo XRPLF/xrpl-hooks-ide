@@ -1,7 +1,7 @@
 import React from "react";
 import { blackA } from "@radix-ui/colors";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
-import { styled, keyframes } from "../stitches.config";
+import { styled, keyframes } from "../../stitches.config";
 
 const overlayShow = keyframes({
   "0%": { opacity: 0 },
@@ -75,7 +75,7 @@ const StyledDescription = styled(AlertDialogPrimitive.Description, {
   marginBottom: 20,
   color: "$mauve11",
   lineHeight: 1.5,
-  fontSize: "$sm",
+  fontSize: "$md",
 });
 
 // Exports
