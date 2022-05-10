@@ -13,6 +13,7 @@ import Popover from "../../components/Popover";
 import state from "../../state";
 import { compileCode } from "../../state/actions";
 import { getSplit, saveSplit } from "../../state/actions/persistSplits";
+import { styled } from "../../stitches.config";
 
 const HooksEditor = dynamic(() => import("../../components/HooksEditor"), {
   ssr: false,
@@ -22,70 +23,177 @@ const LogBox = dynamic(() => import("../../components/LogBox"), {
   ssr: false,
 });
 
+const OptimizationText = () => (
+  <span>
+    Specify which optimization level to use for compiling. For example -O0 means
+    “no optimization”: this level compiles the fastest and generates the most
+    debuggable code. -O2 means moderate level of optimization which enables most
+    optimizations. Read more about the options from{" "}
+    <a
+      className="link"
+      rel="noopener noreferrer"
+      target="_blank"
+      href="https://clang.llvm.org/docs/CommandGuide/clang.html#cmdoption-o0"
+    >
+      clang documentation
+    </a>
+    .
+  </span>
+);
+
+const StyledOptimizationText = styled(OptimizationText, {
+  color: "$mauve12 !important",
+  fontSize: "200px",
+  "span a.link": {
+    color: "red",
+  },
+});
+
 const CompilerSettings = () => {
   const snap = useSnapshot(state);
   return (
     <Flex css={{ minWidth: 200, flexDirection: "column", gap: "$5" }}>
       <Box>
-        <Label>Optimization level</Label>
+        <Label
+          style={{
+            flexDirection: "row",
+            display: "flex",
+          }}
+        >
+          Optimization level{" "}
+          <Popover
+            css={{
+              maxWidth: "240px",
+              lineHeight: "1.3",
+              a: {
+                color: "$purple11",
+              },
+              ".dark &": {
+                backgroundColor: "$black !important",
+
+                ".arrow": {
+                  fill: "$colors$black",
+                },
+              },
+            }}
+            content={<StyledOptimizationText />}
+          >
+            <Flex
+              css={{
+                position: "relative",
+                top: "-1px",
+                ml: "$1",
+                backgroundColor: "$mauve8",
+                borderRadius: "$full",
+                cursor: "pointer",
+                width: "16px",
+                height: "16px",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              ?
+            </Flex>
+          </Popover>
+        </Label>
         <ButtonGroup css={{ mt: "$2", fontFamily: "$monospace" }}>
           <Button
             css={{ fontFamily: "$monospace" }}
-            outline={snap.compileOptions.optimisationLevel !== "-O0"}
-            onClick={() => (state.compileOptions.optimisationLevel = "-O0")}
+            outline={snap.compileOptions.optimizationLevel !== "-O0"}
+            onClick={() => (state.compileOptions.optimizationLevel = "-O0")}
           >
             -O0
           </Button>
           <Button
             css={{ fontFamily: "$monospace" }}
-            outline={snap.compileOptions.optimisationLevel !== "-O1"}
-            onClick={() => (state.compileOptions.optimisationLevel = "-O1")}
+            outline={snap.compileOptions.optimizationLevel !== "-O1"}
+            onClick={() => (state.compileOptions.optimizationLevel = "-O1")}
           >
             -O1
           </Button>
           <Button
             css={{ fontFamily: "$monospace" }}
-            outline={snap.compileOptions.optimisationLevel !== "-O2"}
-            onClick={() => (state.compileOptions.optimisationLevel = "-O2")}
+            outline={snap.compileOptions.optimizationLevel !== "-O2"}
+            onClick={() => (state.compileOptions.optimizationLevel = "-O2")}
           >
             -O2
           </Button>
           <Button
             css={{ fontFamily: "$monospace" }}
-            outline={snap.compileOptions.optimisationLevel !== "-O3"}
-            onClick={() => (state.compileOptions.optimisationLevel = "-O3")}
+            outline={snap.compileOptions.optimizationLevel !== "-O3"}
+            onClick={() => (state.compileOptions.optimizationLevel = "-O3")}
           >
             -O3
           </Button>
           <Button
             css={{ fontFamily: "$monospace" }}
-            outline={snap.compileOptions.optimisationLevel !== "-O4"}
-            onClick={() => (state.compileOptions.optimisationLevel = "-O4")}
+            outline={snap.compileOptions.optimizationLevel !== "-O4"}
+            onClick={() => (state.compileOptions.optimizationLevel = "-O4")}
           >
             -O4
           </Button>
           <Button
             css={{ fontFamily: "$monospace" }}
-            outline={snap.compileOptions.optimisationLevel !== "-Os"}
-            onClick={() => (state.compileOptions.optimisationLevel = "-Os")}
+            outline={snap.compileOptions.optimizationLevel !== "-Os"}
+            onClick={() => (state.compileOptions.optimizationLevel = "-Os")}
           >
             -Os
           </Button>
         </ButtonGroup>
       </Box>
-      <Flex css={{ flexDirection: "column" }}>
-        <Label>Clean code</Label>
+      <Box css={{ flexDirection: "column" }}>
+        <Label
+          style={{
+            flexDirection: "row",
+            display: "flex",
+          }}
+        >
+          Clean code{" "}
+          <Popover
+            css={{
+              maxWidth: "240px",
+              lineHeight: "1.3",
+              a: {
+                color: "$purple11",
+              },
+              ".dark &": {
+                backgroundColor: "$black !important",
+
+                ".arrow": {
+                  fill: "$colors$black",
+                },
+              },
+            }}
+            content="Cleaner removes unwanted compiler-provided exports and functions from a wasm binary to make it (more) suitable for being used as a Hook"
+          >
+            <Flex
+              css={{
+                position: "relative",
+                top: "-1px",
+                mx: "$1",
+                backgroundColor: "$mauve8",
+                borderRadius: "$full",
+                cursor: "pointer",
+                width: "16px",
+                height: "16px",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              ?
+            </Flex>
+          </Popover>
+        </Label>
         <Switch
           css={{ mt: "$2" }}
           checked={snap.compileOptions.strip}
           onCheckedChange={(checked) => {
-            console.log(checked);
             state.compileOptions.strip = checked;
           }}
         >
           <SwitchThumb />
         </Switch>
-      </Flex>
+      </Box>
     </Flex>
   );
 };
