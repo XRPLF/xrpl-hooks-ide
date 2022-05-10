@@ -75,7 +75,7 @@ export interface IState {
   mainModalShowed: boolean;
   accounts: IAccount[];
   compileOptions: {
-    optimisationLevel: '-O0' | '-O1' | '-O2' | '-O3' | '-O4' | '-Os';
+    optimizationLevel: '-O0' | '-O1' | '-O2' | '-O3' | '-O4' | '-Os';
     strip: boolean
   }
 }
@@ -108,7 +108,7 @@ let initialState: IState = {
   mainModalShowed: false,
   accounts: [],
   compileOptions: {
-    optimisationLevel: '-O0',
+    optimizationLevel: '-O0',
     strip: false
   }
 };
