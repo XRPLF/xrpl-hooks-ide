@@ -39,7 +39,7 @@ export const compileCode = async (activeId: number) => {
         files: [
           {
             type: "c",
-            options: state.compileOptions.optimisationLevel || '-O0',
+            options: state.compileOptions.optimizationLevel || '-O0',
             name: state.files[activeId].name,
             src: state.files[activeId].content,
           },
