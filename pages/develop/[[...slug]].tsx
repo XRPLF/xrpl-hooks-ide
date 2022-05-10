@@ -148,7 +148,7 @@ const CompilerSettings = () => {
             display: "flex",
           }}
         >
-          Clean code{" "}
+          Clean WASM{" "}
           <Popover
             css={{
               maxWidth: "240px",
