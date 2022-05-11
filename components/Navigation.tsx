@@ -113,7 +113,7 @@ const Navigation = () => {
                 <Text
                   css={{ fontSize: "$xs", color: "$mauve10", lineHeight: 1 }}
                 >
-                  {snap.files.length > 0 ? "Gist: " : "Playground"}
+                  {snap.files.length > 0 ? "Gist: " : "Builder"}
                   {snap.files.length > 0 && (
                     <Link
                       href={`https://gist.github.com/${snap.gistOwner || ""}/${
