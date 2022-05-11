@@ -31,10 +31,25 @@ import PanelBox from "./PanelBox";
 import { templateFileIds } from "../state/constants";
 import { styled } from "../stitches.config";
 
+import Starter from "../components/icons/Starter";
+import Firewall from "../components/icons/Firewall";
+import Notary from "../components/icons/Notary";
+import Carbon from "../components/icons/Carbon";
+import Peggy from "../components/icons/Peggy";
+
 const ImageWrapper = styled(Flex, {
   position: "relative",
   mt: "$2",
   mb: "$10",
+  svg: {
+    // fill: "red",
+    ".angle": {
+      fill: "$text",
+    },
+    ":not(.angle)": {
+      stroke: "$text",
+    },
+  },
 });
 
 const Navigation = () => {
@@ -142,6 +157,7 @@ const Navigation = () => {
                     maxHeight: "80%",
                     backgroundColor: "$mauve1 !important",
                     overflowY: "auto",
+                    background: "black",
                     p: 0,
                   }}
                 >
@@ -167,7 +183,7 @@ const Navigation = () => {
                           width: "30%",
                           maxWidth: "300px",
                           borderBottom: "0px",
-                          borderRight: "1px solid $colors$mauve6",
+                          borderRight: "1px solid $colors$mauve5",
                         },
                       }}
                     >
@@ -204,9 +220,9 @@ const Navigation = () => {
                               display: "inline-flex",
                               alignItems: "center",
                               gap: "$3",
-                              color: "$purple10",
+                              color: "$purple11",
                               "&:hover": {
-                                color: "$purple11",
+                                color: "$purple12",
                               },
                               "&:focus": {
                                 outline: 0,
@@ -225,9 +241,9 @@ const Navigation = () => {
                               display: "inline-flex",
                               alignItems: "center",
                               gap: "$3",
-                              color: "$purple10",
+                              color: "$purple11",
                               "&:hover": {
-                                color: "$purple11",
+                                color: "$purple12",
                               },
                               "&:focus": {
                                 outline: 0,
@@ -245,9 +261,9 @@ const Navigation = () => {
                               display: "inline-flex",
                               alignItems: "center",
                               gap: "$3",
-                              color: "$purple10",
+                              color: "$purple11",
                               "&:hover": {
-                                color: "$purple11",
+                                color: "$purple12",
                               },
                               "&:focus": {
                                 outline: 0,
@@ -291,12 +307,7 @@ const Navigation = () => {
                         href={`/develop/${templateFileIds.starter}`}
                       >
                         <ImageWrapper>
-                          <Image
-                            src="/starter.svg"
-                            alt="Firewall icon"
-                            width="66px"
-                            height="33px"
-                          />
+                          <Starter />
                         </ImageWrapper>
                         <Heading>Starter</Heading>
 
@@ -312,12 +323,7 @@ const Navigation = () => {
                         css={{ alignItems: "flex-start" }}
                       >
                         <ImageWrapper>
-                          <Image
-                            src="/firewall.svg"
-                            alt="Firewall icon"
-                            width="66px"
-                            height="33px"
-                          />
+                          <Firewall />
                         </ImageWrapper>
                         <Heading>Firewall</Heading>
                         <Text>
@@ -329,12 +335,7 @@ const Navigation = () => {
                         href={`/develop/${templateFileIds.notary}`}
                       >
                         <ImageWrapper>
-                          <Image
-                            src="/notary.svg"
-                            alt="Firewall icon"
-                            width="66px"
-                            height="33px"
-                          />
+                          <Notary />
                         </ImageWrapper>
                         <Heading>Notary</Heading>
                         <Text>
@@ -346,12 +347,7 @@ const Navigation = () => {
                         href={`/develop/${templateFileIds.carbon}`}
                       >
                         <ImageWrapper>
-                          <Image
-                            src="/carbon.svg"
-                            alt="Firewall icon"
-                            width="66px"
-                            height="33px"
-                          />
+                          <Carbon />
                         </ImageWrapper>
                         <Heading>Carbon</Heading>
                         <Text>Send a percentage of sum to an address</Text>
@@ -361,12 +357,7 @@ const Navigation = () => {
                         href={`/develop/${templateFileIds.peggy}`}
                       >
                         <ImageWrapper>
-                          <Image
-                            src="/peggy.svg"
-                            alt="Firewall icon"
-                            width="66px"
-                            height="33px"
-                          />
+                          <Peggy />
                         </ImageWrapper>
                         <Heading>Peggy</Heading>
                         <Text>An oracle based stable coin hook</Text>
