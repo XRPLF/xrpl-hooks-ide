@@ -40,6 +40,7 @@ const StyledContent = styled(DialogPrimitive.Content, {
   color: "$mauve12",
   borderRadius: "$md",
   position: "relative",
+  mb: "15%",
   boxShadow:
     "0px 10px 38px -5px rgba(22, 23, 24, 0.25), 0px 10px 20px -5px rgba(22, 23, 24, 0.2)",
   width: "90vw",
