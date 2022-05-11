@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 import { useSnapshot } from "valtio";
 import { useRouter } from "next/router";
@@ -28,6 +29,13 @@ import {
 } from "./Dialog";
 import PanelBox from "./PanelBox";
 import { templateFileIds } from "../state/constants";
+import { styled } from "../stitches.config";
+
+const ImageWrapper = styled(Flex, {
+  position: "relative",
+  mt: "$2",
+  mb: "$10",
+});
 
 const Navigation = () => {
   const router = useRouter();
@@ -128,9 +136,10 @@ const Navigation = () => {
                 </DialogTrigger>
                 <DialogContent
                   css={{
+                    display: "flex",
                     maxWidth: "1080px",
                     width: "80vw",
-                    height: "80%",
+                    maxHeight: "80%",
                     backgroundColor: "$mauve1 !important",
                     overflowY: "auto",
                     p: 0,
@@ -139,8 +148,7 @@ const Navigation = () => {
                   <Flex
                     css={{
                       flexDirection: "column",
-                      flex: 1,
-                      height: "auto",
+                      height: "100%",
                       "@md": {
                         flexDirection: "row",
                         height: "100%",
@@ -151,9 +159,9 @@ const Navigation = () => {
                       css={{
                         borderBottom: "1px solid $colors$mauve5",
                         width: "100%",
+                        minWidth: "240px",
                         flexDirection: "column",
                         p: "$7",
-                        height: "100%",
                         backgroundColor: "$mauve2",
                         "@md": {
                           width: "30%",
@@ -255,67 +263,115 @@ const Navigation = () => {
                         </Flex>
                       </DialogDescription>
                     </Flex>
-                    <div>
-                      <Flex
-                        css={{
-                          display: "grid",
-                          gridTemplateColumns: "1fr",
+
+                    <Flex
+                      css={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr",
+                        gridTemplateRows: "max-content",
+                        flex: 1,
+                        p: "$7",
+                        pb: "$16",
+                        gap: "$3",
+                        alignItems: "normal",
+                        flexWrap: "wrap",
+                        backgroundColor: "$mauve1",
+                        "@md": {
+                          gridTemplateColumns: "1fr 1fr",
                           gridTemplateRows: "max-content",
-                          flex: 1,
-                          p: "$7",
-                          gap: "$3",
-                          alignItems: "normal",
-                          flexWrap: "wrap",
-                          backgroundColor: "$mauve1",
-                          "@md": {
-                            gridTemplateColumns: "1fr 1fr 1fr",
-                            gridTemplateRows: "max-content",
-                          },
-                        }}
+                        },
+                        "@lg": {
+                          gridTemplateColumns: "1fr 1fr 1fr",
+                          gridTemplateRows: "max-content",
+                        },
+                      }}
+                    >
+                      <PanelBox
+                        as="a"
+                        href={`/develop/${templateFileIds.starter}`}
                       >
-                        <PanelBox
-                          as="a"
-                          href={`/develop/${templateFileIds.starter}`}
-                        >
-                          <Heading>Starter</Heading>
-                          <Text>
-                            Just a basic starter with essential imports
-                          </Text>
-                        </PanelBox>
-                        <PanelBox
-                          as="a"
-                          href={`/develop/${templateFileIds.firewall}`}
-                        >
-                          <Heading>Firewall</Heading>
-                          <Text>
-                            This Hook essentially checks a blacklist of accounts
-                          </Text>
-                        </PanelBox>
-                        <PanelBox
-                          as="a"
-                          href={`/develop/${templateFileIds.notary}`}
-                        >
-                          <Heading>Notary</Heading>
-                          <Text>
-                            Collecting signatures for multi-sign transactions
-                          </Text>
-                        </PanelBox>
-                        <PanelBox
-                          as="a"
-                          href={`/develop/${templateFileIds.carbon}`}
-                        >
-                          <Heading>Carbon</Heading>
-                          <Text>Send a percentage of sum to an address</Text>
-                        </PanelBox>
-                        <PanelBox
-                          as="a"
-                          href={`/develop/${templateFileIds.peggy}`}
-                        >
-                          <Heading>Peggy</Heading>
-                          <Text>An oracle based stable coin hook</Text>
-                        </PanelBox>
-                      </Flex>
-                    </div>
+                        <ImageWrapper>
+                          <Image
+                            src="/starter.svg"
+                            alt="Firewall icon"
+                            width="66px"
+                            height="33px"
+                          />
+                        </ImageWrapper>
+                        <Heading>Starter</Heading>
+
+                        <Text>
+                          Just a basic starter with essential imports, just
+                          accepts any transaction coming through
+                        </Text>
+                      </PanelBox>
+
+                      <PanelBox
+                        as="a"
+                        href={`/develop/${templateFileIds.firewall}`}
+                        css={{ alignItems: "flex-start" }}
+                      >
+                        <ImageWrapper>
+                          <Image
+                            src="/firewall.svg"
+                            alt="Firewall icon"
+                            width="66px"
+                            height="33px"
+                          />
+                        </ImageWrapper>
+                        <Heading>Firewall</Heading>
+                        <Text>
+                          This Hook essentially checks a blacklist of accounts
+                        </Text>
+                      </PanelBox>
+                      <PanelBox
+                        as="a"
+                        href={`/develop/${templateFileIds.notary}`}
+                      >
+                        <ImageWrapper>
+                          <Image
+                            src="/notary.svg"
+                            alt="Firewall icon"
+                            width="66px"
+                            height="33px"
+                          />
+                        </ImageWrapper>
+                        <Heading>Notary</Heading>
+                        <Text>
+                          Collecting signatures for multi-sign transactions
+                        </Text>
+                      </PanelBox>
+                      <PanelBox
+                        as="a"
+                        href={`/develop/${templateFileIds.carbon}`}
+                      >
+                        <ImageWrapper>
+                          <Image
+                            src="/carbon.svg"
+                            alt="Firewall icon"
+                            width="66px"
+                            height="33px"
+                          />
+                        </ImageWrapper>
+                        <Heading>Carbon</Heading>
+                        <Text>Send a percentage of sum to an address</Text>
+                      </PanelBox>
+                      <PanelBox
+                        as="a"
+                        href={`/develop/${templateFileIds.peggy}`}
+                      >
+                        <ImageWrapper>
+                          <Image
+                            src="/peggy.svg"
+                            alt="Firewall icon"
+                            width="66px"
+                            height="33px"
+                          />
+                        </ImageWrapper>
+                        <Heading>Peggy</Heading>
+                        <Text>An oracle based stable coin hook</Text>
+                      </PanelBox>
+                    </Flex>
                   </Flex>
                   <DialogClose asChild>
                     <Box
