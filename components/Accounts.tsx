@@ -294,6 +294,7 @@ const Accounts: FC<AccountProps> = (props) => {
           })
         );
         const responses = await Promise.all(requests);
+        console.log(responses);
         responses.forEach((res: any) => {
           const address = res?.account_data?.Account as string;
           const balance = res?.account_data?.Balance as string;
@@ -304,6 +305,18 @@ const Accounts: FC<AccountProps> = (props) => {
           if (accountToUpdate) {
             accountToUpdate.xrp = balance;
             accountToUpdate.sequence = sequence;
+            accountToUpdate.error = null;
+          } else {
+            const oldAccount = state.accounts.find(
+              (acc) => acc.address === res?.account
+            );
+            if (oldAccount) {
+              oldAccount.xrp = "0";
+              oldAccount.error = {
+                code: res?.error,
+                message: res?.error_message,
+              };
+            }
           }
         });
         const objectRequests = snap.accounts.map((acc) => {
@@ -431,18 +444,23 @@ const Accounts: FC<AccountProps> = (props) => {
                       wordBreak: "break-word",
                     }}
                   >
-                    {account.address} (
-                    {Dinero({
-                      amount: Number(account?.xrp || "0"),
-                      precision: 6,
-                    })
-                      .toUnit()
-                      .toLocaleString(undefined, {
-                        style: "currency",
-                        currency: "XRP",
-                        currencyDisplay: "name",
-                      })}
-                    )
+                    {account.address}{" "}
+                    {!account?.error ? (
+                      `(${Dinero({
+                        amount: Number(account?.xrp || "0"),
+                        precision: 6,
+                      })
+                        .toUnit()
+                        .toLocaleString(undefined, {
+                          style: "currency",
+                          currency: "XRP",
+                          currencyDisplay: "name",
+                        })})`
+                    ) : (
+                      <Box css={{ color: "$red11" }}>
+                        (Account not found, request funds to activate account)
+                      </Box>
+                    )}
                   </Text>
                 </Box>
                 {!props.hideDeployBtn && (
