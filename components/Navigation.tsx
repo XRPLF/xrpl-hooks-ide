@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 
 import { useSnapshot } from "valtio";
 import { useRouter } from "next/router";
