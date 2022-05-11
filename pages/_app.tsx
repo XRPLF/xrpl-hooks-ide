@@ -16,7 +16,7 @@ import state from "../state";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en.json";
 import { useSnapshot } from "valtio";
-import Alert from '../components/AlertDialog';
+import Alert from "../components/AlertDialog";
 
 TimeAgo.setDefaultLocale(en.locale);
 TimeAgo.addLocale(en);
@@ -61,22 +61,22 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         <meta name="format-detection" content="telephone=no" />
         <meta property="og:url" content={`${origin}${router.asPath}`} />
 
-        <title>XRPL Hooks Editor</title>
+        <title>XRPL Hooks Builder</title>
         <meta property="og:title" content="XRPL Hooks Editor" />
         <meta name="twitter:title" content="XRPL Hooks Editor" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@xrpllabs" />
         <meta
           name="description"
-          content="Playground for buildings Hooks, that add smart contract functionality to the XRP Ledger."
+          content="Hooks Builder, add smart contract functionality to the XRP Ledger."
         />
         <meta
           property="og:description"
-          content="Playground for buildings Hooks, that add smart contract functionality to the XRP Ledger."
+          content="Hooks Builder, add smart contract functionality to the XRP Ledger."
         />
         <meta
           name="twitter:description"
-          content="Playground for buildings Hooks, that add smart contract functionality to the XRP Ledger.."
+          content="Hooks Builder, add smart contract functionality to the XRP Ledger."
         />
         <meta property="og:image" content={`${origin}${shareImg}`} />
         <meta property="og:image:width" content="1200" />

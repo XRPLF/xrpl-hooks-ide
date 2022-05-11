@@ -28,6 +28,28 @@ import {
 } from "./Dialog";
 import PanelBox from "./PanelBox";
 import { templateFileIds } from "../state/constants";
+import { styled } from "../stitches.config";
+
+import Starter from "../components/icons/Starter";
+import Firewall from "../components/icons/Firewall";
+import Notary from "../components/icons/Notary";
+import Carbon from "../components/icons/Carbon";
+import Peggy from "../components/icons/Peggy";
+
+const ImageWrapper = styled(Flex, {
+  position: "relative",
+  mt: "$2",
+  mb: "$10",
+  svg: {
+    // fill: "red",
+    ".angle": {
+      fill: "$text",
+    },
+    ":not(.angle)": {
+      stroke: "$text",
+    },
+  },
+});
 
 const Navigation = () => {
   const router = useRouter();
@@ -91,7 +113,7 @@ const Navigation = () => {
                 <Text
                   css={{ fontSize: "$xs", color: "$mauve10", lineHeight: 1 }}
                 >
-                  {snap.files.length > 0 ? "Gist: " : "Playground"}
+                  {snap.files.length > 0 ? "Gist: " : "Builder"}
                   {snap.files.length > 0 && (
                     <Link
                       href={`https://gist.github.com/${snap.gistOwner || ""}/${
@@ -128,19 +150,20 @@ const Navigation = () => {
                 </DialogTrigger>
                 <DialogContent
                   css={{
+                    display: "flex",
                     maxWidth: "1080px",
                     width: "80vw",
-                    height: "80%",
+                    maxHeight: "80%",
                     backgroundColor: "$mauve1 !important",
                     overflowY: "auto",
+                    background: "black",
                     p: 0,
                   }}
                 >
                   <Flex
                     css={{
                       flexDirection: "column",
-                      flex: 1,
-                      height: "auto",
+                      height: "100%",
                       "@md": {
                         flexDirection: "row",
                         height: "100%",
@@ -151,15 +174,15 @@ const Navigation = () => {
                       css={{
                         borderBottom: "1px solid $colors$mauve5",
                         width: "100%",
+                        minWidth: "240px",
                         flexDirection: "column",
                         p: "$7",
-                        height: "100%",
                         backgroundColor: "$mauve2",
                         "@md": {
                           width: "30%",
                           maxWidth: "300px",
                           borderBottom: "0px",
-                          borderRight: "1px solid $colors$mauve6",
+                          borderRight: "1px solid $colors$mauve5",
                         },
                       }}
                     >
@@ -196,9 +219,9 @@ const Navigation = () => {
                               display: "inline-flex",
                               alignItems: "center",
                               gap: "$3",
-                              color: "$purple10",
+                              color: "$purple11",
                               "&:hover": {
-                                color: "$purple11",
+                                color: "$purple12",
                               },
                               "&:focus": {
                                 outline: 0,
@@ -217,9 +240,9 @@ const Navigation = () => {
                               display: "inline-flex",
                               alignItems: "center",
                               gap: "$3",
-                              color: "$purple10",
+                              color: "$purple11",
                               "&:hover": {
-                                color: "$purple11",
+                                color: "$purple12",
                               },
                               "&:focus": {
                                 outline: 0,
@@ -237,9 +260,9 @@ const Navigation = () => {
                               display: "inline-flex",
                               alignItems: "center",
                               gap: "$3",
-                              color: "$purple10",
+                              color: "$purple11",
                               "&:hover": {
-                                color: "$purple11",
+                                color: "$purple12",
                               },
                               "&:focus": {
                                 outline: 0,
@@ -255,67 +278,90 @@ const Navigation = () => {
                         </Flex>
                       </DialogDescription>
                     </Flex>
-                    <div>
-                      <Flex
-                        css={{
-                          display: "grid",
-                          gridTemplateColumns: "1fr",
+
+                    <Flex
+                      css={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr",
+                        gridTemplateRows: "max-content",
+                        flex: 1,
+                        p: "$7",
+                        pb: "$16",
+                        gap: "$3",
+                        alignItems: "normal",
+                        flexWrap: "wrap",
+                        backgroundColor: "$mauve1",
+                        "@md": {
+                          gridTemplateColumns: "1fr 1fr",
                           gridTemplateRows: "max-content",
-                          flex: 1,
-                          p: "$7",
-                          gap: "$3",
-                          alignItems: "normal",
-                          flexWrap: "wrap",
-                          backgroundColor: "$mauve1",
-                          "@md": {
-                            gridTemplateColumns: "1fr 1fr 1fr",
-                            gridTemplateRows: "max-content",
-                          },
-                        }}
+                        },
+                        "@lg": {
+                          gridTemplateColumns: "1fr 1fr 1fr",
+                          gridTemplateRows: "max-content",
+                        },
+                      }}
+                    >
+                      <PanelBox
+                        as="a"
+                        href={`/develop/${templateFileIds.starter}`}
                       >
-                        <PanelBox
-                          as="a"
-                          href={`/develop/${templateFileIds.starter}`}
-                        >
-                          <Heading>Starter</Heading>
-                          <Text>
-                            Just a basic starter with essential imports
-                          </Text>
-                        </PanelBox>
-                        <PanelBox
-                          as="a"
-                          href={`/develop/${templateFileIds.firewall}`}
-                        >
-                          <Heading>Firewall</Heading>
-                          <Text>
-                            This Hook essentially checks a blacklist of accounts
-                          </Text>
-                        </PanelBox>
-                        <PanelBox
-                          as="a"
-                          href={`/develop/${templateFileIds.notary}`}
-                        >
-                          <Heading>Notary</Heading>
-                          <Text>
-                            Collecting signatures for multi-sign transactions
-                          </Text>
-                        </PanelBox>
-                        <PanelBox
-                          as="a"
-                          href={`/develop/${templateFileIds.carbon}`}
-                        >
-                          <Heading>Carbon</Heading>
-                          <Text>Send a percentage of sum to an address</Text>
-                        </PanelBox>
-                        <PanelBox
-                          as="a"
-                          href={`/develop/${templateFileIds.peggy}`}
-                        >
-                          <Heading>Peggy</Heading>
-                          <Text>An oracle based stable coin hook</Text>
-                        </PanelBox>
-                      </Flex>
-                    </div>
+                        <ImageWrapper>
+                          <Starter />
+                        </ImageWrapper>
+                        <Heading>Starter</Heading>
+
+                        <Text>
+                          Just a basic starter with essential imports, just
+                          accepts any transaction coming through
+                        </Text>
+                      </PanelBox>
+
+                      <PanelBox
+                        as="a"
+                        href={`/develop/${templateFileIds.firewall}`}
+                        css={{ alignItems: "flex-start" }}
+                      >
+                        <ImageWrapper>
+                          <Firewall />
+                        </ImageWrapper>
+                        <Heading>Firewall</Heading>
+                        <Text>
+                          This Hook essentially checks a blacklist of accounts
+                        </Text>
+                      </PanelBox>
+                      <PanelBox
+                        as="a"
+                        href={`/develop/${templateFileIds.notary}`}
+                      >
+                        <ImageWrapper>
+                          <Notary />
+                        </ImageWrapper>
+                        <Heading>Notary</Heading>
+                        <Text>
+                          Collecting signatures for multi-sign transactions
+                        </Text>
+                      </PanelBox>
+                      <PanelBox
+                        as="a"
+                        href={`/develop/${templateFileIds.carbon}`}
+                      >
+                        <ImageWrapper>
+                          <Carbon />
+                        </ImageWrapper>
+                        <Heading>Carbon</Heading>
+                        <Text>Send a percentage of sum to an address</Text>
+                      </PanelBox>
+                      <PanelBox
+                        as="a"
+                        href={`/develop/${templateFileIds.peggy}`}
+                      >
+                        <ImageWrapper>
+                          <Peggy />
+                        </ImageWrapper>
+                        <Heading>Peggy</Heading>
+                        <Text>An oracle based stable coin hook</Text>
+                      </PanelBox>
+                    </Flex>
                   </Flex>
                   <DialogClose asChild>
                     <Box
