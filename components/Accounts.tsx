@@ -294,7 +294,6 @@ const Accounts: FC<AccountProps> = (props) => {
           })
         );
         const responses = await Promise.all(requests);
-        console.log(responses);
         responses.forEach((res: any) => {
           const address = res?.account_data?.Account as string;
           const balance = res?.account_data?.Balance as string;
