@@ -35,6 +35,10 @@ export interface IAccount {
   hooks: string[];
   isLoading: boolean;
   version?: string;
+  error?: {
+    message: string;
+    code: string;
+  } | null;
 }
 
 export interface ILog {
