@@ -62,10 +62,10 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         <meta property="og:url" content={`${origin}${router.asPath}`} />
 
         <title>XRPL Hooks Builder</title>
-        <meta property="og:title" content="XRPL Hooks Editor" />
-        <meta name="twitter:title" content="XRPL Hooks Editor" />
+        <meta property="og:title" content="XRPL Hooks Builder" />
+        <meta name="twitter:title" content="XRPL Hooks Builder" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@xrpllabs" />
+        <meta name="twitter:site" content="@XRPLF" />
         <meta
           name="description"
           content="Hooks Builder, add smart contract functionality to the XRP Ledger."
@@ -101,7 +101,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         />
         <link rel="manifest" href="/site.webmanifest" />
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#161618" />
-        <meta name="application-name" content="XRPL Hooks Editor" />
+        <meta name="application-name" content="XRPL Hooks Builder" />
         <meta name="msapplication-TileColor" content="#c10ad0" />
         <meta
           name="theme-color"
