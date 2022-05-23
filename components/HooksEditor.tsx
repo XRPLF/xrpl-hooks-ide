@@ -22,6 +22,7 @@ import { listen } from "@codingame/monaco-jsonrpc";
 import ReconnectingWebSocket from "reconnecting-websocket";
 
 import docs from "../xrpl-hooks-docs/docs";
+import asc from "assemblyscript/dist/asc";
 
 loader.config({
   paths: {
@@ -150,6 +151,11 @@ const HooksEditor = () => {
                 )
               );
             }
+
+            monaco.languages.typescript.typescriptDefaults.addExtraLib(
+              asc.definitionFiles.assembly,
+              "assemblyscript/std/assembly/index.d.ts"
+            );
 
             // create the web socket
             if (!subscriptionRef.current) {

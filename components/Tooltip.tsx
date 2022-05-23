@@ -65,7 +65,8 @@ interface ITooltip {
 }
 
 const Tooltip: React.FC<
-  React.ComponentProps<typeof StyledContent> & ITooltip
+  React.ComponentProps<typeof StyledContent> &
+    ITooltip & { children: React.ReactNode }
 > = ({
   children,
   content,

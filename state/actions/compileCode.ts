@@ -14,6 +14,7 @@ import { ref } from "valtio";
  */
 export const compileCode = async (activeId: number) => {
   // Save the file to global state
+  let asc: typeof import("assemblyscript/dist/asc") | undefined
   saveFile(false);
   if (!process.env.NEXT_PUBLIC_COMPILE_API_ENDPOINT) {
     throw Error("Missing env!");
@@ -23,8 +24,77 @@ export const compileCode = async (activeId: number) => {
     // if compiling is ongoing return
     return;
   }
-  // Set loading state to true
   state.compiling = true;
+  if (typeof window !== 'undefined') {
+    // IF AssemblyScript
+    if (state.files[activeId].language.toLowerCase() === 'ts' || state.files[activeId].language.toLowerCase() === 'typescript') {
+      if (!asc) {
+        asc = await import('assemblyscript/dist/asc')
+      }
+      const files: { [key: string]: string } = {
+
+      };
+      state.files.forEach(file => {
+        files[file.name] = file.content;
+      });
+      const res = await asc.main([state.files[activeId].name, "--textFile", "-o", state.files[activeId].name, "--runtime", "minimal", "-O3"], {
+        readFile: (name, baseDir) => {
+          console.log('--> ', name)
+          const currentFile = state.files.find(file => file.name === name);
+          if (currentFile) {
+            return currentFile.content;
+          }
+          return null
+        },
+        writeFile: (name, data, baseDir) => {
+          console.log(name)
+          const curr = state.files.find(file => file.name === name);
+          if (curr) {
+            curr.compiledContent = ref(data);
+          }
+
+        },
+        listFiles: (dirname, baseDir) => {
+          console.log("listFiles: " + dirname + ", baseDir=" + baseDir);
+          return [];
+        }
+      });
+      // In case you want to compile just single file
+      // const res = await asc.compileString(state.files[activeId].content, {
+      //   optimizeLevel: 3,
+      //   runtime: 'stub',
+      // })
+      console.log(state.files)
+      if (res.error?.message) {
+        state.compiling = false;
+        state.logs.push({
+          type: 'error',
+          message: res.error.message
+        })
+        state.logs.push({
+          type: 'error',
+          message: res.stderr.toString()
+        })
+        return
+      }
+      if (res.stdout) {
+        const wat = res.stdout.toString()
+        state.files[activeId].lastCompiled = new Date();
+        state.files[activeId].compiledWatContent = wat;
+
+        state.logs.push({
+          type: "success",
+          message: `File ${state.files?.[activeId]?.name} compiled successfully. Ready to deploy.`,
+          link: Router.asPath.replace("develop", "deploy"),
+          linkText: "Go to deploy",
+        });
+      }
+      state.compiling = false;
+      return
+    }
+  }
+
+  // Set loading state to true
   state.logs = []
   try {
     const res = await fetch(process.env.NEXT_PUBLIC_COMPILE_API_ENDPOINT, {

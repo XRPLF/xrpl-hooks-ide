@@ -58,7 +58,10 @@ const StyledContent = styled(DialogPrimitive.Content, {
   },
 });
 
-const Content: React.FC<{ css?: Stiches.CSS }> = ({ css, children }) => {
+const Content: React.FC<{ css?: Stiches.CSS; children: React.ReactNode }> = ({
+  css,
+  children,
+}) => {
   return (
     <StyledOverlay>
       <StyledContent css={css}>{children}</StyledContent>

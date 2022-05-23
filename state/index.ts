@@ -13,7 +13,7 @@ export interface IFile {
   name: string;
   language: string;
   content: string;
-  compiledContent?: ArrayBuffer | null;
+  compiledContent?: ArrayBuffer | Uint8Array | null;
   compiledWatContent?: string | null;
   lastCompiled?: Date
 }

@@ -24,6 +24,7 @@ interface ILogBox {
   logs: ILog[];
   renderNav?: () => ReactNode;
   enhanced?: boolean;
+  children?: React.ReactNode;
 }
 
 const LogBox: FC<ILogBox> = ({

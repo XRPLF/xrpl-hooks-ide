@@ -25,19 +25,22 @@ function toHex(str: string) {
   return result.toUpperCase();
 }
 
-function arrayBufferToHex(arrayBuffer?: ArrayBuffer | null) {
+function arrayBufferToHex(arrayBuffer?: ArrayBuffer | Uint8Array | null) {
   if (!arrayBuffer) {
     return "";
   }
-  if (
-    typeof arrayBuffer !== "object" ||
-    arrayBuffer === null ||
-    typeof arrayBuffer.byteLength !== "number"
-  ) {
-    throw new TypeError("Expected input to be an ArrayBuffer");
-  }
+  if (!(arrayBuffer instanceof Uint8Array)) {
 
-  var view = new Uint8Array(arrayBuffer);
+
+    if (
+      typeof arrayBuffer !== "object" ||
+      arrayBuffer === null ||
+      typeof arrayBuffer.byteLength !== "number"
+    ) {
+      throw new TypeError("Expected input to be an ArrayBuffer");
+    }
+  }
+  var view = arrayBuffer instanceof Uint8Array ? arrayBuffer : new Uint8Array(arrayBuffer);
   var result = "";
   var value;
 
@@ -117,7 +120,8 @@ export const deployHook = async (
         },
       ],
     };
-
+    // DEBUG: CAN BE REMOVED
+    console.log(tx)
     const keypair = derive.familySeed(account.secret);
     const { signedTransaction } = sign(tx, keypair);
     const currentAccount = state.accounts.find(
