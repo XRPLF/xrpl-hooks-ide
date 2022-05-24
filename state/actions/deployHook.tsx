@@ -6,13 +6,14 @@ import calculateHookOn, { TTS } from "../../utils/hookOnCalculator";
 import { SetHookData } from "../../components/SetHookDialog";
 import { Link } from "../../components";
 import { ref } from "valtio";
+import estimateFee from "../../utils/estimateFee";
 
 export const sha256 = async (string: string) => {
   const utf8 = new TextEncoder().encode(string);
   const hashBuffer = await crypto.subtle.digest("SHA-256", utf8);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hashHex = hashArray
-    .map(bytes => bytes.toString(16).padStart(2, "0"))
+    .map((bytes) => bytes.toString(16).padStart(2, "0"))
     .join("");
   return hashHex;
 };
@@ -72,12 +73,12 @@ export const deployHook = async (
     return;
   }
   const HookNamespace = (await sha256(data.HookNamespace)).toUpperCase();
-  const hookOnValues: (keyof TTS)[] = data.Invoke.map(tt => tt.value);
+  const hookOnValues: (keyof TTS)[] = data.Invoke.map((tt) => tt.value);
   const { HookParameters } = data;
   const filteredHookParameters = HookParameters.filter(
-    hp =>
+    (hp) =>
       hp.HookParameter.HookParameterName && hp.HookParameter.HookParameterValue
-  )?.map(aa => ({
+  )?.map((aa) => ({
     HookParameter: {
       HookParameterName: toHex(aa.HookParameter.HookParameterName || ""),
       HookParameterValue: aa.HookParameter.HookParameterValue || "",
@@ -119,14 +120,22 @@ export const deployHook = async (
     };
 
     const keypair = derive.familySeed(account.secret);
+    try {
+      // Update tx Fee value with network estimation
+      await estimateFee(tx, keypair);
+    } catch (err) {
+      // use default value what you defined earlier
+      console.log(err);
+    }
     const { signedTransaction } = sign(tx, keypair);
     const currentAccount = state.accounts.find(
-      acc => acc.address === account.address
+      (acc) => acc.address === account.address
     );
     if (currentAccount) {
       currentAccount.isLoading = true;
     }
     let submitRes;
+
     try {
       submitRes = await state.client.send({
         command: "submit",
@@ -183,7 +192,7 @@ export const deleteHook = async (account: IAccount & { name?: string }) => {
     return;
   }
   const currentAccount = state.accounts.find(
-    acc => acc.address === account.address
+    (acc) => acc.address === account.address
   );
   if (currentAccount?.isLoading || !currentAccount?.hooks.length) {
     return;
@@ -205,6 +214,13 @@ export const deleteHook = async (account: IAccount & { name?: string }) => {
     };
 
     const keypair = derive.familySeed(account.secret);
+    try {
+      // Update tx Fee value with network estimation
+      await estimateFee(tx, keypair);
+    } catch (err) {
+      // use default value what you defined earlier
+      console.log(err);
+    }
     const { signedTransaction } = sign(tx, keypair);
 
     if (currentAccount) {
