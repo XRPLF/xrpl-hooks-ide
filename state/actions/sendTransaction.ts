@@ -24,10 +24,7 @@ export const sendTransaction = async (account: IAccount, txOptions: TransactionO
         Fee,  // TODO auto-fillable
         ...opts
     };
-    const currAcc = state.accounts.find(acc => acc.address === account.address);
-    if (currAcc) {
-        currAcc.sequence = account.sequence + 1;
-    }
+
     const { logPrefix = '' } = options || {}
     try {
         const signedAccount = derive.familySeed(account.secret);
@@ -46,6 +43,10 @@ export const sendTransaction = async (account: IAccount, txOptions: TransactionO
                 type: "error",
                 message: `${logPrefix}[${response.error || response.engine_result}] ${response.error_exception || response.engine_result_message}`,
             });
+        }
+        const currAcc = state.accounts.find(acc => acc.address === account.address);
+        if (currAcc && response.account_sequence_next) {
+            currAcc.sequence = response.account_sequence_next;
         }
     } catch (err) {
         console.error(err);
