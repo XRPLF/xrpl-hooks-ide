@@ -38,17 +38,16 @@ export const sendTransaction = async (account: IAccount, txOptions: TransactionO
                 type: 'success',
                 message: `${logPrefix}[${response.engine_result}] ${response.engine_result_message}`
             })
-            const currAcc = state.accounts.find(acc => acc.address === account.address);
-            if (currAcc && response.account_sequence_next) {
-                currAcc.sequence = response.account_sequence_next;
-            }
         } else {
             state.transactionLogs.push({
                 type: "error",
                 message: `${logPrefix}[${response.error || response.engine_result}] ${response.error_exception || response.engine_result_message}`,
             });
         }
-
+        const currAcc = state.accounts.find(acc => acc.address === account.address);
+        if (currAcc && response.account_sequence_next) {
+            currAcc.sequence = response.account_sequence_next;
+        }
     } catch (err) {
         console.error(err);
         state.transactionLogs.push({
