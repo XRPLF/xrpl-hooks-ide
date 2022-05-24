@@ -113,7 +113,7 @@ let initialState: IState = {
   accounts: [],
   compileOptions: {
     optimizationLevel: '-O0',
-    strip: false
+    strip: true
   }
 };
 
