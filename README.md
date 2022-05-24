@@ -1,6 +1,8 @@
-# XRPL Hooks IDE
+# XRPL Hooks Builder
 
-This is the repository for XRPL Hooks IDE. This project is built with Next.JS
+https://hooks-builder.xrpl.org/
+
+This is the repository for XRPL Hooks Builder. This project is built with Next.JS
 
 ## General
 
