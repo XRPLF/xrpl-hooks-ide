@@ -355,7 +355,7 @@ const Accounts: FC<AccountProps> = (props) => {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snap.accounts, snap.clientStatus]);
+  }, [snap.accounts.length, snap.clientStatus]);
   return (
     <Box
       as="div"
