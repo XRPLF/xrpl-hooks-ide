@@ -412,7 +412,7 @@ const Accounts: FC<AccountProps> = (props) => {
             overflowY: "auto",
           }}
         >
-          {snap.accounts.map((account) => (
+          {snap.accounts.map((account, index) => (
             <Flex
               column
               key={account.address + account.name}
@@ -469,7 +469,7 @@ const Accounts: FC<AccountProps> = (props) => {
                       e.stopPropagation();
                     }}
                   >
-                    <SetHookDialog account={account} />
+                    <SetHookDialog accountIndex={index} />
                   </div>
                 )}
               </Flex>
