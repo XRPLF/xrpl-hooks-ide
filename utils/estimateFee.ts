@@ -3,7 +3,6 @@ import state, { IAccount } from "../state"
 
 const estimateFee = async (tx: Record<string, unknown>, account: IAccount): Promise<null | { base_fee: string, median_fee: string; minimum_fee: string; open_ledger_fee: string; }> => {
   const copyTx = JSON.parse(JSON.stringify(tx))
-  console.log(tx)
   delete copyTx['SigningPubKey']
   if (!copyTx.Fee) {
     copyTx.Fee = '1000'

@@ -53,10 +53,11 @@ export type SetHookData = {
   // }[];
 };
 
-export const SetHookDialog: React.FC<{ accountIndex: number }> = React.memo(
-  ({ accountIndex }) => {
+export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
+  ({ accountAddress }) => {
     const snap = useSnapshot(state);
-    const account = snap.accounts[accountIndex];
+    const account = snap.accounts.find((acc) => acc.address === accountAddress);
+
     const [isSetHookDialogOpen, setIsSetHookDialogOpen] = useState(false);
     const {
       register,
@@ -88,22 +89,6 @@ export const SetHookDialog: React.FC<{ accountIndex: number }> = React.memo(
       );
       setFormInitialized(true);
     }, [snap.activeWat, snap.files, setValue]);
-    // Calcucate initial fee estimate when modal opens
-    useEffect(() => {
-      if (formInitialized) {
-        (async () => {
-          const formValues = getValues();
-          const tx = await prepareDeployHookTx(account, formValues);
-          if (!tx) {
-            return;
-          }
-          const res = await estimateFee(tx, account);
-          if (res && res.base_fee) {
-            setValue("Fee", res.base_fee);
-          }
-        })();
-      }
-    }, [formInitialized]);
     // const {
     //   fields: grantFields,
     //   append: grantAppend,
@@ -124,6 +109,24 @@ export const SetHookDialog: React.FC<{ accountIndex: number }> = React.memo(
     useEffect(() => {
       calculateHashedValue();
     }, [namespace, calculateHashedValue]);
+
+    // Calcucate initial fee estimate when modal opens
+    useEffect(() => {
+      if (formInitialized && account) {
+        (async () => {
+          const formValues = getValues();
+          const tx = await prepareDeployHookTx(account, formValues);
+          if (!tx) {
+            return;
+          }
+          const res = await estimateFee(tx, account);
+          if (res && res.base_fee) {
+            setValue("Fee", res.base_fee);
+          }
+        })();
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formInitialized]);
 
     if (!account) {
       return null;
@@ -391,5 +394,7 @@ export const SetHookDialog: React.FC<{ accountIndex: number }> = React.memo(
     );
   }
 );
+
+SetHookDialog.displayName = "SetHookDialog";
 
 export default SetHookDialog;
