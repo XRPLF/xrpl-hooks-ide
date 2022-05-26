@@ -152,14 +152,14 @@ export const deployHook = async (
           message: ref(
             <>
               [{submitRes.engine_result}] {submitRes.engine_result_message}{" "}
-              Validated ledger index:{" "}
+              Transaction hash:{" "}
               <Link
                 as="a"
-                href={`https://${process.env.NEXT_PUBLIC_EXPLORER_URL}/${submitRes.validated_ledger_index}`}
+                href={`https://${process.env.NEXT_PUBLIC_EXPLORER_URL}/${submitRes.tx_json?.hash}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {submitRes.validated_ledger_index}
+                {submitRes.tx_json?.hash}
               </Link>
             </>
           ),
