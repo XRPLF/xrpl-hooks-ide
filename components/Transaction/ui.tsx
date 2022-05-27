@@ -13,13 +13,19 @@ import {
 import { useSnapshot } from "valtio";
 import state from "../../state";
 import { streamState } from "../DebugStream";
+import { Label } from "..";
 
 interface UIProps {
   setState: (pTx?: Partial<TransactionState> | undefined) => void;
   state: TransactionState;
+  estimatedFee?: string;
 }
 
-export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
+export const TxUI: FC<UIProps> = ({
+  state: txState,
+  setState,
+  estimatedFee,
+}) => {
   const { accounts } = useSnapshot(state);
   const {
     selectedAccount,
@@ -87,7 +93,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
         height: "calc(100% - 45px)",
       }}
     >
-      <Flex column fluid css={{ height: "100%", overflowY: "auto" }}>
+      <Flex column fluid css={{ height: "100%", overflowY: "auto", pr: "$1" }}>
         <Flex
           row
           fluid
@@ -174,36 +180,45 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
           }
 
           let isXrp = typeof _value === "object" && _value.$type === "xrp";
+
+          const hint =
+            field === "Fee" && estimatedFee
+              ? `Suggested Fee: ${estimatedFee}`
+              : undefined;
           return (
-            <Flex
-              key={field}
-              row
-              fluid
-              css={{
-                justifyContent: "flex-end",
-                alignItems: "center",
-                mb: "$3",
-                pr: "1px",
-              }}
-            >
-              <Text muted css={{ mr: "$3" }}>
-                {field + (isXrp ? " (XRP)" : "")}:{" "}
-              </Text>
-              <Input
-                value={value}
-                onChange={e => {
-                  setState({
-                    txFields: {
-                      ...txFields,
-                      [field]:
-                        typeof _value === "object"
-                          ? { ..._value, $value: e.target.value }
-                          : e.target.value,
-                    },
-                  });
+            <Flex column key={field} css={{ mb: "$2", pr: "1px" }}>
+              <Flex
+                row
+                fluid
+                css={{
+                  justifyContent: "flex-end",
+                  alignItems: "center",
                 }}
-                css={{ width: "70%", flex: "inherit" }}
-              />
+              >
+                <Text muted css={{ mr: "$3" }}>
+                  {field + (isXrp ? " (XRP)" : "")}:{" "}
+                </Text>
+                <Input
+                  value={value}
+                  onChange={e => {
+                    setState({
+                      txFields: {
+                        ...txFields,
+                        [field]:
+                          typeof _value === "object"
+                            ? { ..._value, $value: e.target.value }
+                            : e.target.value,
+                      },
+                    });
+                  }}
+                  css={{ width: "70%", flex: "inherit" }}
+                />
+              </Flex>
+              <Label
+                css={{ color: "$success", textAlign: "right", mt: "$1", mb: 0, fontSize: "$sm" }}
+              >
+                {hint}
+              </Label>
             </Flex>
           );
         })}

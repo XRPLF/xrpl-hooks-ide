@@ -29,6 +29,7 @@ interface JsonProps {
   header?: string;
   setState: (pTx?: Partial<TransactionState> | undefined) => void;
   state: TransactionState;
+  estimatedFee?: string
 }
 
 export const TxJson: FC<JsonProps> = ({
@@ -36,6 +37,7 @@ export const TxJson: FC<JsonProps> = ({
   state: txState,
   header,
   setState,
+  estimatedFee
 }) => {
   const { editorSettings, accounts } = useSnapshot(state);
   const { editorValue = value, selectedTransaction } = txState;
@@ -98,7 +100,7 @@ export const TxJson: FC<JsonProps> = ({
         {}
       );
     }
-
+    console.log({  estimatedFee})
     return [
       {
         uri: "file:///main-schema.json", // id of the first schema
@@ -130,6 +132,9 @@ export const TxJson: FC<JsonProps> = ({
             Amount: {
               $ref: "file:///amount-schema.json",
             },
+            Fee: {
+              $ref: "file:///fee-schema.json",
+            },
           },
         },
       },
@@ -142,10 +147,19 @@ export const TxJson: FC<JsonProps> = ({
         },
       },
       {
+        uri: "file:///fee-schema.json",
+        schema: {
+          type: "string",
+          title: "Fee type",
+          const: estimatedFee,
+          description: "Above mentioned value is recommended base fee",
+        },
+      },
+      {
         ...amountSchema,
       },
     ];
-  }, [accounts, header, selectedTransaction?.value]);
+  }, [accounts, estimatedFee, header, selectedTransaction?.value]);
 
   useEffect(() => {
     if (!monaco) return;

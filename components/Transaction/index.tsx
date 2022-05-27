@@ -1,5 +1,5 @@
 import { Play } from "phosphor-react";
-import { FC, useCallback, useEffect, useMemo } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useSnapshot } from "valtio";
 import state from "../../state";
 import {
@@ -14,6 +14,7 @@ import Button from "../Button";
 import Flex from "../Flex";
 import { TxJson } from "./json";
 import { TxUI } from "./ui";
+import estimateFee from "../../utils/estimateFee";
 
 export interface TransactionProps {
   header: string;
@@ -76,13 +77,18 @@ const Transaction: FC<TransactionProps> = ({
     } else {
       setState({ txIsDisabled: false });
     }
-  }, [selectedAccount?.value, selectedTransaction?.value, setState, txIsLoading]);
+  }, [
+    selectedAccount?.value,
+    selectedTransaction?.value,
+    setState,
+    txIsLoading,
+  ]);
 
   const submitTest = useCallback(async () => {
     let st: TransactionState | undefined;
     if (viewType === "json") {
       // save the editor state first
-      const pst = prepareState(editorValue || '', txState);
+      const pst = prepareState(editorValue || "", txState);
       if (!pst) return;
 
       st = setState(pst);
@@ -102,7 +108,7 @@ const Transaction: FC<TransactionProps> = ({
       const options = prepareOptions(st);
 
       if (options.Destination === null) {
-        throw Error("Destination account cannot be null")
+        throw Error("Destination account cannot be null");
       }
 
       await sendTransaction(account, options, { logPrefix });
@@ -116,7 +122,17 @@ const Transaction: FC<TransactionProps> = ({
       }
     }
     setState({ txIsLoading: false });
-  }, [viewType, accounts, txIsDisabled, setState, header, editorValue, txState, selectedAccount?.value, prepareOptions]);
+  }, [
+    viewType,
+    accounts,
+    txIsDisabled,
+    setState,
+    header,
+    editorValue,
+    txState,
+    selectedAccount?.value,
+    prepareOptions,
+  ]);
 
   const resetState = useCallback(() => {
     modifyTransaction(header, { viewType }, { replaceState: true });
@@ -129,6 +145,25 @@ const Transaction: FC<TransactionProps> = ({
     [editorSavedValue, editorSettings.tabSize, prepareOptions]
   );
 
+  const [estimatedFee, setEstimatedFee] = useState<string>();
+  useEffect(() => {
+    const ptx = prepareOptions(txState);
+    const account = accounts.find(
+      acc => acc.address === selectedAccount?.value
+    );
+    if (!account) return;
+
+    ptx.Account = account.address;
+    ptx.Sequence = account.sequence;
+
+    console.log("estimating fee...");
+    estimateFee(ptx, account, { silent: true })
+      .then(res => res?.base_fee)
+      .then(fee => {
+        setEstimatedFee(fee)
+      });
+  }, [accounts, prepareOptions, selectedAccount?.value, txState]);
+
   return (
     <Box css={{ position: "relative", height: "calc(100% - 28px)" }} {...props}>
       {viewType === "json" ? (
@@ -137,9 +172,10 @@ const Transaction: FC<TransactionProps> = ({
           header={header}
           state={txState}
           setState={setState}
+          estimatedFee={estimatedFee}
         />
       ) : (
-        <TxUI state={txState} setState={setState} />
+        <TxUI state={txState} setState={setState} estimatedFee={estimatedFee} />
       )}
       <Flex
         row
