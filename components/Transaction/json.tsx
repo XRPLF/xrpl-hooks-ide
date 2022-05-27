@@ -100,7 +100,6 @@ export const TxJson: FC<JsonProps> = ({
         {}
       );
     }
-    console.log({  estimatedFee})
     return [
       {
         uri: "file:///main-schema.json", // id of the first schema

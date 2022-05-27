@@ -156,7 +156,6 @@ const Transaction: FC<TransactionProps> = ({
     ptx.Account = account.address;
     ptx.Sequence = account.sequence;
 
-    console.log("estimating fee...");
     estimateFee(ptx, account, { silent: true })
       .then(res => res?.base_fee)
       .then(fee => {
