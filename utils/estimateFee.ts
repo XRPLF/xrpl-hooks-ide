@@ -16,8 +16,9 @@ const estimateFee = async (tx: Record<string, unknown>, account: IAccount): Prom
     }
     return null
   } catch (err) {
-    throw Error('Cannot estimate fee');
+    console.log(err)
     return null
+
   }
 }
 

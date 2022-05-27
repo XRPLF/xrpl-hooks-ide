@@ -412,7 +412,7 @@ const Accounts: FC<AccountProps> = (props) => {
             overflowY: "auto",
           }}
         >
-          {snap.accounts.map((account, index) => (
+          {snap.accounts.map((account) => (
             <Flex
               column
               key={account.address + account.name}
