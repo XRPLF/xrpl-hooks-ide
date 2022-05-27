@@ -469,7 +469,7 @@ const Accounts: FC<AccountProps> = (props) => {
                       e.stopPropagation();
                     }}
                   >
-                    <SetHookDialog account={account} />
+                    <SetHookDialog accountAddress={account.address} />
                   </div>
                 )}
               </Flex>

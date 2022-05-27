@@ -50,11 +50,7 @@ function arrayBufferToHex(arrayBuffer?: ArrayBuffer | null) {
   return result;
 }
 
-/* deployHook function turns the wasm binary into
- * hex string, signs the transaction and deploys it to
- * Hooks testnet.
- */
-export const deployHook = async (
+export const prepareDeployHookTx = async (
   account: IAccount & { name?: string },
   data: SetHookData
 ) => {
@@ -93,13 +89,12 @@ export const deployHook = async (
   //     }
   //   }
   // });
-
   if (typeof window !== "undefined") {
     const tx = {
       Account: account.address,
       TransactionType: "SetHook",
       Sequence: account.sequence,
-      Fee: "100000",
+      Fee: data.Fee,
       Hooks: [
         {
           Hook: {
@@ -118,15 +113,28 @@ export const deployHook = async (
         },
       ],
     };
+    return tx;
+  }
+};
 
-    const keypair = derive.familySeed(account.secret);
-    try {
-      // Update tx Fee value with network estimation
-      await estimateFee(tx, keypair);
-    } catch (err) {
-      // use default value what you defined earlier
-      console.log(err);
+/* deployHook function turns the wasm binary into
+ * hex string, signs the transaction and deploys it to
+ * Hooks testnet.
+ */
+export const deployHook = async (
+  account: IAccount & { name?: string },
+  data: SetHookData
+) => {
+  if (typeof window !== "undefined") {
+    const tx = await prepareDeployHookTx(account, data);
+    if (!tx) {
+      return;
     }
+    if (!state.client) {
+      return;
+    }
+    const keypair = derive.familySeed(account.secret);
+
     const { signedTransaction } = sign(tx, keypair);
     const currentAccount = state.accounts.find(
       (acc) => acc.address === account.address
@@ -137,7 +145,7 @@ export const deployHook = async (
     let submitRes;
 
     try {
-      submitRes = await state.client.send({
+      submitRes = await state.client?.send({
         command: "submit",
         tx_blob: signedTransaction,
       });
@@ -216,7 +224,8 @@ export const deleteHook = async (account: IAccount & { name?: string }) => {
     const keypair = derive.familySeed(account.secret);
     try {
       // Update tx Fee value with network estimation
-      await estimateFee(tx, keypair);
+      const res = await estimateFee(tx, account);
+      tx["Fee"] = res?.base_fee ? res?.base_fee : "1000";
     } catch (err) {
       // use default value what you defined earlier
       console.log(err);
