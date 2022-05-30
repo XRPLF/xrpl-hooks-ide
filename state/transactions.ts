@@ -93,7 +93,7 @@ export const modifyTransaction = (
     Object.keys(partialTx).forEach(k => {
         // Typescript mess here, but is definetly safe!
         const s = tx.state as any;
-        const p = partialTx as any;
+        const p = partialTx as any; // ? Make copy
         if (!deepEqual(s[k], p[k])) s[k] = p[k];
     });
 
@@ -220,6 +220,26 @@ export const prepareState = (value: string, txState: TransactionState) => {
     tx.editorSavedValue = null;
 
     return tx
+}
+
+export const getTxFields = (tt: string) => {
+    const txFields: TxFields | undefined = transactionsData.find(
+        tx => tx.TransactionType === tt
+    );
+
+    if (!txFields) return {}
+
+    let _txFields = Object.keys(txFields)
+        .filter(
+            key => !["TransactionType", "Account", "Sequence"].includes(key)
+        )
+        .reduce<TxFields>(
+            (tf, key) => (
+                (tf[key as keyof TxFields] = (txFields as any)[key]), tf
+            ),
+            {}
+        );
+    return _txFields
 }
 
 export { transactionsData }

@@ -1,5 +1,5 @@
 import { Play } from "phosphor-react";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo } from "react";
 import { useSnapshot } from "valtio";
 import state from "../../state";
 import {
@@ -14,7 +14,7 @@ import Button from "../Button";
 import Flex from "../Flex";
 import { TxJson } from "./json";
 import { TxUI } from "./ui";
-import estimateFee from "../../utils/estimateFee";
+import { default as _estimateFee } from "../../utils/estimateFee";
 
 export interface TransactionProps {
   header: string;
@@ -145,23 +145,23 @@ const Transaction: FC<TransactionProps> = ({
     [editorSavedValue, editorSettings.tabSize, prepareOptions]
   );
 
-  const [estimatedFee, setEstimatedFee] = useState<string>();
-  useEffect(() => {
-    const ptx = prepareOptions(txState);
-    const account = accounts.find(
-      acc => acc.address === selectedAccount?.value
-    );
-    if (!account) return;
+  const estimateFee = useCallback(
+    async (st?: TransactionState) => {
+      const state = st || txState;
+      const ptx = prepareOptions(state);
+      const account = accounts.find(
+        acc => acc.address === state.selectedAccount?.value
+      );
+      if (!account) return;
 
-    ptx.Account = account.address;
-    ptx.Sequence = account.sequence;
+      ptx.Account = account.address;
+      ptx.Sequence = account.sequence;
 
-    estimateFee(ptx, account, { silent: true })
-      .then(res => res?.base_fee)
-      .then(fee => {
-        setEstimatedFee(fee)
-      });
-  }, [accounts, prepareOptions, selectedAccount?.value, txState]);
+      const res = await _estimateFee(ptx, account, { silent: true });
+      return res?.base_fee;
+    },
+    [accounts, prepareOptions, txState]
+  );
 
   return (
     <Box css={{ position: "relative", height: "calc(100% - 28px)" }} {...props}>
@@ -171,10 +171,10 @@ const Transaction: FC<TransactionProps> = ({
           header={header}
           state={txState}
           setState={setState}
-          estimatedFee={estimatedFee}
+          estimateFee={estimateFee}
         />
       ) : (
-        <TxUI state={txState} setState={setState} estimatedFee={estimatedFee} />
+        <TxUI state={txState} setState={setState} estimateFee={estimateFee} />
       )}
       <Flex
         row

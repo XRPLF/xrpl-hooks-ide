@@ -29,7 +29,7 @@ interface JsonProps {
   header?: string;
   setState: (pTx?: Partial<TransactionState> | undefined) => void;
   state: TransactionState;
-  estimatedFee?: string
+  estimateFee?: () => Promise<string | undefined>;
 }
 
 export const TxJson: FC<JsonProps> = ({
@@ -37,7 +37,7 @@ export const TxJson: FC<JsonProps> = ({
   state: txState,
   header,
   setState,
-  estimatedFee
+  estimateFee,
 }) => {
   const { editorSettings, accounts } = useSnapshot(state);
   const { editorValue = value, selectedTransaction } = txState;
@@ -84,7 +84,7 @@ export const TxJson: FC<JsonProps> = ({
   const path = `file:///${header}`;
   const monaco = useMonaco();
 
-  const getSchemas = useCallback((): any[] => {
+  const getSchemas = useCallback(async (): Promise<any[]> => {
     const tt = selectedTransaction?.value;
     const txObj = transactionsData.find(td => td.TransactionType === tt);
 
@@ -100,6 +100,7 @@ export const TxJson: FC<JsonProps> = ({
         {}
       );
     }
+    const estimatedFee = await estimateFee?.();
     return [
       {
         uri: "file:///main-schema.json", // id of the first schema
@@ -158,13 +159,16 @@ export const TxJson: FC<JsonProps> = ({
         ...amountSchema,
       },
     ];
-  }, [accounts, estimatedFee, header, selectedTransaction?.value]);
+  }, [accounts, header, selectedTransaction?.value]);
 
   useEffect(() => {
     if (!monaco) return;
-    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-      validate: true,
-      schemas: getSchemas(),
+    getSchemas().then(schemas => {
+      console.log('seeung schmea')
+      monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+        validate: true,
+        schemas,
+      });
     });
   }, [getSchemas, monaco]);
 
@@ -197,12 +201,6 @@ export const TxJson: FC<JsonProps> = ({
           // register onExit cb
           const model = editor.getModel();
           model?.onWillDispose(() => onExit(model.getValue()));
-
-          // set json defaults
-          monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-            validate: true,
-            schemas: getSchemas(),
-          });
         }}
         theme={theme === "dark" ? "dark" : "light"}
       />
