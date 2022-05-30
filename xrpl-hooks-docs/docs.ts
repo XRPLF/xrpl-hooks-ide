@@ -41,6 +41,7 @@ import hooksSkipHashBufLen from "./md/hooks-skip-hash-buf-len.md";
 import hooksStateBufLen from "./md/hooks-state-buf-len.md";
 import hooksTransactionHashBufLen from "./md/hooks-transaction-hash-buf-len.md";
 import hooksTransactionSlotLimit from "./md/hooks-transaction-slot-limit.md";
+import hooksTrivialCbak from "./md/hooks-trivial-cbak.md";
 import hooksValidateBufLen from "./md/hooks-validate-buf-len.md";
 import hooksVerifyBufLen from "./md/hooks-verify-buf-len.md";
 
@@ -90,6 +91,7 @@ const docs: { [key: string]: string; } = {
   "hooks-state-buf-len": hooksStateBufLen,
   "hooks-transaction-hash-buf-len": hooksTransactionHashBufLen,
   "hooks-transaction-slot-limit": hooksTransactionSlotLimit,
+  "hooks-trivial-cbak": hooksTrivialCbak,
   "hooks-validate-buf-len": hooksValidateBufLen,
   "hooks-verify-buf-len": hooksVerifyBufLen,
 };
