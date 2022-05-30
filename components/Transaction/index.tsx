@@ -158,9 +158,11 @@ const Transaction: FC<TransactionProps> = ({
       ptx.Sequence = account.sequence;
 
       const res = await _estimateFee(ptx, account, { silent: true });
-      return res?.base_fee;
+      const fee = res?.base_fee;
+      setState({ estimatedFee: fee });
+      return fee;
     },
-    [accounts, prepareOptions, txState]
+    [accounts, prepareOptions, setState, txState]
   );
 
   return (

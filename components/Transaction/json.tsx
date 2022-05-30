@@ -37,17 +37,29 @@ export const TxJson: FC<JsonProps> = ({
   state: txState,
   header,
   setState,
-  estimateFee,
 }) => {
   const { editorSettings, accounts } = useSnapshot(state);
-  const { editorValue = value, selectedTransaction } = txState;
+  const { editorValue = value, estimatedFee } = txState;
   const { theme } = useTheme();
   const [hasUnsaved, setHasUnsaved] = useState(false);
+  const [currTxType, setCurrTxType] = useState<string>();
 
   useEffect(() => {
     setState({ editorValue: value });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
+
+  useEffect(() => {
+    const parsed = parseJSON(editorValue);
+    if (!parsed) return;
+
+    const tt = parsed.TransactionType;
+    const tx = transactionsData.find(t => t.TransactionType === tt);
+    if (tx) setCurrTxType(tx.TransactionType);
+    else {
+      setCurrTxType(undefined);
+    }
+  }, [editorValue]);
 
   useEffect(() => {
     if (editorValue === value) setHasUnsaved(false);
@@ -85,8 +97,9 @@ export const TxJson: FC<JsonProps> = ({
   const monaco = useMonaco();
 
   const getSchemas = useCallback(async (): Promise<any[]> => {
-    const tt = selectedTransaction?.value;
-    const txObj = transactionsData.find(td => td.TransactionType === tt);
+    const txObj = transactionsData.find(
+      td => td.TransactionType === currTxType
+    );
 
     let genericSchemaProps: any;
     if (txObj) {
@@ -100,7 +113,6 @@ export const TxJson: FC<JsonProps> = ({
         {}
       );
     }
-    const estimatedFee = await estimateFee?.();
     return [
       {
         uri: "file:///main-schema.json", // id of the first schema
@@ -152,19 +164,21 @@ export const TxJson: FC<JsonProps> = ({
           type: "string",
           title: "Fee type",
           const: estimatedFee,
-          description: "Above mentioned value is recommended base fee",
+          description: estimatedFee
+            ? "Above mentioned value is recommended base fee"
+            : undefined,
         },
       },
       {
         ...amountSchema,
       },
     ];
-  }, [accounts, header, selectedTransaction?.value]);
+  }, [accounts, currTxType, estimatedFee, header]);
 
   useEffect(() => {
     if (!monaco) return;
     getSchemas().then(schemas => {
-      console.log('seeung schmea')
+      console.log("seeung schmea");
       monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
         validate: true,
         schemas,

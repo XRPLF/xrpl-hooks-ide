@@ -19,7 +19,8 @@ export interface TransactionState {
     txFields: TxFields;
     viewType: 'json' | 'ui',
     editorSavedValue: null | string,
-    editorValue?: string
+    editorValue?: string,
+    estimatedFee?: string
 }
 
 

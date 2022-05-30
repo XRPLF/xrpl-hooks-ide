@@ -110,8 +110,6 @@ export const TxUI: FC<UIProps> = ({
     k => !specialFields.includes(k)
   ) as [keyof TxFields];
 
-  console.log("render ui");
-
   return (
     <Container
       css={{
