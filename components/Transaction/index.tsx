@@ -86,9 +86,10 @@ const Transaction: FC<TransactionProps> = ({
 
   const submitTest = useCallback(async () => {
     let st: TransactionState | undefined;
+    const tt = txState.selectedTransaction?.value;
     if (viewType === "json") {
       // save the editor state first
-      const pst = prepareState(editorValue || "", txState);
+      const pst = prepareState(editorValue || "", tt);
       if (!pst) return;
 
       st = setState(pst);

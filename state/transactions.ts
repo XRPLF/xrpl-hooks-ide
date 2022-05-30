@@ -141,7 +141,7 @@ export const prepareTransaction = (data: any) => {
 }
 
 // editor value to state
-export const prepareState = (value: string, txState: TransactionState) => {
+export const prepareState = (value: string, transactionType?: string) => {
     const options = parseJSON(value);
     if (!options) {
         showAlert("Error!", {
@@ -152,7 +152,7 @@ export const prepareState = (value: string, txState: TransactionState) => {
 
     const { Account, TransactionType, Destination, ...rest } = options;
     let tx: Partial<TransactionState> = {};
-    const { txFields } = txState
+    const txFields = getTxFields(transactionType)
 
     if (Account) {
         const acc = state.accounts.find(acc => acc.address === Account);
@@ -207,7 +207,7 @@ export const prepareState = (value: string, txState: TransactionState) => {
         if (isXrp) {
             rest[field] = {
                 $type: "xrp",
-                $value: +value / 1000000, // TODO maybe use bigint?
+                $value: +value / 1000000, // ! maybe use bigint?
             };
         } else if (typeof value === "object") {
             rest[field] = {
@@ -223,7 +223,7 @@ export const prepareState = (value: string, txState: TransactionState) => {
     return tx
 }
 
-export const getTxFields = (tt: string) => {
+export const getTxFields = (tt?: string) => {
     const txFields: TxFields | undefined = transactionsData.find(
         tx => tx.TransactionType === tt
     );

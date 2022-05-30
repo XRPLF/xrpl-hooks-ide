@@ -42,7 +42,9 @@ export const TxJson: FC<JsonProps> = ({
   const { editorValue = value, estimatedFee } = txState;
   const { theme } = useTheme();
   const [hasUnsaved, setHasUnsaved] = useState(false);
-  const [currTxType, setCurrTxType] = useState<string>();
+  const [currTxType, setCurrTxType] = useState<string | undefined>(
+    txState.selectedTransaction?.value
+  );
 
   useEffect(() => {
     setState({ editorValue: value });
@@ -66,8 +68,8 @@ export const TxJson: FC<JsonProps> = ({
     else setHasUnsaved(true);
   }, [editorValue, value]);
 
-  const saveState = (value: string, txState: TransactionState) => {
-    const tx = prepareState(value, txState);
+  const saveState = (value: string, transactionType?: string) => {
+    const tx = prepareState(value, transactionType);
     if (tx) setState(tx);
   };
 
@@ -82,7 +84,7 @@ export const TxJson: FC<JsonProps> = ({
   const onExit = (value: string) => {
     const options = parseJSON(value);
     if (options) {
-      saveState(value, txState);
+      saveState(value, currTxType);
       return;
     }
     showAlert("Error!", {
@@ -178,7 +180,6 @@ export const TxJson: FC<JsonProps> = ({
   useEffect(() => {
     if (!monaco) return;
     getSchemas().then(schemas => {
-      console.log("seeung schmea");
       monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
         validate: true,
         schemas,
@@ -221,7 +222,7 @@ export const TxJson: FC<JsonProps> = ({
       {hasUnsaved && (
         <Text muted small css={{ position: "absolute", bottom: 0, right: 0 }}>
           This file has unsaved changes.{" "}
-          <Link onClick={() => saveState(editorValue, txState)}>save</Link>{" "}
+          <Link onClick={() => saveState(editorValue, currTxType)}>save</Link>{" "}
           <Link onClick={discardChanges}>discard</Link>
         </Text>
       )}
