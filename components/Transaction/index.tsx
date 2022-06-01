@@ -15,6 +15,7 @@ import Flex from "../Flex";
 import { TxJson } from "./json";
 import { TxUI } from "./ui";
 import { default as _estimateFee } from "../../utils/estimateFee";
+import toast from 'react-hot-toast';
 
 export interface TransactionProps {
   header: string;
@@ -147,18 +148,23 @@ const Transaction: FC<TransactionProps> = ({
   );
 
   const estimateFee = useCallback(
-    async (st?: TransactionState) => {
+    async (st?: TransactionState, opts?: { silent?: boolean }) => {
       const state = st || txState;
       const ptx = prepareOptions(state);
       const account = accounts.find(
         acc => acc.address === state.selectedAccount?.value
       );
-      if (!account) return;
+      if (!account) {
+        if (!opts?.silent) {
+          toast.error("Please select account from the list.")
+        }
+        return
+      };
 
       ptx.Account = account.address;
       ptx.Sequence = account.sequence;
 
-      const res = await _estimateFee(ptx, account, { silent: true });
+      const res = await _estimateFee(ptx, account, opts);
       const fee = res?.base_fee;
       setState({ estimatedFee: fee });
       return fee;

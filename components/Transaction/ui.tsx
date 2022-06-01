@@ -21,7 +21,7 @@ interface UIProps {
     pTx?: Partial<TransactionState> | undefined
   ) => TransactionState | undefined;
   state: TransactionState;
-  estimateFee?: (state?: TransactionState) => Promise<string | undefined>;
+  estimateFee?: (...arg: any) => Promise<string | undefined>;
 }
 
 export const TxUI: FC<UIProps> = ({
@@ -85,10 +85,10 @@ export const TxUI: FC<UIProps> = ({
   );
 
   const handleEstimateFee = useCallback(
-    async (state?: TransactionState) => {
+    async (state?: TransactionState, silent?: boolean) => {
       setFeeLoading(true);
 
-      const fee = await estimateFee?.(state);
+      const fee = await estimateFee?.(state, { silent });
       if (fee) handleSetField("Fee", fee, state?.txFields);
 
       setFeeLoading(false);
@@ -101,7 +101,7 @@ export const TxUI: FC<UIProps> = ({
 
     const newState = resetOptions(tt.value);
 
-    handleEstimateFee(newState);
+    handleEstimateFee(newState, true);
   };
 
   const specialFields = ["TransactionType", "Account", "Destination"];
