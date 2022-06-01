@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useCallback, useState } from "react";
 import Container from "../Container";
 import Flex from "../Flex";
 import Input from "../Input";
@@ -9,17 +9,26 @@ import {
   TransactionState,
   transactionsData,
   TxFields,
+  getTxFields,
 } from "../../state/transactions";
 import { useSnapshot } from "valtio";
 import state from "../../state";
 import { streamState } from "../DebugStream";
+import { Button } from "..";
 
 interface UIProps {
-  setState: (pTx?: Partial<TransactionState> | undefined) => void;
+  setState: (
+    pTx?: Partial<TransactionState> | undefined
+  ) => TransactionState | undefined;
   state: TransactionState;
+  estimateFee?: (...arg: any) => Promise<string | undefined>;
 }
 
-export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
+export const TxUI: FC<UIProps> = ({
+  state: txState,
+  setState,
+  estimateFee,
+}) => {
   const { accounts } = useSnapshot(state);
   const {
     selectedAccount,
@@ -45,32 +54,54 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
     }))
     .filter(acc => acc.value !== selectedAccount?.value);
 
-  const resetOptions = (tt: string) => {
-    const txFields: TxFields | undefined = transactionsData.find(
-      tx => tx.TransactionType === tt
-    );
+  const [feeLoading, setFeeLoading] = useState(false);
 
-    if (!txFields) return setState({ txFields: {} });
-
-    const _txFields = Object.keys(txFields)
-      .filter(key => !["TransactionType", "Account", "Sequence"].includes(key))
-      .reduce<TxFields>(
-        (tf, key) => ((tf[key as keyof TxFields] = (txFields as any)[key]), tf),
-        {}
-      );
-
-    if (!_txFields.Destination) setState({ selectedDestAccount: null });
-    setState({ txFields: _txFields });
-  };
+  const resetOptions = useCallback(
+    (tt: string) => {
+      const fields = getTxFields(tt);
+      if (!fields.Destination) setState({ selectedDestAccount: null });
+      return setState({ txFields: fields });
+    },
+    [setState]
+  );
 
   const handleSetAccount = (acc: SelectOption) => {
     setState({ selectedAccount: acc });
     streamState.selectedAccount = acc;
   };
 
+  const handleSetField = useCallback(
+    (field: keyof TxFields, value: string, opFields?: TxFields) => {
+      const fields = opFields || txFields;
+      const obj = fields[field];
+      setState({
+        txFields: {
+          ...fields,
+          [field]: typeof obj === "object" ? { ...obj, $value: value } : value,
+        },
+      });
+    },
+    [setState, txFields]
+  );
+
+  const handleEstimateFee = useCallback(
+    async (state?: TransactionState, silent?: boolean) => {
+      setFeeLoading(true);
+
+      const fee = await estimateFee?.(state, { silent });
+      if (fee) handleSetField("Fee", fee, state?.txFields);
+
+      setFeeLoading(false);
+    },
+    [estimateFee, handleSetField]
+  );
+
   const handleChangeTxType = (tt: SelectOption) => {
     setState({ selectedTransaction: tt });
-    resetOptions(tt.value);
+
+    const newState = resetOptions(tt.value);
+
+    handleEstimateFee(newState, true);
   };
 
   const specialFields = ["TransactionType", "Account", "Destination"];
@@ -87,7 +118,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
         height: "calc(100% - 45px)",
       }}
     >
-      <Flex column fluid css={{ height: "100%", overflowY: "auto" }}>
+      <Flex column fluid css={{ height: "100%", overflowY: "auto", pr: "$1" }}>
         <Flex
           row
           fluid
@@ -174,36 +205,49 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState }) => {
           }
 
           let isXrp = typeof _value === "object" && _value.$type === "xrp";
+
+          const isFee = field === "Fee";
           return (
-            <Flex
-              key={field}
-              row
-              fluid
-              css={{
-                justifyContent: "flex-end",
-                alignItems: "center",
-                mb: "$3",
-                pr: "1px",
-              }}
-            >
-              <Text muted css={{ mr: "$3" }}>
-                {field + (isXrp ? " (XRP)" : "")}:{" "}
-              </Text>
-              <Input
-                value={value}
-                onChange={e => {
-                  setState({
-                    txFields: {
-                      ...txFields,
-                      [field]:
-                        typeof _value === "object"
-                          ? { ..._value, $value: e.target.value }
-                          : e.target.value,
-                    },
-                  });
+            <Flex column key={field} css={{ mb: "$2", pr: "1px" }}>
+              <Flex
+                row
+                fluid
+                css={{
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                  position: "relative",
                 }}
-                css={{ width: "70%", flex: "inherit" }}
-              />
+              >
+                <Text muted css={{ mr: "$3" }}>
+                  {field + (isXrp ? " (XRP)" : "")}:{" "}
+                </Text>
+                <Input
+                  value={value}
+                  onChange={e => {
+                    handleSetField(field, e.target.value);
+                  }}
+                  css={{ width: "70%", flex: "inherit" }}
+                />
+                {isFee && (
+                  <Button
+                    size="xs"
+                    variant="primary"
+                    outline
+                    isLoading={feeLoading}
+                    css={{
+                      position: "absolute",
+                      right: "$2",
+                      fontSize: "$xs",
+                      cursor: "pointer",
+                      alignContent: "center",
+                      display: "flex",
+                    }}
+                    onClick={() => handleEstimateFee()}
+                  >
+                    Suggest
+                  </Button>
+                )}
+              </Flex>
             </Flex>
           );
         })}

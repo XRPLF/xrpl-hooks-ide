@@ -19,7 +19,8 @@ export interface TransactionState {
     txFields: TxFields;
     viewType: 'json' | 'ui',
     editorSavedValue: null | string,
-    editorValue?: string
+    editorValue?: string,
+    estimatedFee?: string
 }
 
 
@@ -93,7 +94,7 @@ export const modifyTransaction = (
     Object.keys(partialTx).forEach(k => {
         // Typescript mess here, but is definetly safe!
         const s = tx.state as any;
-        const p = partialTx as any;
+        const p = partialTx as any; // ? Make copy
         if (!deepEqual(s[k], p[k])) s[k] = p[k];
     });
 
@@ -140,7 +141,7 @@ export const prepareTransaction = (data: any) => {
 }
 
 // editor value to state
-export const prepareState = (value: string, txState: TransactionState) => {
+export const prepareState = (value: string, transactionType?: string) => {
     const options = parseJSON(value);
     if (!options) {
         showAlert("Error!", {
@@ -151,7 +152,7 @@ export const prepareState = (value: string, txState: TransactionState) => {
 
     const { Account, TransactionType, Destination, ...rest } = options;
     let tx: Partial<TransactionState> = {};
-    const { txFields } = txState
+    const txFields = getTxFields(transactionType)
 
     if (Account) {
         const acc = state.accounts.find(acc => acc.address === Account);
@@ -206,7 +207,7 @@ export const prepareState = (value: string, txState: TransactionState) => {
         if (isXrp) {
             rest[field] = {
                 $type: "xrp",
-                $value: +value / 1000000, // TODO maybe use bigint?
+                $value: +value / 1000000, // ! maybe use bigint?
             };
         } else if (typeof value === "object") {
             rest[field] = {
@@ -220,6 +221,26 @@ export const prepareState = (value: string, txState: TransactionState) => {
     tx.editorSavedValue = null;
 
     return tx
+}
+
+export const getTxFields = (tt?: string) => {
+    const txFields: TxFields | undefined = transactionsData.find(
+        tx => tx.TransactionType === tt
+    );
+
+    if (!txFields) return {}
+
+    let _txFields = Object.keys(txFields)
+        .filter(
+            key => !["TransactionType", "Account", "Sequence"].includes(key)
+        )
+        .reduce<TxFields>(
+            (tf, key) => (
+                (tf[key as keyof TxFields] = (txFields as any)[key]), tf
+            ),
+            {}
+        );
+    return _txFields
 }
 
 export { transactionsData }

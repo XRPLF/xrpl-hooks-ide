@@ -20,8 +20,8 @@ export const sendTransaction = async (account: IAccount, txOptions: TransactionO
     const { Fee = "1000", ...opts } = txOptions
     const tx: TransactionOptions = {
         Account: account.address,
-        Sequence: account.sequence, // TODO auto-fillable
-        Fee,  // TODO auto-fillable
+        Sequence: account.sequence,
+        Fee,  // TODO auto-fillable default
         ...opts
     };
 

@@ -14,6 +14,8 @@ import Button from "../Button";
 import Flex from "../Flex";
 import { TxJson } from "./json";
 import { TxUI } from "./ui";
+import { default as _estimateFee } from "../../utils/estimateFee";
+import toast from 'react-hot-toast';
 
 export interface TransactionProps {
   header: string;
@@ -76,13 +78,19 @@ const Transaction: FC<TransactionProps> = ({
     } else {
       setState({ txIsDisabled: false });
     }
-  }, [selectedAccount?.value, selectedTransaction?.value, setState, txIsLoading]);
+  }, [
+    selectedAccount?.value,
+    selectedTransaction?.value,
+    setState,
+    txIsLoading,
+  ]);
 
   const submitTest = useCallback(async () => {
     let st: TransactionState | undefined;
+    const tt = txState.selectedTransaction?.value;
     if (viewType === "json") {
       // save the editor state first
-      const pst = prepareState(editorValue || '', txState);
+      const pst = prepareState(editorValue || "", tt);
       if (!pst) return;
 
       st = setState(pst);
@@ -102,7 +110,7 @@ const Transaction: FC<TransactionProps> = ({
       const options = prepareOptions(st);
 
       if (options.Destination === null) {
-        throw Error("Destination account cannot be null")
+        throw Error("Destination account cannot be null");
       }
 
       await sendTransaction(account, options, { logPrefix });
@@ -116,7 +124,17 @@ const Transaction: FC<TransactionProps> = ({
       }
     }
     setState({ txIsLoading: false });
-  }, [viewType, accounts, txIsDisabled, setState, header, editorValue, txState, selectedAccount?.value, prepareOptions]);
+  }, [
+    viewType,
+    accounts,
+    txIsDisabled,
+    setState,
+    header,
+    editorValue,
+    txState,
+    selectedAccount?.value,
+    prepareOptions,
+  ]);
 
   const resetState = useCallback(() => {
     modifyTransaction(header, { viewType }, { replaceState: true });
@@ -129,6 +147,31 @@ const Transaction: FC<TransactionProps> = ({
     [editorSavedValue, editorSettings.tabSize, prepareOptions]
   );
 
+  const estimateFee = useCallback(
+    async (st?: TransactionState, opts?: { silent?: boolean }) => {
+      const state = st || txState;
+      const ptx = prepareOptions(state);
+      const account = accounts.find(
+        acc => acc.address === state.selectedAccount?.value
+      );
+      if (!account) {
+        if (!opts?.silent) {
+          toast.error("Please select account from the list.")
+        }
+        return
+      };
+
+      ptx.Account = account.address;
+      ptx.Sequence = account.sequence;
+
+      const res = await _estimateFee(ptx, account, opts);
+      const fee = res?.base_fee;
+      setState({ estimatedFee: fee });
+      return fee;
+    },
+    [accounts, prepareOptions, setState, txState]
+  );
+
   return (
     <Box css={{ position: "relative", height: "calc(100% - 28px)" }} {...props}>
       {viewType === "json" ? (
@@ -137,9 +180,10 @@ const Transaction: FC<TransactionProps> = ({
           header={header}
           state={txState}
           setState={setState}
+          estimateFee={estimateFee}
         />
       ) : (
-        <TxUI state={txState} setState={setState} />
+        <TxUI state={txState} setState={setState} estimateFee={estimateFee} />
       )}
       <Flex
         row

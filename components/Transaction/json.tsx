@@ -29,6 +29,7 @@ interface JsonProps {
   header?: string;
   setState: (pTx?: Partial<TransactionState> | undefined) => void;
   state: TransactionState;
+  estimateFee?: () => Promise<string | undefined>;
 }
 
 export const TxJson: FC<JsonProps> = ({
@@ -38,9 +39,12 @@ export const TxJson: FC<JsonProps> = ({
   setState,
 }) => {
   const { editorSettings, accounts } = useSnapshot(state);
-  const { editorValue = value, selectedTransaction } = txState;
+  const { editorValue = value, estimatedFee } = txState;
   const { theme } = useTheme();
   const [hasUnsaved, setHasUnsaved] = useState(false);
+  const [currTxType, setCurrTxType] = useState<string | undefined>(
+    txState.selectedTransaction?.value
+  );
 
   useEffect(() => {
     setState({ editorValue: value });
@@ -48,12 +52,24 @@ export const TxJson: FC<JsonProps> = ({
   }, [value]);
 
   useEffect(() => {
+    const parsed = parseJSON(editorValue);
+    if (!parsed) return;
+
+    const tt = parsed.TransactionType;
+    const tx = transactionsData.find(t => t.TransactionType === tt);
+    if (tx) setCurrTxType(tx.TransactionType);
+    else {
+      setCurrTxType(undefined);
+    }
+  }, [editorValue]);
+
+  useEffect(() => {
     if (editorValue === value) setHasUnsaved(false);
     else setHasUnsaved(true);
   }, [editorValue, value]);
 
-  const saveState = (value: string, txState: TransactionState) => {
-    const tx = prepareState(value, txState);
+  const saveState = (value: string, transactionType?: string) => {
+    const tx = prepareState(value, transactionType);
     if (tx) setState(tx);
   };
 
@@ -68,7 +84,7 @@ export const TxJson: FC<JsonProps> = ({
   const onExit = (value: string) => {
     const options = parseJSON(value);
     if (options) {
-      saveState(value, txState);
+      saveState(value, currTxType);
       return;
     }
     showAlert("Error!", {
@@ -82,9 +98,10 @@ export const TxJson: FC<JsonProps> = ({
   const path = `file:///${header}`;
   const monaco = useMonaco();
 
-  const getSchemas = useCallback((): any[] => {
-    const tt = selectedTransaction?.value;
-    const txObj = transactionsData.find(td => td.TransactionType === tt);
+  const getSchemas = useCallback(async (): Promise<any[]> => {
+    const txObj = transactionsData.find(
+      td => td.TransactionType === currTxType
+    );
 
     let genericSchemaProps: any;
     if (txObj) {
@@ -98,7 +115,6 @@ export const TxJson: FC<JsonProps> = ({
         {}
       );
     }
-
     return [
       {
         uri: "file:///main-schema.json", // id of the first schema
@@ -130,6 +146,9 @@ export const TxJson: FC<JsonProps> = ({
             Amount: {
               $ref: "file:///amount-schema.json",
             },
+            Fee: {
+              $ref: "file:///fee-schema.json",
+            },
           },
         },
       },
@@ -142,16 +161,29 @@ export const TxJson: FC<JsonProps> = ({
         },
       },
       {
+        uri: "file:///fee-schema.json",
+        schema: {
+          type: "string",
+          title: "Fee type",
+          const: estimatedFee,
+          description: estimatedFee
+            ? "Above mentioned value is recommended base fee"
+            : undefined,
+        },
+      },
+      {
         ...amountSchema,
       },
     ];
-  }, [accounts, header, selectedTransaction?.value]);
+  }, [accounts, currTxType, estimatedFee, header]);
 
   useEffect(() => {
     if (!monaco) return;
-    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-      validate: true,
-      schemas: getSchemas(),
+    getSchemas().then(schemas => {
+      monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+        validate: true,
+        schemas,
+      });
     });
   }, [getSchemas, monaco]);
 
@@ -184,19 +216,13 @@ export const TxJson: FC<JsonProps> = ({
           // register onExit cb
           const model = editor.getModel();
           model?.onWillDispose(() => onExit(model.getValue()));
-
-          // set json defaults
-          monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-            validate: true,
-            schemas: getSchemas(),
-          });
         }}
         theme={theme === "dark" ? "dark" : "light"}
       />
       {hasUnsaved && (
         <Text muted small css={{ position: "absolute", bottom: 0, right: 0 }}>
           This file has unsaved changes.{" "}
-          <Link onClick={() => saveState(editorValue, txState)}>save</Link>{" "}
+          <Link onClick={() => saveState(editorValue, currTxType)}>save</Link>{" "}
           <Link onClick={discardChanges}>discard</Link>
         </Text>
       )}
