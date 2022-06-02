@@ -67,7 +67,6 @@ export const fetchFiles = (gistId: string) => {
               return 0
             };
             if (aExtension === bExtension) {
-              console.log('tääl')
               if (a.name > b.name) {
                 return 1;
               }
