@@ -121,7 +121,7 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
           }
           const res = await estimateFee(tx, account);
           if (res && res.base_fee) {
-            setValue("Fee", res.base_fee);
+            setValue("Fee", Math.round(Number(res.base_fee || "")).toString());
           }
         })();
       }
@@ -256,6 +256,12 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                       type="number"
                       {...register("Fee", { required: true })}
                       autoComplete={"off"}
+                      onKeyPress={(e) => {
+                        if (e.key === "." || e.key === ",") {
+                          e.preventDefault();
+                        }
+                      }}
+                      step="1"
                       defaultValue={10000}
                       css={{
                         "-moz-appearance": "textfield",
@@ -295,7 +301,12 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                             const res = await estimateFee(tx, account);
 
                             if (res && res.base_fee) {
-                              setValue("Fee", res.base_fee);
+                              setValue(
+                                "Fee",
+                                Math.round(
+                                  Number(res.base_fee || "")
+                                ).toString()
+                              );
                             }
                           }
                         } catch (err) {}
