@@ -66,14 +66,19 @@ export const fetchFiles = (gistId: string) => {
             if (!aExtension || !bExtension) {
               return 0
             };
-            if (aExtension === 'c' && bExtension === 'c') {
+            if (aExtension.toLocaleLowerCase() === 'c' && bExtension.toLocaleLowerCase() === 'c') {
               return 0
             }
-            if (aExtension === 'c' && bExtension !== 'c') {
+            if (aExtension.toLocaleLowerCase() === 'c' && bExtension.toLocaleLowerCase() !== 'c') {
               return -1
             }
-            return 0
+            if (bExtension.toLocaleLowerCase() === 'c' && aExtension.toLocaleLowerCase() !== 'c') {
+              return 1
+            }
+            return 0;
+
           })
+          console.log(files)
           state.loading = false;
           if (files.length > 0) {
             state.logs.push({
