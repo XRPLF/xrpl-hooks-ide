@@ -1,5 +1,4 @@
 import { Label } from "@radix-ui/react-label";
-import { Switch, SwitchThumb } from "../../components/Switch";
 import type { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { Gear, Play } from "phosphor-react";
@@ -140,59 +139,6 @@ const CompilerSettings = () => {
             -Os
           </Button>
         </ButtonGroup>
-      </Box>
-      <Box css={{ flexDirection: "column" }}>
-        <Label
-          style={{
-            flexDirection: "row",
-            display: "flex",
-          }}
-        >
-          Clean WASM (experimental){" "}
-          <Popover
-            css={{
-              maxWidth: "240px",
-              lineHeight: "1.3",
-              a: {
-                color: "$purple11",
-              },
-              ".dark &": {
-                backgroundColor: "$black !important",
-
-                ".arrow": {
-                  fill: "$colors$black",
-                },
-              },
-            }}
-            content="Cleaner removes unwanted compiler-provided exports and functions from a wasm binary to make it (more) suitable for being used as a Hook"
-          >
-            <Flex
-              css={{
-                position: "relative",
-                top: "-1px",
-                mx: "$1",
-                backgroundColor: "$mauve8",
-                borderRadius: "$full",
-                cursor: "pointer",
-                width: "16px",
-                height: "16px",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              ?
-            </Flex>
-          </Popover>
-        </Label>
-        <Switch
-          css={{ mt: "$2" }}
-          checked={snap.compileOptions.strip}
-          onCheckedChange={(checked) => {
-            state.compileOptions.strip = checked;
-          }}
-        >
-          <SwitchThumb />
-        </Switch>
       </Box>
     </Flex>
   );
