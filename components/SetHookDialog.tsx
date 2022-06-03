@@ -80,7 +80,7 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
     });
     const [formInitialized, setFormInitialized] = useState(false);
     const [estimateLoading, setEstimateLoading] = useState(false);
-
+    const watchedFee = watch("Fee");
     // Update value if activeWat changes
     useEffect(() => {
       setValue(
@@ -89,6 +89,14 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       );
       setFormInitialized(true);
     }, [snap.activeWat, snap.files, setValue]);
+    useEffect(() => {
+      if (
+        watchedFee &&
+        (watchedFee.includes(".") || watchedFee.includes(","))
+      ) {
+        setValue("Fee", watchedFee.replaceAll(".", "").replaceAll(",", ""));
+      }
+    }, [watchedFee, setValue]);
     // const {
     //   fields: grantFields,
     //   append: grantAppend,
