@@ -69,6 +69,9 @@ export const fetchFiles = (gistId: string) => {
             if (aCext && !bCext) {
               return -1;
             }
+            if (!aCext && bCext) {
+              return 1
+            }
             // Otherwise fallback to default sorting based on basename
             if (aBasename > bBasename) {
               return 1;
