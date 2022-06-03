@@ -213,7 +213,7 @@ const Home: NextPage = () => {
     >
       <main style={{ display: "flex", flex: 1, position: "relative" }}>
         <HooksEditor />
-        {snap.files[snap.active]?.name?.split(".")?.[1].toLowerCase() ===
+        {snap.files[snap.active]?.name?.split(".")?.[1]?.toLowerCase() ===
           "c" && (
           <Hotkeys
             keyName="command+b,ctrl+b"
