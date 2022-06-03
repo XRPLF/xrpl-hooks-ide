@@ -61,30 +61,23 @@ export const fetchFiles = (gistId: string) => {
           // Sort files so that the source files are first
           // In case of other files leave the order as it its
           files.sort((a, b) => {
-            const aExtension = a.name.split('.')?.[1]?.toLocaleLowerCase();
-            const bExtension = b.name.split('.')?.[1]?.toLocaleLowerCase();
-            if (!aExtension || !bExtension) {
-              return 0
-            };
-            if (aExtension === bExtension) {
-              if (a.name > b.name) {
-                return 1;
-              }
-              if (b.name > a.name) {
-                return -1;
-              }
-              return 0;
+            const aBasename = a.name.split('.')?.[0];
+            const aCext = a.name?.toLowerCase().endsWith('.c');
+            const bBasename = b.name.split('.')?.[0];
+            const bCext = b.name?.toLowerCase().endsWith('.c');
+            // If a has c extension and b doesn't move a up
+            if (aCext && !bCext) {
+              return -1;
             }
-            if (aExtension === 'c' && bExtension !== 'c') {
-              return -1
+            // Otherwise fallback to default sorting based on basename
+            if (aBasename > bBasename) {
+              return 1;
             }
-            if (bExtension === 'c' && aExtension !== 'c') {
-              return 1
+            if (bBasename > aBasename) {
+              return -1;
             }
             return 0;
-
           })
-          console.log(files)
           state.loading = false;
           if (files.length > 0) {
             state.logs.push({
