@@ -15,6 +15,7 @@ import { useSnapshot } from "valtio";
 import state from "../../state";
 import { streamState } from "../DebugStream";
 import { Button } from "..";
+import Textarea from "../Textarea";
 
 interface UIProps {
   setState: (
@@ -110,6 +111,9 @@ export const TxUI: FC<UIProps> = ({
     k => !specialFields.includes(k)
   ) as [keyof TxFields];
 
+  const switchToJson = () =>
+    setState({ editorSavedValue: null, viewType: "json" });
+
   return (
     <Container
       css={{
@@ -196,7 +200,7 @@ export const TxUI: FC<UIProps> = ({
           let value: string | undefined;
           if (typeof _value === "object") {
             if (_value.$type === "json" && typeof _value.$value === "object") {
-              value = JSON.stringify(_value.$value);
+              value = JSON.stringify(_value.$value, null, 2);
             } else {
               value = _value.$value.toString();
             }
@@ -204,9 +208,13 @@ export const TxUI: FC<UIProps> = ({
             value = _value?.toString();
           }
 
-          let isXrp = typeof _value === "object" && _value.$type === "xrp";
-
+          const isXrp = typeof _value === "object" && _value.$type === "xrp";
+          const isJson = typeof _value === "object" && _value.$type === "json";
           const isFee = field === "Fee";
+          let rows = isJson
+            ? (value?.match(/\n/gm)?.length || 0) + 1
+            : undefined;
+          if (rows && rows > 5) rows = 5;
           return (
             <Flex column key={field} css={{ mb: "$2", pr: "1px" }}>
               <Flex
@@ -221,13 +229,30 @@ export const TxUI: FC<UIProps> = ({
                 <Text muted css={{ mr: "$3" }}>
                   {field + (isXrp ? " (XRP)" : "")}:{" "}
                 </Text>
-                <Input
-                  value={value}
-                  onChange={e => {
-                    handleSetField(field, e.target.value);
-                  }}
-                  css={{ width: "70%", flex: "inherit" }}
-                />
+                {isJson ? (
+                  <Textarea
+                    rows={rows}
+                    value={value}
+                    spellCheck={false}
+                    onChange={switchToJson}
+                    css={{
+                      width: "70%",
+                      flex: "inherit",
+                      resize: 'vertical'
+                    }}
+                  />
+                ) : (
+                  <Input
+                    value={value}
+                    onChange={e => {
+                      handleSetField(field, e.target.value);
+                    }}
+                    css={{
+                      width: "70%",
+                      flex: "inherit",
+                    }}
+                  />
+                )}
                 {isFee && (
                   <Button
                     size="xs"
