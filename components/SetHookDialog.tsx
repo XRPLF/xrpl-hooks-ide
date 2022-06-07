@@ -80,7 +80,7 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
     });
     const [formInitialized, setFormInitialized] = useState(false);
     const [estimateLoading, setEstimateLoading] = useState(false);
-
+    const watchedFee = watch("Fee");
     // Update value if activeWat changes
     useEffect(() => {
       setValue(
@@ -89,6 +89,14 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       );
       setFormInitialized(true);
     }, [snap.activeWat, snap.files, setValue]);
+    useEffect(() => {
+      if (
+        watchedFee &&
+        (watchedFee.includes(".") || watchedFee.includes(","))
+      ) {
+        setValue("Fee", watchedFee.replaceAll(".", "").replaceAll(",", ""));
+      }
+    }, [watchedFee, setValue]);
     // const {
     //   fields: grantFields,
     //   append: grantAppend,
@@ -121,7 +129,7 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
           }
           const res = await estimateFee(tx, account);
           if (res && res.base_fee) {
-            setValue("Fee", res.base_fee);
+            setValue("Fee", Math.round(Number(res.base_fee || "")).toString());
           }
         })();
       }
@@ -256,6 +264,12 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                       type="number"
                       {...register("Fee", { required: true })}
                       autoComplete={"off"}
+                      onKeyPress={(e) => {
+                        if (e.key === "." || e.key === ",") {
+                          e.preventDefault();
+                        }
+                      }}
+                      step="1"
                       defaultValue={10000}
                       css={{
                         "-moz-appearance": "textfield",
@@ -295,7 +309,12 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                             const res = await estimateFee(tx, account);
 
                             if (res && res.base_fee) {
-                              setValue("Fee", res.base_fee);
+                              setValue(
+                                "Fee",
+                                Math.round(
+                                  Number(res.base_fee || "")
+                                ).toString()
+                              );
                             }
                           }
                         } catch (err) {}
