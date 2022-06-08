@@ -14,7 +14,7 @@ export const Textarea = styled("textarea", {
   alignItems: "center",
   justifyContent: "center",
   borderRadius: "$sm",
-  px: "$2",
+  p: "$2",
   fontSize: "$md",
   lineHeight: 1,
   color: "$mauve12",
