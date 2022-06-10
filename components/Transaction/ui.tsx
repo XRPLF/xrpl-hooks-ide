@@ -15,6 +15,7 @@ import { useSnapshot } from "valtio";
 import state from "../../state";
 import { streamState } from "../DebugStream";
 import { Button } from "..";
+import Textarea from "../Textarea";
 
 interface UIProps {
   setState: (
@@ -37,22 +38,22 @@ export const TxUI: FC<UIProps> = ({
     txFields,
   } = txState;
 
-  const transactionsOptions = transactionsData.map((tx) => ({
+  const transactionsOptions = transactionsData.map(tx => ({
     value: tx.TransactionType,
     label: tx.TransactionType,
   }));
 
-  const accountOptions: SelectOption[] = accounts.map((acc) => ({
+  const accountOptions: SelectOption[] = accounts.map(acc => ({
     label: acc.name,
     value: acc.address,
   }));
 
   const destAccountOptions: SelectOption[] = accounts
-    .map((acc) => ({
+    .map(acc => ({
       label: acc.name,
       value: acc.address,
     }))
-    .filter((acc) => acc.value !== selectedAccount?.value);
+    .filter(acc => acc.value !== selectedAccount?.value);
 
   const [feeLoading, setFeeLoading] = useState(false);
 
@@ -107,9 +108,12 @@ export const TxUI: FC<UIProps> = ({
   const specialFields = ["TransactionType", "Account", "Destination"];
 
   const otherFields = Object.keys(txFields).filter(
-    (k) => !specialFields.includes(k)
+    k => !specialFields.includes(k)
   ) as [keyof TxFields];
 
+  const switchToJson = () =>
+    setState({ editorSavedValue: null, viewType: "json" });
+  
   useEffect(() => {
     const defaultOption = transactionsOptions.find(
       tt => tt.value === "Payment"
@@ -117,7 +121,7 @@ export const TxUI: FC<UIProps> = ({
     if (defaultOption) {
       handleChangeTxType(defaultOption);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -200,13 +204,13 @@ export const TxUI: FC<UIProps> = ({
             />
           </Flex>
         )}
-        {otherFields.map((field) => {
+        {otherFields.map(field => {
           let _value = txFields[field];
 
           let value: string | undefined;
           if (typeof _value === "object") {
             if (_value.$type === "json" && typeof _value.$value === "object") {
-              value = JSON.stringify(_value.$value);
+              value = JSON.stringify(_value.$value, null, 2);
             } else {
               value = _value.$value.toString();
             }
@@ -214,9 +218,13 @@ export const TxUI: FC<UIProps> = ({
             value = _value?.toString();
           }
 
-          let isXrp = typeof _value === "object" && _value.$type === "xrp";
-
+          const isXrp = typeof _value === "object" && _value.$type === "xrp";
+          const isJson = typeof _value === "object" && _value.$type === "json";
           const isFee = field === "Fee";
+          let rows = isJson
+            ? (value?.match(/\n/gm)?.length || 0) + 1
+            : undefined;
+          if (rows && rows > 5) rows = 5;
           return (
             <Flex column key={field} css={{ mb: "$2", pr: "1px" }}>
               <Flex
@@ -231,18 +239,30 @@ export const TxUI: FC<UIProps> = ({
                 <Text muted css={{ mr: "$3" }}>
                   {field + (isXrp ? " (XRP)" : "")}:{" "}
                 </Text>
-                <Input
-                  value={value}
-                  onChange={(e) => {
-                    let value = e.target.value;
-                    if (value && (value.includes(".") || value.includes(","))) {
-                      value = value.replaceAll(".", "").replaceAll(",", "");
-                    }
-
-                    handleSetField(field, value);
-                  }}
-                  css={{ width: "70%", flex: "inherit" }}
-                />
+                {isJson ? (
+                  <Textarea
+                    rows={rows}
+                    value={value}
+                    spellCheck={false}
+                    onChange={switchToJson}
+                    css={{
+                      width: "70%",
+                      flex: "inherit",
+                      resize: "vertical",
+                    }}
+                  />
+                ) : (
+                  <Input
+                    value={value}
+                    onChange={e => {
+                      handleSetField(field, e.target.value);
+                    }}
+                    css={{
+                      width: "70%",
+                      flex: "inherit",
+                    }}
+                  />
+                )}
                 {isFee && (
                   <Button
                     size="xs"
