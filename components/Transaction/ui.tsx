@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import Container from "../Container";
 import Flex from "../Flex";
 import Input from "../Input";
@@ -109,6 +109,16 @@ export const TxUI: FC<UIProps> = ({
   const otherFields = Object.keys(txFields).filter(
     (k) => !specialFields.includes(k)
   ) as [keyof TxFields];
+
+  useEffect(() => {
+    const defaultOption = transactionsOptions.find(
+      tt => tt.value === "Payment"
+    );
+    if (defaultOption) {
+      handleChangeTxType(defaultOption);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container
