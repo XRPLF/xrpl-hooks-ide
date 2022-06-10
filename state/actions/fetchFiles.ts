@@ -23,7 +23,6 @@ export const fetchFiles = (gistId: string) => {
           return res
         }
         // in case of templates, fetch header file(s) and append to res
-        let resHeaderJson;
         try {
           const resHeader = await fetch(`${process.env.NEXT_PUBLIC_COMPILE_API_BASE_URL}/api/header-files`);
           if (resHeader.ok) {
