@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import Container from "../Container";
 import Flex from "../Flex";
 import Input from "../Input";
@@ -38,22 +38,22 @@ export const TxUI: FC<UIProps> = ({
     txFields,
   } = txState;
 
-  const transactionsOptions = transactionsData.map((tx) => ({
+  const transactionsOptions = transactionsData.map(tx => ({
     value: tx.TransactionType,
     label: tx.TransactionType,
   }));
 
-  const accountOptions: SelectOption[] = accounts.map((acc) => ({
+  const accountOptions: SelectOption[] = accounts.map(acc => ({
     label: acc.name,
     value: acc.address,
   }));
 
   const destAccountOptions: SelectOption[] = accounts
-    .map((acc) => ({
+    .map(acc => ({
       label: acc.name,
       value: acc.address,
     }))
-    .filter((acc) => acc.value !== selectedAccount?.value);
+    .filter(acc => acc.value !== selectedAccount?.value);
 
   const [feeLoading, setFeeLoading] = useState(false);
 
@@ -108,11 +108,21 @@ export const TxUI: FC<UIProps> = ({
   const specialFields = ["TransactionType", "Account", "Destination"];
 
   const otherFields = Object.keys(txFields).filter(
-    (k) => !specialFields.includes(k)
+    k => !specialFields.includes(k)
   ) as [keyof TxFields];
 
   const switchToJson = () =>
     setState({ editorSavedValue: null, viewType: "json" });
+  
+  useEffect(() => {
+    const defaultOption = transactionsOptions.find(
+      tt => tt.value === "Payment"
+    );
+    if (defaultOption) {
+      handleChangeTxType(defaultOption);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container
@@ -194,7 +204,7 @@ export const TxUI: FC<UIProps> = ({
             />
           </Flex>
         )}
-        {otherFields.map((field) => {
+        {otherFields.map(field => {
           let _value = txFields[field];
 
           let value: string | undefined;
@@ -238,7 +248,7 @@ export const TxUI: FC<UIProps> = ({
                     css={{
                       width: "70%",
                       flex: "inherit",
-                      resize: 'vertical'
+                      resize: "vertical",
                     }}
                   />
                 ) : (
