@@ -28,13 +28,17 @@ export const fetchFiles = (gistId: string) => {
           const resHeader = await fetch(`${process.env.NEXT_PUBLIC_COMPILE_API_BASE_URL}/api/header-files`);
           if (resHeader.ok) {
             resHeaderJson = await resHeader.json();
-            const files = {
-              ...res.data.files,
-              'hookapi.h': res.data.files?.['hookapi.h'] || { filename: 'hookapi.h', content: resHeaderJson.hookapi, language: 'C' },
-              'hookmacro.h': res.data.files?.['hookmacro.h'] || { filename: 'hookmacro.h', content: resHeaderJson.hookmacro, language: 'C' },
-              'sfcodes.h': res.data.files?.['sfcodes.h'] || { filename: 'sfcodes.h', content: resHeaderJson.sfcodes, language: 'C' },
-            };
-            res.data.files = files;
+            let fileMap = new Map<string, string>();
+            for (const fname in res.data.files) {
+              fileMap.set(fname, res.data.files[fname]);
+            }
+            for (const bname in resHeaderJson) {
+              const fname = bname + '.h';
+              if (!fileMap.has(fname)) {
+                fileMap.set(fname, { filename: fname, content: resHeaderJson[bname], language: 'C' });
+              }
+            }
+            res.data.files = Object.fromEntries(fileMap);
           }
         } catch (err) {
           console.log(err)
