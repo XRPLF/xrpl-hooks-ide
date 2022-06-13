@@ -23,16 +23,18 @@ export const fetchFiles = (gistId: string) => {
           return res
         }
         // in case of templates, fetch header file(s) and append to res
-        let resHeaderJson;
         try {
           const resHeader = await fetch(`${process.env.NEXT_PUBLIC_COMPILE_API_BASE_URL}/api/header-files`);
           if (resHeader.ok) {
-            resHeaderJson = await resHeader.json();
+            const resHeaderJson = await resHeader.json()
+            const headerFiles: Record<string, { filename: string; content: string; language: string }> = {};
+            Object.entries(resHeaderJson).forEach(([key, value]) => {
+              const fname = `${key}.h`;
+              headerFiles[fname] = { filename: fname, content: value as string, language: 'C' }
+            })
             const files = {
               ...res.data.files,
-              'hookapi.h': res.data.files?.['hookapi.h'] || { filename: 'hookapi.h', content: resHeaderJson.hookapi, language: 'C' },
-              'hookmacro.h': res.data.files?.['hookmacro.h'] || { filename: 'hookmacro.h', content: resHeaderJson.hookmacro, language: 'C' },
-              'sfcodes.h': res.data.files?.['sfcodes.h'] || { filename: 'sfcodes.h', content: resHeaderJson.sfcodes, language: 'C' },
+              ...headerFiles
             };
             res.data.files = files;
           }
