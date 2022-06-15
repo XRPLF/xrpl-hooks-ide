@@ -22,17 +22,32 @@ const generateHtmlTemplate = (code: string) => {
   <html>
   <head>
     <script>
-      function log() {
+      var log = console.log;
+      var errorLog = console.error;
+      var infoLog = console.info;
+      var warnLog = console.warn
+      console.log = function(){
         var args = Array.from(arguments);
-        this.parent.window.postMessage({ type: 'log', args: args || [] }, '*');
-      };
-      function error() {
+        parent.window.postMessage({ type: 'log', args: args || [] }, '*');
+        log.apply(console, args);
+      }
+      console.error = function(){
         var args = Array.from(arguments);
-        this.parent.window.postMessage({ type: 'error', args: args || [] }, '*');
-      };
+        parent.window.postMessage({ type: 'error', args: args || [] }, '*');
+        errorLog.apply(console, args);
+      }
+      console.info = function(){
+        var args = Array.from(arguments);
+        parent.window.postMessage({ type: 'info', args: args || [] }, '*');
+        infoLog.apply(console, args);
+      }
+      console.warn = function(){
+        var args = Array.from(arguments);
+        parent.window.postMessage({ type: 'warning', args: args || [] }, '*');
+        warnLog.apply(console, args);
+      }
     </script>
     <script type="module">   
-    log('Started running...');
     ${code}
     </script>
   </head>
@@ -63,7 +78,6 @@ const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
   useEffect(() => {
     const handleEvent = (e: any) => {
       if (e.data.type === "log" || e.data.type === "error") {
-        console.log(e.data);
         const data: ILog[] = e.data.args.map((msg: any) => ({
           type: e.data.type,
           message: msg.toString(),
@@ -159,7 +173,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
         <iframe
           style={{ display: "none" }}
           srcDoc={iFrameCode}
-          sandbox="allow-scripts allow-same-origin"
+          sandbox="allow-scripts"
         />
       )}
     </>
