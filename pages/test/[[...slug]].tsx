@@ -7,6 +7,7 @@ import state from "../../state";
 import { getSplit, saveSplit } from "../../state/actions/persistSplits";
 import { transactionsState, modifyTransaction } from "../../state";
 import LogBoxForScripts from "../../components/LogBoxForScripts";
+import { useEffect, useState } from "react";
 
 const DebugStream = dynamic(() => import("../../components/DebugStream"), {
   ssr: false,
@@ -20,9 +21,17 @@ const Accounts = dynamic(() => import("../../components/Accounts"), {
 });
 
 const Test = () => {
+  // This and useEffect is here to prevent useLayoutEffect warnings from react-split
+  const [showComponent, setShowComponent] = useState(false);
   const { transactionLogs } = useSnapshot(state);
   const { transactions, activeHeader } = useSnapshot(transactionsState);
   const snap = useSnapshot(state);
+  useEffect(() => {
+    setShowComponent(true);
+  }, []);
+  if (!showComponent) {
+    return null;
+  }
   return (
     <Container css={{ px: 0 }}>
       <Split
