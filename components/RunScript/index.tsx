@@ -52,7 +52,6 @@ const generateHtmlTemplate = (code: string) => {
     </script>
   </head>
   <body>
-  kissa
   </body>
   </html>
   `;
