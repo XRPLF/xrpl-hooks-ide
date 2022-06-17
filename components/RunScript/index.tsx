@@ -79,7 +79,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
       if (e.data.type === "log" || e.data.type === "error") {
         const data: ILog[] = e.data.args.map((msg: any) => ({
           type: e.data.type,
-          message: msg.toString(),
+          message: typeof msg === "string" ? msg : JSON.stringify(msg, null, 2),
         }));
         state.scriptLogs = [...snap.scriptLogs, ...data];
       }
