@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useSnapshot, ref } from "valtio";
-import Editor, { loader } from "@monaco-editor/react";
+import Editor from "@monaco-editor/react";
 import type monaco from "monaco-editor";
 import { ArrowBendLeftUp } from "phosphor-react";
 import { useTheme } from "next-themes";
@@ -164,7 +164,7 @@ const HooksEditor = () => {
                 onConnection: (connection) => {
                   // create and start the language client
                   const languageClient = createLanguageClient(connection);
-                  const disposable = languageClient.start();
+                  languageClient.start();
                   // connection.onDispose((d) => {
                   //   console.log("disposed: ", d);
                   // });
