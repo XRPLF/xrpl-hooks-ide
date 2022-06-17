@@ -23,12 +23,6 @@ import ReconnectingWebSocket from "reconnecting-websocket";
 
 import docs from "../xrpl-hooks-docs/docs";
 
-loader.config({
-  paths: {
-    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.30.1/min/vs",
-  },
-});
-
 const validateWritability = (editor: monaco.editor.IStandaloneCodeEditor) => {
   const currPath = editor.getModel()?.uri.path;
   if (apiHeaderFiles.find((h) => currPath?.endsWith(h))) {
@@ -171,14 +165,20 @@ const HooksEditor = () => {
                   // create and start the language client
                   const languageClient = createLanguageClient(connection);
                   const disposable = languageClient.start();
-                  connection.onClose(() => {
-                    try {
-                      // disposable.stop();
-                      disposable.dispose();
-                    } catch (err) {
-                      console.log("err", err);
-                    }
-                  });
+                  // connection.onDispose((d) => {
+                  //   console.log("disposed: ", d);
+                  // });
+                  // connection.onError((ee) => {
+                  //   console.log(ee =)
+                  // })
+                  // connection.onClose(() => {
+                  //   try {
+                  //     // disposable.stop();
+                  //     disposable.dispose();
+                  //   } catch (err) {
+                  //     console.log("err", err);
+                  //   }
+                  // });
                 },
               });
             }

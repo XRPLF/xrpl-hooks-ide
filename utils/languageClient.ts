@@ -1,6 +1,5 @@
 import { MessageConnection } from "@codingame/monaco-jsonrpc";
 import { MonacoLanguageClient, ErrorAction, CloseAction, createConnection } from "@codingame/monaco-languageclient";
-import Router from "next/router";
 import normalizeUrl from "normalize-url";
 import ReconnectingWebSocket from "reconnecting-websocket";
 
@@ -14,11 +13,7 @@ export function createLanguageClient(connection: MessageConnection): MonacoLangu
       errorHandler: {
         error: () => ErrorAction.Continue,
         closed: () => {
-          if (Router.pathname.includes('/develop')) {
-            return CloseAction.Restart
-          } else {
-            return CloseAction.DoNotRestart
-          }
+          return CloseAction.DoNotRestart
         }
       },
 
