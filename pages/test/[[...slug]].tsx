@@ -6,6 +6,8 @@ import Transaction from "../../components/Transaction";
 import state from "../../state";
 import { getSplit, saveSplit } from "../../state/actions/persistSplits";
 import { transactionsState, modifyTransaction } from "../../state";
+import LogBoxForScripts from "../../components/LogBoxForScripts";
+import { useEffect, useState } from "react";
 
 const DebugStream = dynamic(() => import("../../components/DebugStream"), {
   ssr: false,
@@ -19,18 +21,26 @@ const Accounts = dynamic(() => import("../../components/Accounts"), {
 });
 
 const Test = () => {
+  // This and useEffect is here to prevent useLayoutEffect warnings from react-split
+  const [showComponent, setShowComponent] = useState(false);
   const { transactionLogs } = useSnapshot(state);
   const { transactions, activeHeader } = useSnapshot(transactionsState);
-
+  const snap = useSnapshot(state);
+  useEffect(() => {
+    setShowComponent(true);
+  }, []);
+  if (!showComponent) {
+    return null;
+  }
   return (
     <Container css={{ px: 0 }}>
       <Split
         direction="vertical"
-        sizes={getSplit("testVertical") || [50, 50]}
+        sizes={getSplit("testVertical") || [50, 20, 30]}
         gutterSize={4}
         gutterAlign="center"
         style={{ height: "calc(100vh - 60px)" }}
-        onDragEnd={e => saveSplit("testVertical", e)}
+        onDragEnd={(e) => saveSplit("testVertical", e)}
       >
         <Flex
           row
@@ -52,7 +62,7 @@ const Test = () => {
               width: "100%",
               height: "100%",
             }}
-            onDragEnd={e => saveSplit("testHorizontal", e)}
+            onDragEnd={(e) => saveSplit("testHorizontal", e)}
           >
             <Box css={{ width: "55%", px: "$2" }}>
               <Tabs
@@ -64,17 +74,14 @@ const Test = () => {
                 keepAllAlive
                 forceDefaultExtension
                 defaultExtension=".json"
-                onCreateNewTab={header => modifyTransaction(header, {})}
+                onCreateNewTab={(header) => modifyTransaction(header, {})}
                 onCloseTab={(idx, header) =>
                   header && modifyTransaction(header, undefined)
                 }
               >
                 {transactions.map(({ header, state }) => (
                   <Tab key={header} header={header}>
-                    <Transaction
-                      state={state}
-                      header={header}
-                    />
+                    <Transaction state={state} header={header} />
                   </Tab>
                 ))}
               </Tabs>
@@ -84,8 +91,17 @@ const Test = () => {
             </Box>
           </Split>
         </Flex>
-
-        <Flex row fluid>
+        <Flex
+          as="div"
+          css={{
+            borderTop: "1px solid $mauve6",
+            background: "$mauve1",
+            flexDirection: "column",
+          }}
+        >
+          <LogBoxForScripts title="Helper scripts" logs={snap.scriptLogs} />
+        </Flex>
+        <Flex>
           <Split
             direction="horizontal"
             sizes={[50, 50]}

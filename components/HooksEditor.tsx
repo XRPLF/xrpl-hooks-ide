@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useSnapshot, ref } from "valtio";
-import Editor, { loader } from "@monaco-editor/react";
+import Editor from "@monaco-editor/react";
 import type monaco from "monaco-editor";
 import { ArrowBendLeftUp } from "phosphor-react";
 import { useTheme } from "next-themes";
@@ -22,12 +22,6 @@ import { listen } from "@codingame/monaco-jsonrpc";
 import ReconnectingWebSocket from "reconnecting-websocket";
 
 import docs from "../xrpl-hooks-docs/docs";
-
-loader.config({
-  paths: {
-    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.30.1/min/vs",
-  },
-});
 
 const validateWritability = (editor: monaco.editor.IStandaloneCodeEditor) => {
   const currPath = editor.getModel()?.uri.path;
@@ -170,15 +164,21 @@ const HooksEditor = () => {
                 onConnection: (connection) => {
                   // create and start the language client
                   const languageClient = createLanguageClient(connection);
-                  const disposable = languageClient.start();
-                  connection.onClose(() => {
-                    try {
-                      // disposable.stop();
-                      disposable.dispose();
-                    } catch (err) {
-                      console.log("err", err);
-                    }
-                  });
+                  languageClient.start();
+                  // connection.onDispose((d) => {
+                  //   console.log("disposed: ", d);
+                  // });
+                  // connection.onError((ee) => {
+                  //   console.log(ee =)
+                  // })
+                  // connection.onClose(() => {
+                  //   try {
+                  //     // disposable.stop();
+                  //     disposable.dispose();
+                  //   } catch (err) {
+                  //     console.log("err", err);
+                  //   }
+                  // });
                 },
               });
             }
