@@ -18,9 +18,12 @@ import Flex from "../Flex";
 import { useSnapshot } from "valtio";
 import Select from "../Select";
 
-Handlebars.registerHelper("input", function (/* dynamic arguments */) {
-  return new Handlebars.SafeString(arguments[0]);
-});
+Handlebars.registerHelper(
+  "customize_input",
+  function (/* dynamic arguments */) {
+    return new Handlebars.SafeString(arguments[0]);
+  }
+);
 
 const generateHtmlTemplate = (code: string) => {
   return `
@@ -66,7 +69,7 @@ type Fields = Record<
   string,
   {
     key: string;
-    value: string | { value: string; label: string };
+    value: string;
     label?: string;
     type?: string;
     attach?: "account_secret" | "account_address" | string;
@@ -87,7 +90,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
       const label = block.hash?.pairs?.find((i) => i.key == "title");
       const key =
         // @ts-expect-error
-        block?.path?.original === "input"
+        block?.path?.original === "customize_input"
           ? // @ts-expect-error
             block?.params?.[0].original
           : // @ts-expect-error
@@ -108,8 +111,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
   const runScript = () => {
     const fieldsToSend: Record<string, string> = {};
     Object.entries(fields).map(([key, obj]) => {
-      fieldsToSend[key] =
-        typeof obj.value === "string" ? obj.value : obj.value.value;
+      fieldsToSend[key] = obj.value;
     });
     const template = Handlebars.compile(file.content);
     const code = template(fieldsToSend);
@@ -129,6 +131,13 @@ const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
     window.addEventListener("message", handleEvent);
     return () => window.removeEventListener("message", handleEvent);
   }, [snap.scriptLogs]);
+
+  const options = snap.accounts?.map((acc) => ({
+    label: acc.name,
+    secret: acc.secret,
+    address: acc.address,
+    value: acc.address,
+  }));
 
   return (
     <>
@@ -158,22 +167,27 @@ const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
             {Object.keys(fields).map((key) => (
               <Box key={key} css={{ width: "100%" }}>
                 <label>{fields[key]?.label || key}</label>
-                {fields[key].type === "select" ? (
+                {fields[key].attach === "account_secret" ||
+                fields[key].attach === "account_address" ? (
                   <Select
-                    options={snap.accounts.map((acc) => ({
-                      label: acc.name,
-                      value:
-                        fields[key].attach === "account_secret"
-                          ? acc.secret
-                          : acc.address,
-                    }))}
+                    options={options}
                     onChange={(val: any) => {
                       setFields({
                         ...fields,
-                        [key]: { ...fields[key], value: val },
+                        [key]: {
+                          ...fields[key],
+                          value:
+                            fields[key].attach === "account_secret"
+                              ? val.secret
+                              : val.address,
+                        },
                       });
                     }}
-                    value={fields[key].value}
+                    value={options.find(
+                      (opt) =>
+                        opt.address === fields[key].value ||
+                        opt.secret === fields[key].value
+                    )}
                   />
                 ) : (
                   <Input
@@ -205,7 +219,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
                 variant="primary"
                 isDisabled={
                   Object.entries(fields).length > 0 &&
-                  Object.entries(fields).every(([key, value]) => !value.value)
+                  Object.entries(fields).every(([key, obj]) => !obj.value)
                 }
                 onClick={() => {
                   state.scriptLogs = [];
