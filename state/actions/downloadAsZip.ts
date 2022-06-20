@@ -8,7 +8,8 @@ export const downloadAsZip = async () => {
         state.zipLoading = true
         // TODO do something about file/gist loading state
         const files = state.files.map(({ name, content }) => ({ name, content }));
-        const zipped = await createZip(files);
+        const wasmFiles = state.files.filter(i => i.compiledContent).map(({ name, compiledContent }) => ({ name: `${name}.wasm`, content: compiledContent }));
+        const zipped = await createZip([...files, ...wasmFiles]);
         const zipFileName = guessZipFileName(files);
         zipped.saveFile(zipFileName);
     } catch (error) {
