@@ -1,4 +1,4 @@
-import Handlebars from "handlebars";
+import * as Handlebars from "handlebars";
 import { Play, X } from "phosphor-react";
 import { useEffect, useState } from "react";
 import state, { IFile, ILog } from "../../state";
@@ -16,6 +16,11 @@ import {
 } from "../Dialog";
 import Flex from "../Flex";
 import { useSnapshot } from "valtio";
+import Select from "../Select";
+
+Handlebars.registerHelper("input", function (/* dynamic arguments */) {
+  return new Handlebars.SafeString(arguments[0]);
+});
 
 const generateHtmlTemplate = (code: string) => {
   return `
@@ -56,21 +61,58 @@ const generateHtmlTemplate = (code: string) => {
   </html>
   `;
 };
+
+type Fields = Record<
+  string,
+  {
+    key: string;
+    value: string | { value: string; label: string };
+    label?: string;
+    type?: string;
+    attach?: "account_secret" | "account_address" | string;
+  }
+>;
+
 const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
   const snap = useSnapshot(state);
   const parsed = Handlebars.parse(file.content);
   const names = parsed.body
     .filter((i) => i.type === "MustacheStatement")
-    // @ts-expect-error
-    .map((block) => block?.path?.original);
-  const defaultState: Record<string, string> = {};
-  names.forEach((name) => (defaultState[name] = ""));
-  const [fields, setFields] = useState<Record<string, string>>(defaultState);
+    .map((block) => {
+      // @ts-expect-error
+      const type = block.hash?.pairs?.find((i) => i.key == "type");
+      // @ts-expect-error
+      const attach = block.hash?.pairs?.find((i) => i.key == "attach");
+      // @ts-expect-error
+      const label = block.hash?.pairs?.find((i) => i.key == "title");
+      const key =
+        // @ts-expect-error
+        block?.path?.original === "input"
+          ? // @ts-expect-error
+            block?.params?.[0].original
+          : // @ts-expect-error
+            block?.path?.original;
+      return {
+        key,
+        label: label?.value?.original || key,
+        attach: attach?.value?.original,
+        type: type?.value?.original,
+        value: "",
+      };
+    });
+  const defaultState: Fields = {};
+  names.forEach((field) => (defaultState[field.key] = field));
+  const [fields, setFields] = useState<Fields>(defaultState);
   const [iFrameCode, setIframeCode] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const runScript = () => {
+    const fieldsToSend: Record<string, string> = {};
+    Object.entries(fields).map(([key, obj]) => {
+      fieldsToSend[key] =
+        typeof obj.value === "string" ? obj.value : obj.value.value;
+    });
     const template = Handlebars.compile(file.content);
-    const code = template(fields);
+    const code = template(fieldsToSend);
     setIframeCode(generateHtmlTemplate(code));
   };
 
@@ -115,15 +157,42 @@ const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
           <Stack css={{ width: "100%" }}>
             {Object.keys(fields).map((key) => (
               <Box key={key} css={{ width: "100%" }}>
-                <label>{key}</label>
-                <Input
-                  type="text"
-                  value={fields[key]}
-                  css={{ mt: "$1" }}
-                  onChange={(e) =>
-                    setFields({ ...fields, [key]: e.target.value })
-                  }
-                />
+                <label>{fields[key]?.label || key}</label>
+                {fields[key].type === "select" ? (
+                  <Select
+                    options={snap.accounts.map((acc) => ({
+                      label: acc.name,
+                      value:
+                        fields[key].attach === "account_secret"
+                          ? acc.secret
+                          : acc.address,
+                    }))}
+                    onChange={(val: any) => {
+                      setFields({
+                        ...fields,
+                        [key]: { ...fields[key], value: val },
+                      });
+                    }}
+                    value={fields[key].value}
+                  />
+                ) : (
+                  <Input
+                    type={fields[key].type || "text"}
+                    value={
+                      typeof fields[key].value !== "string"
+                        ? // @ts-expect-error
+                          fields[key].value.value
+                        : fields[key].value
+                    }
+                    css={{ mt: "$1" }}
+                    onChange={(e) => {
+                      setFields({
+                        ...fields,
+                        [key]: { ...fields[key], value: e.target.value },
+                      });
+                    }}
+                  />
+                )}
               </Box>
             ))}
             <Flex
@@ -136,9 +205,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
                 variant="primary"
                 isDisabled={
                   Object.entries(fields).length > 0 &&
-                  Object.entries(fields).every(
-                    ([key, value]: [string, string]) => !value
-                  )
+                  Object.entries(fields).every(([key, value]) => !value.value)
                 }
                 onClick={() => {
                   state.scriptLogs = [];
