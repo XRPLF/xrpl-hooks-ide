@@ -8,7 +8,9 @@ import { useSnapshot } from "valtio";
 import { ButtonGroup, Flex } from "../../components";
 import Box from "../../components/Box";
 import Button from "../../components/Button";
+import LogBoxForScripts from "../../components/LogBoxForScripts";
 import Popover from "../../components/Popover";
+import RunScript from "../../components/RunScript";
 import state from "../../state";
 import { compileCode } from "../../state/actions";
 import { getSplit, saveSplit } from "../../state/actions/persistSplits";
@@ -196,20 +198,61 @@ const Home: NextPage = () => {
             </Flex>
           </Hotkeys>
         )}
+        {snap.files[snap.active]?.name?.split(".")?.[1]?.toLowerCase() ===
+          "js" && (
+          <Hotkeys
+            keyName="command+b,ctrl+b"
+            onKeyDown={() =>
+              !snap.compiling && snap.files.length && compileCode(snap.active)
+            }
+          >
+            <Flex
+              css={{
+                position: "absolute",
+                bottom: "$4",
+                left: "$4",
+                alignItems: "center",
+                display: "flex",
+                cursor: "pointer",
+                gap: "$2",
+              }}
+            >
+              <RunScript file={snap.files[snap.active]} />
+            </Flex>
+          </Hotkeys>
+        )}
       </main>
-      <Box
-        css={{
-          display: "flex",
-          background: "$mauve1",
-          position: "relative",
-        }}
-      >
-        <LogBox
-          title="Development Log"
-          clearLog={() => (state.logs = [])}
-          logs={snap.logs}
-        />
-      </Box>
+      <Flex css={{ width: "100%" }}>
+        <Flex
+          css={{
+            flex: 1,
+            background: "$mauve1",
+            position: "relative",
+            borderRight: "1px solid $mauve8",
+          }}
+        >
+          <LogBox
+            title="Development Log"
+            clearLog={() => (state.logs = [])}
+            logs={snap.logs}
+          />
+        </Flex>
+        {snap.files[snap.active]?.name?.split(".")?.[1]?.toLowerCase() ===
+          "js" && (
+          <Flex
+            css={{
+              flex: 1,
+            }}
+          >
+            <LogBoxForScripts
+              showButtons={false}
+              title="Script Log"
+              logs={snap.scriptLogs}
+              clearLog={() => (state.scriptLogs = [])}
+            />
+          </Flex>
+        )}
+      </Flex>
     </Split>
   );
 };
