@@ -1,6 +1,6 @@
 import * as Handlebars from "handlebars";
 import { Play, X } from "phosphor-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import state, { IFile, ILog } from "../../state";
 import Button from "../Button";
 import Box from "../Box";
@@ -17,6 +17,7 @@ import {
 import Flex from "../Flex";
 import { useSnapshot } from "valtio";
 import Select from "../Select";
+import { saveFile } from "../../state/actions/saveFile";
 
 Handlebars.registerHelper(
   "customize_input",
@@ -56,7 +57,7 @@ const generateHtmlTemplate = (code: string) => {
       }
     </script>
     <script type="module">   
-    ${code}
+      ${code}
     </script>
   </head>
   <body>
@@ -76,36 +77,53 @@ type Fields = Record<
   }
 >;
 
-const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
+const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
   const snap = useSnapshot(state);
-  const parsed = Handlebars.parse(file.content);
-  const names = parsed.body
-    .filter((i) => i.type === "MustacheStatement")
-    .map((block) => {
-      // @ts-expect-error
-      const type = block.hash?.pairs?.find((i) => i.key == "type");
-      // @ts-expect-error
-      const attach = block.hash?.pairs?.find((i) => i.key == "attach");
-      // @ts-expect-error
-      const label = block.hash?.pairs?.find((i) => i.key == "title");
-      const key =
-        // @ts-expect-error
-        block?.path?.original === "customize_input"
-          ? // @ts-expect-error
-            block?.params?.[0].original
-          : // @ts-expect-error
-            block?.path?.original;
-      return {
-        key,
-        label: label?.value?.original || key,
-        attach: attach?.value?.original,
-        type: type?.value?.original,
-        value: "",
-      };
-    });
-  const defaultState: Fields = {};
-  names.forEach((field) => (defaultState[field.key] = field));
-  const [fields, setFields] = useState<Fields>(defaultState);
+  const [templateError, setTemplateError] = useState("");
+  const getFieldValues = useCallback(() => {
+    try {
+      const parsed = Handlebars.parse(content);
+      const names = parsed.body
+        .filter((i) => i.type === "MustacheStatement")
+        .map((block) => {
+          // @ts-expect-error
+          const type = block.hash?.pairs?.find((i) => i.key == "type");
+          // @ts-expect-error
+          const attach = block.hash?.pairs?.find((i) => i.key == "attach");
+          // @ts-expect-error
+          const label = block.hash?.pairs?.find((i) => i.key == "label");
+          const key =
+            // @ts-expect-error
+            block?.path?.original === "customize_input"
+              ? // @ts-expect-error
+                block?.params?.[0].original
+              : // @ts-expect-error
+                block?.path?.original;
+          return {
+            key,
+            label: label?.value?.original || key,
+            attach: attach?.value?.original,
+            type: type?.value?.original,
+            value: "",
+          };
+        });
+      const defaultState: Fields = {};
+
+      if (names) {
+        names.forEach((field) => (defaultState[field.key] = field));
+      }
+      setTemplateError("");
+      return defaultState;
+    } catch (err) {
+      console.log(err);
+      setTemplateError("Could not parse template");
+      return undefined;
+    }
+  }, [content]);
+
+  // const defaultFieldValues = getFieldValues();
+
+  const [fields, setFields] = useState<Fields>({});
   const [iFrameCode, setIframeCode] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const runScript = () => {
@@ -113,9 +131,21 @@ const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
     Object.entries(fields).map(([key, obj]) => {
       fieldsToSend[key] = obj.value;
     });
-    const template = Handlebars.compile(file.content);
-    const code = template(fieldsToSend);
-    setIframeCode(generateHtmlTemplate(code));
+    const template = Handlebars.compile(content, { strict: false });
+    try {
+      const code = template(fieldsToSend);
+      setIframeCode(generateHtmlTemplate(code));
+      state.scriptLogs = [
+        ...snap.scriptLogs,
+        { type: "log", message: "Started running..." },
+      ];
+    } catch (err) {
+      state.scriptLogs = [
+        ...snap.scriptLogs,
+        // @ts-expect-error
+        { type: "error", message: err?.message || "Could not parse template" },
+      ];
+    }
   };
 
   useEffect(() => {
@@ -132,6 +162,11 @@ const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
     return () => window.removeEventListener("message", handleEvent);
   }, [snap.scriptLogs]);
 
+  useEffect(() => {
+    const newDefaultState = getFieldValues();
+    setFields(newDefaultState || {});
+  }, [content, setFields, getFieldValues]);
+
   const options = snap.accounts?.map((acc) => ({
     label: acc.name,
     secret: acc.secret,
@@ -146,18 +181,28 @@ const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
           <Button
             variant="primary"
             onClick={() => {
+              saveFile(false);
               setIframeCode("");
             }}
           >
-            {file.name} <Play weight="bold" size="16px" />
+            <Play weight="bold" size="16px" /> {name}
           </Button>
         </DialogTrigger>
         <DialogContent>
-          <DialogTitle>Run {file.name} script</DialogTitle>
+          <DialogTitle>Run {name} script</DialogTitle>
           <DialogDescription>
             You are about to run scripts provided by the developer of the hook,
             make sure you know what you are doing.
             <br />
+            {templateError && (
+              <Box
+                as="span"
+                css={{ display: "block", color: "$error", mt: "$3" }}
+              >
+                Error occured while parsing template, modify script and try
+                again!
+              </Box>
+            )}
             <br />
             {Object.keys(fields).length > 0
               ? `You also need to fill in following parameters to run the script`
@@ -166,10 +211,15 @@ const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
           <Stack css={{ width: "100%" }}>
             {Object.keys(fields).map((key) => (
               <Box key={key} css={{ width: "100%" }}>
-                <label>{fields[key]?.label || key}</label>
+                <label>
+                  {fields[key]?.label || key}{" "}
+                  {fields[key].attach === "account_secret" &&
+                    `(Script uses account secret)`}
+                </label>
                 {fields[key].attach === "account_secret" ||
                 fields[key].attach === "account_address" ? (
                   <Select
+                    css={{ mt: "$1" }}
                     options={options}
                     onChange={(val: any) => {
                       setFields({
@@ -218,8 +268,9 @@ const RunScript: React.FC<{ file: IFile }> = ({ file }) => {
               <Button
                 variant="primary"
                 isDisabled={
-                  Object.entries(fields).length > 0 &&
-                  Object.entries(fields).every(([key, obj]) => !obj.value)
+                  (Object.entries(fields).length > 0 &&
+                    Object.entries(fields).some(([key, obj]) => !obj.value)) ||
+                  Boolean(templateError)
                 }
                 onClick={() => {
                   state.scriptLogs = [];
