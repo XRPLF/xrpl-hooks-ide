@@ -25,6 +25,7 @@ interface ILogBox {
   logs: ILog[];
   renderNav?: () => ReactNode;
   enhanced?: boolean;
+  showButtons?: boolean;
 }
 
 const LogBox: FC<ILogBox> = ({
@@ -34,6 +35,7 @@ const LogBox: FC<ILogBox> = ({
   children,
   renderNav,
   enhanced,
+  showButtons = true,
 }) => {
   const logRef = useRef<HTMLPreElement>(null);
   const { stayScrolled /*, scrollBottom*/ } = useStayScrolled(logRef);
@@ -86,13 +88,15 @@ const LogBox: FC<ILogBox> = ({
           >
             <FileJs size="15px" /> <Text css={{ lineHeight: 1 }}>{title}</Text>
           </Heading>
-          <Flex css={{ gap: "$3" }}>
-            {snap.files
-              .filter((f) => f.name.endsWith(".js"))
-              .map((file) => (
-                <RunScript file={file} key={file.name} />
-              ))}
-          </Flex>
+          {showButtons && (
+            <Flex css={{ gap: "$3" }}>
+              {snap.files
+                .filter((f) => f.name.endsWith(".js"))
+                .map((file) => (
+                  <RunScript file={file} key={file.name} />
+                ))}
+            </Flex>
+          )}
           <Flex css={{ ml: "auto", gap: "$3", marginRight: "$3" }}>
             {clearLog && (
               <Button ghost size="xs" onClick={clearLog}>

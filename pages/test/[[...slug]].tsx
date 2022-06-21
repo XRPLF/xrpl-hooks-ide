@@ -32,11 +32,15 @@ const Test = () => {
   if (!showComponent) {
     return null;
   }
+  const hasScripts =
+    snap.files.filter((f) => f.name.endsWith(".js")).length > 0;
   return (
     <Container css={{ px: 0 }}>
       <Split
         direction="vertical"
-        sizes={getSplit("testVertical") || [50, 20, 30]}
+        sizes={
+          getSplit("testVertical") || (hasScripts ? [50, 20, 30] : [50, 50])
+        }
         gutterSize={4}
         gutterAlign="center"
         style={{ height: "calc(100vh - 60px)" }}
@@ -91,16 +95,22 @@ const Test = () => {
             </Box>
           </Split>
         </Flex>
-        <Flex
-          as="div"
-          css={{
-            borderTop: "1px solid $mauve6",
-            background: "$mauve1",
-            flexDirection: "column",
-          }}
-        >
-          <LogBoxForScripts title="Helper scripts" logs={snap.scriptLogs} />
-        </Flex>
+        {hasScripts && (
+          <Flex
+            as="div"
+            css={{
+              borderTop: "1px solid $mauve6",
+              background: "$mauve1",
+              flexDirection: "column",
+            }}
+          >
+            <LogBoxForScripts
+              title="Helper scripts"
+              logs={snap.scriptLogs}
+              clearLog={() => (state.scriptLogs = [])}
+            />
+          </Flex>
+        )}
         <Flex>
           <Split
             direction="horizontal"
