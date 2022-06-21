@@ -137,7 +137,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
       setIframeCode(generateHtmlTemplate(code));
       state.scriptLogs = [
         ...snap.scriptLogs,
-        { type: "log", message: "Started running..." },
+        { type: "success", message: "Started running..." },
       ];
     } catch (err) {
       state.scriptLogs = [
