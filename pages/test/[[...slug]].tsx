@@ -104,7 +104,11 @@ const Test = () => {
               flexDirection: "column",
             }}
           >
-            <LogBoxForScripts title="Helper scripts" logs={snap.scriptLogs} />
+            <LogBoxForScripts
+              title="Helper scripts"
+              logs={snap.scriptLogs}
+              clearLog={() => (state.scriptLogs = [])}
+            />
           </Flex>
         )}
         <Flex>
