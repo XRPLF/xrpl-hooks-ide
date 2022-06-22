@@ -54,15 +54,15 @@ export const prepareDeployHookTx = async (
   account: IAccount & { name?: string },
   data: SetHookData
 ) => {
-  if (
-    !state.files ||
-    state.files.length === 0 ||
-    !state.files?.[state.active]?.compiledContent
-  ) {
+  const activeFile = state.files[state.active]?.compiledContent
+    ? state.files[state.active]
+    : state.files.filter((file) => file.compiledContent)[0];
+
+  if (!state.files || state.files.length === 0) {
     return;
   }
 
-  if (!state.files?.[state.active]?.compiledContent) {
+  if (!activeFile?.compiledContent) {
     return;
   }
   if (!state.client) {
@@ -99,7 +99,7 @@ export const prepareDeployHookTx = async (
         {
           Hook: {
             CreateCode: arrayBufferToHex(
-              state.files?.[state.active]?.compiledContent
+              activeFile?.compiledContent
             ).toUpperCase(),
             HookOn: calculateHookOn(hookOnValues),
             HookNamespace,
