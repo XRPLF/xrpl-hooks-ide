@@ -256,7 +256,14 @@ export const TxUI: FC<UIProps> = ({
                     type={isFee ? "number" : "text"}
                     value={value}
                     onChange={(e) => {
-                      handleSetField(field, e.target.value);
+                      if (isFee) {
+                        const val = e.target.value
+                          .replaceAll(".", "")
+                          .replaceAll(",", "");
+                        handleSetField(field, val);
+                      } else {
+                        handleSetField(field, e.target.value);
+                      }
                     }}
                     onKeyPress={
                       isFee
