@@ -512,6 +512,7 @@ const ImportAccountDialog = () => {
           <Input
             name="secret"
             type="password"
+            autoComplete="new-password"
             value={value}
             onChange={(e) => setValue(e.target.value)}
           />

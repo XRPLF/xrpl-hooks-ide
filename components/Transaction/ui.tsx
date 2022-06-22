@@ -38,22 +38,22 @@ export const TxUI: FC<UIProps> = ({
     txFields,
   } = txState;
 
-  const transactionsOptions = transactionsData.map(tx => ({
+  const transactionsOptions = transactionsData.map((tx) => ({
     value: tx.TransactionType,
     label: tx.TransactionType,
   }));
 
-  const accountOptions: SelectOption[] = accounts.map(acc => ({
+  const accountOptions: SelectOption[] = accounts.map((acc) => ({
     label: acc.name,
     value: acc.address,
   }));
 
   const destAccountOptions: SelectOption[] = accounts
-    .map(acc => ({
+    .map((acc) => ({
       label: acc.name,
       value: acc.address,
     }))
-    .filter(acc => acc.value !== selectedAccount?.value);
+    .filter((acc) => acc.value !== selectedAccount?.value);
 
   const [feeLoading, setFeeLoading] = useState(false);
 
@@ -108,15 +108,15 @@ export const TxUI: FC<UIProps> = ({
   const specialFields = ["TransactionType", "Account", "Destination"];
 
   const otherFields = Object.keys(txFields).filter(
-    k => !specialFields.includes(k)
+    (k) => !specialFields.includes(k)
   ) as [keyof TxFields];
 
   const switchToJson = () =>
     setState({ editorSavedValue: null, viewType: "json" });
-  
+
   useEffect(() => {
     const defaultOption = transactionsOptions.find(
-      tt => tt.value === "Payment"
+      (tt) => tt.value === "Payment"
     );
     if (defaultOption) {
       handleChangeTxType(defaultOption);
@@ -204,7 +204,7 @@ export const TxUI: FC<UIProps> = ({
             />
           </Flex>
         )}
-        {otherFields.map(field => {
+        {otherFields.map((field) => {
           let _value = txFields[field];
 
           let value: string | undefined;
@@ -253,13 +253,32 @@ export const TxUI: FC<UIProps> = ({
                   />
                 ) : (
                   <Input
+                    type={isFee ? "number" : "text"}
                     value={value}
-                    onChange={e => {
+                    onChange={(e) => {
                       handleSetField(field, e.target.value);
                     }}
+                    onKeyPress={
+                      isFee
+                        ? (e) => {
+                            if (e.key === "." || e.key === ",") {
+                              e.preventDefault();
+                            }
+                          }
+                        : undefined
+                    }
                     css={{
                       width: "70%",
                       flex: "inherit",
+                      "-moz-appearance": "textfield",
+                      "&::-webkit-outer-spin-button": {
+                        "-webkit-appearance": "none",
+                        margin: 0,
+                      },
+                      "&::-webkit-inner-spin-button ": {
+                        "-webkit-appearance": "none",
+                        margin: 0,
+                      },
                     }}
                   />
                 )}
