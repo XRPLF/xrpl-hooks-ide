@@ -34,7 +34,9 @@ const DeployEditor = () => {
 
   const [showContent, setShowContent] = useState(false);
 
-  const activeFile = snap.files[snap.active];
+  const activeFile = snap.files[snap.active]?.compiledContent
+    ? snap.files[snap.active]
+    : snap.files.filter((file) => file.compiledContent)[0];
   const compiledSize = activeFile?.compiledContent?.byteLength || 0;
   const color =
     compiledSize > FILESIZE_BREAKPOINTS[1]
@@ -60,12 +62,21 @@ const DeployEditor = () => {
         {activeFile?.lastCompiled && (
           <ReactTimeAgo date={activeFile.lastCompiled} locale="en-US" />
         )}
+
         {activeFile.compiledContent?.byteLength && (
           <Text css={{ ml: "$2", color }}>
             ({filesize(activeFile.compiledContent.byteLength)})
           </Text>
         )}
       </Flex>
+      {activeFile.compiledContent?.byteLength &&
+        activeFile.compiledContent?.byteLength >= 64000 && (
+          <Flex css={{ flexDirection: "column", py: "$3", pb: "$1" }}>
+            <Text css={{ ml: "$2", color: "$error" }}>
+              File size is larger than 64kB, cannot set hook!
+            </Text>
+          </Flex>
+        )}
       <Button variant="link" onClick={() => setShowContent(true)}>
         View as WAT-file
       </Button>
@@ -119,8 +130,8 @@ const DeployEditor = () => {
             className="hooks-editor"
             defaultLanguage={"wat"}
             language={"wat"}
-            path={`file://tmp/c/${snap.files?.[snap.active]?.name}.wat`}
-            value={snap.files?.[snap.active]?.compiledWatContent || ""}
+            path={`file://tmp/c/${activeFile?.name}.wat`}
+            value={activeFile?.compiledWatContent || ""}
             beforeMount={(monaco) => {
               monaco.languages.register({ id: "wat" });
               monaco.languages.setLanguageConfiguration("wat", wat.config);

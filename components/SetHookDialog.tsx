@@ -140,6 +140,16 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       return null;
     }
 
+    const tooLargeFile = () => {
+      const activeFile = snap.files[snap.active].compiledContent
+        ? snap.files[snap.active]
+        : snap.files.filter((file) => file.compiledContent)[0];
+      return Boolean(
+        activeFile?.compiledContent?.byteLength &&
+          activeFile?.compiledContent?.byteLength >= 64000
+      );
+    };
+
     const onSubmit: SubmitHandler<SetHookData> = async (data) => {
       const currAccount = state.accounts.find(
         (acc) => acc.address === account.address
@@ -164,7 +174,8 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
             variant={"secondary"}
             disabled={
               account.isLoading ||
-              !snap.files.filter((file) => file.compiledWatContent).length
+              !snap.files.filter((file) => file.compiledWatContent).length ||
+              tooLargeFile()
             }
           >
             Set Hook
