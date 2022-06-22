@@ -114,7 +114,7 @@ let initialState: IState = {
   mainModalShowed: false,
   accounts: [],
   compileOptions: {
-    optimizationLevel: '-O0',
+    optimizationLevel: '-O2',
     strip: true
   }
 };
