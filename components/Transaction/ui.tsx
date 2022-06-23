@@ -294,6 +294,8 @@ export const TxUI: FC<UIProps> = ({
                     size="xs"
                     variant="primary"
                     outline
+                    disabled={txState.txIsDisabled}
+                    isDisabled={txState.txIsDisabled}
                     isLoading={feeLoading}
                     css={{
                       position: "absolute",
