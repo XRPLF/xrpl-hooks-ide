@@ -30,12 +30,6 @@ import PanelBox from "./PanelBox";
 import { templateFileIds } from "../state/constants";
 import { styled } from "../stitches.config";
 
-import Starter from "../components/icons/Starter";
-import Firewall from "../components/icons/Firewall";
-import Notary from "../components/icons/Notary";
-import Carbon from "../components/icons/Carbon";
-import Peggy from "../components/icons/Peggy";
-
 const ImageWrapper = styled(Flex, {
   position: "relative",
   mt: "$2",
