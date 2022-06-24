@@ -6,32 +6,32 @@ import Starter from "../../components/icons/Starter";
 
 export const templateFileIds = {
     'starter': {
-        id: '1f7d2963d9e342ea092286115274f3e3',
+        id: '9106f1fe60482d90475bfe8f1315affe',
         name: 'Starter',
         description: 'Just a basic starter with essential imports, just accepts any transaction coming through',
         icon: Starter
 
     },
     'firewall': {
-        id: '70edec690f0de4dd315fad1f4f996d8c',
+        id: '741816f53eddac862ef1ba400e1b9b84',
         name: 'Firewall',
         description: 'This Hook essentially checks a blacklist of accounts',
         icon: Firewall
     },
     'notary': {
-        id: '3d5677768fe8a54c4f6317e185d9ba66',
+        id: '0dfe12adb0aa75cff24c3c19497fb95a',
         name: 'Notary',
         description: 'Collecting signatures for multi-sign transactions',
         icon: Notary
     },
     'carbon': {
-        id: 'a9fbcaf1b816b198c7fc0f62962bebf2',
+        id: '5941c19dce3e147948f564e224553c02',
         name: 'Carbon',
         description: 'Send a percentage of sum to an address',
         icon: Carbon
     },
     'peggy': {
-        id: 'd21298a37e1550b781682014762a567b',
+        id: '52e61c02e777c44c913808981a4ca61f',
         name: 'Peggy',
         description: 'An oracle based stable coin hook',
         icon: Peggy
