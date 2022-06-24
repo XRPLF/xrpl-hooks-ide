@@ -19,7 +19,7 @@ export const fetchFiles = (gistId: string) => {
     octokit
       .request("GET /gists/{gist_id}", { gist_id: gistId })
       .then(async res => {
-        if (!Object.values(templateFileIds).includes(gistId)) {
+        if (!Object.values(templateFileIds).map(v => v.id).includes(gistId)) {
           return res
         }
         // in case of templates, fetch header file(s) and append to res
