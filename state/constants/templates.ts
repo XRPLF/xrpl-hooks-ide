@@ -1,20 +1,41 @@
-// export const templateFileIds = {
-//     'starter': '1d14e51e2e02dc0a508cb0733767a914', // TODO currently same as accept
-//     'firewall': 'bcd6d0c0fcbe52545ddb802481ff9d26',
-//     'notary': 'a789c75f591eeab7932fd702ed8cf9ea',
-//     'carbon': '43925143fa19735d8c6505c34d3a6a47',
-//     'peggy': 'ceaf352e2a65741341033ab7ef05c448',
-//     'headers': '9b448e8a55fab11ef5d1274cb59f9cf3'
-// }
+import Carbon from "../../components/icons/Carbon";
+import Firewall from "../../components/icons/Firewall";
+import Notary from "../../components/icons/Notary";
+import Peggy from "../../components/icons/Peggy";
+import Starter from "../../components/icons/Starter";
 
 export const templateFileIds = {
-    'starter': '1f7d2963d9e342ea092286115274f3e3',
-    'firewall': '70edec690f0de4dd315fad1f4f996d8c',
-    'notary': '3d5677768fe8a54c4f6317e185d9ba66',
-    'carbon': 'a9fbcaf1b816b198c7fc0f62962bebf2',
-    'doubler': '56b86174aeb70b2b48eee962bad3e355',
-    'peggy': 'd21298a37e1550b781682014762a567b',
-    'headers': '55f639bce59a49c58c45e663776b5138'
+    'starter': {
+        id: '9106f1fe60482d90475bfe8f1315affe',
+        name: 'Starter',
+        description: 'Just a basic starter with essential imports, just accepts any transaction coming through',
+        icon: Starter
+
+    },
+    'firewall': {
+        id: '741816f53eddac862ef1ba400e1b9b84',
+        name: 'Firewall',
+        description: 'This Hook essentially checks a blacklist of accounts',
+        icon: Firewall
+    },
+    'notary': {
+        id: '0dfe12adb0aa75cff24c3c19497fb95a',
+        name: 'Notary',
+        description: 'Collecting signatures for multi-sign transactions',
+        icon: Notary
+    },
+    'carbon': {
+        id: '5941c19dce3e147948f564e224553c02',
+        name: 'Carbon',
+        description: 'Send a percentage of sum to an address',
+        icon: Carbon
+    },
+    'peggy': {
+        id: '52e61c02e777c44c913808981a4ca61f',
+        name: 'Peggy',
+        description: 'An oracle based stable coin hook',
+        icon: Peggy
+    },
 }
 
-export const apiHeaderFiles = ['hookapi.h', 'sfcodes.h', 'hookmacro.h']
+export const apiHeaderFiles = ['hookapi.h', 'sfcodes.h', 'macro.h', 'extern.h', 'error.h'];

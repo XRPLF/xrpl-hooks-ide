@@ -30,12 +30,6 @@ import PanelBox from "./PanelBox";
 import { templateFileIds } from "../state/constants";
 import { styled } from "../stitches.config";
 
-import Starter from "../components/icons/Starter";
-import Firewall from "../components/icons/Firewall";
-import Notary from "../components/icons/Notary";
-import Carbon from "../components/icons/Carbon";
-import Peggy from "../components/icons/Peggy";
-
 const ImageWrapper = styled(Flex, {
   position: "relative",
   mt: "$2",
@@ -301,66 +295,18 @@ const Navigation = () => {
                         },
                       }}
                     >
-                      <PanelBox
-                        as="a"
-                        href={`/develop/${templateFileIds.starter}`}
-                      >
-                        <ImageWrapper>
-                          <Starter />
-                        </ImageWrapper>
-                        <Heading>Starter</Heading>
+                      {Object.values(templateFileIds).map((template) => (
+                        <PanelBox
+                          key={template.id}
+                          as="a"
+                          href={`/develop/${template.id}`}
+                        >
+                          <ImageWrapper>{template.icon()}</ImageWrapper>
+                          <Heading>{template.name}</Heading>
 
-                        <Text>
-                          Just a basic starter with essential imports, just
-                          accepts any transaction coming through
-                        </Text>
-                      </PanelBox>
-
-                      <PanelBox
-                        as="a"
-                        href={`/develop/${templateFileIds.firewall}`}
-                        css={{ alignItems: "flex-start" }}
-                      >
-                        <ImageWrapper>
-                          <Firewall />
-                        </ImageWrapper>
-                        <Heading>Firewall</Heading>
-                        <Text>
-                          This Hook essentially checks a blacklist of accounts
-                        </Text>
-                      </PanelBox>
-                      <PanelBox
-                        as="a"
-                        href={`/develop/${templateFileIds.notary}`}
-                      >
-                        <ImageWrapper>
-                          <Notary />
-                        </ImageWrapper>
-                        <Heading>Notary</Heading>
-                        <Text>
-                          Collecting signatures for multi-sign transactions
-                        </Text>
-                      </PanelBox>
-                      <PanelBox
-                        as="a"
-                        href={`/develop/${templateFileIds.carbon}`}
-                      >
-                        <ImageWrapper>
-                          <Carbon />
-                        </ImageWrapper>
-                        <Heading>Carbon</Heading>
-                        <Text>Send a percentage of sum to an address</Text>
-                      </PanelBox>
-                      <PanelBox
-                        as="a"
-                        href={`/develop/${templateFileIds.peggy}`}
-                      >
-                        <ImageWrapper>
-                          <Peggy />
-                        </ImageWrapper>
-                        <Heading>Peggy</Heading>
-                        <Text>An oracle based stable coin hook</Text>
-                      </PanelBox>
+                          <Text>{template.description}</Text>
+                        </PanelBox>
+                      ))}
                     </Flex>
                   </Flex>
                   <DialogClose asChild>
