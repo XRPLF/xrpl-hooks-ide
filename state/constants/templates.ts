@@ -38,4 +38,4 @@ export const templateFileIds = {
     },
 }
 
-export const apiHeaderFiles = ['hookapi.h', 'sfcodes.h', 'hookmacro.h', 'extern.h', 'error.h']
+export const apiHeaderFiles = ['hookapi.h', 'sfcodes.h', 'macro.h', 'hookmacro.h', 'extern.h', 'error.h']
