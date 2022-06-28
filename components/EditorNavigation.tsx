@@ -147,18 +147,32 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
           pb: "$0",
           flex: 1,
           "&::-webkit-scrollbar": {
-            height: "0.31em",
-            background: "rgba(0,0,0,.1)",
+            height: "0.3em",
+            background: "rgba(0,0,0,.0)",
           },
           "&::-webkit-scrollbar-gutter": "stable",
           "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "rgba(255,255,255,.3)",
+            backgroundColor: "rgba(0,0,0,.1)",
             outline: "0px",
             borderRadius: "9999px",
           },
-          scrollbarColor: "rgba(255,255,255,.3) rgba(0,0,0,.1)",
+          scrollbarColor: "rgba(0,0,0,.1) rgba(0,0,0,0)",
           scrollbarGutter: "stable",
           scrollbarWidth: "thin",
+          ".dark &": {
+            "&::-webkit-scrollbar": {
+              background: "rgba(0,0,0,.0)",
+            },
+            "&::-webkit-scrollbar-gutter": "stable",
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "rgba(255,255,255,.1)",
+              outline: "0px",
+              borderRadius: "9999px",
+            },
+            scrollbarColor: "rgba(255,255,255,.1) rgba(0,0,0,0)",
+            scrollbarGutter: "stable",
+            scrollbarWidth: "thin",
+          },
         }}
         onWheelCapture={(e) => {
           if (scrollRef.current) {
