@@ -87,7 +87,6 @@ const addListeners = (account: ISelect | null) => {
     if (streamState.socket) {
       interval = setInterval(() => {
         streamState.socket?.send("");
-        console.log("ping");
       }, 10000);
     }
 
