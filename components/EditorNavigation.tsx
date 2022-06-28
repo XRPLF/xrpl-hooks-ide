@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Plus,
   Share,
@@ -101,7 +101,7 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
       if (!filename) {
         return { error: "You need to add filename" };
       }
-      if (snap.files.find(file => file.name === filename)) {
+      if (snap.files.find((file) => file.name === filename)) {
         return { error: "Filename already exists." };
       }
 
@@ -132,22 +132,55 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
     createNewFile(filename);
     setFilename("");
   }, [filename, setIsNewfileDialogOpen, setFilename, validateFilename]);
-
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const files = snap.files;
   return (
     <Flex css={{ flexShrink: 0, gap: "$0" }}>
       <Flex
+        id="kissa"
+        ref={scrollRef}
         css={{
           overflowX: "scroll",
+          overflowY: "hidden",
           py: "$3",
+          pb: "$0",
           flex: 1,
           "&::-webkit-scrollbar": {
-            height: 0,
-            background: "transparent",
+            height: "0.3em",
+            background: "rgba(0,0,0,.0)",
+          },
+          "&::-webkit-scrollbar-gutter": "stable",
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "rgba(0,0,0,.2)",
+            outline: "0px",
+            borderRadius: "9999px",
+          },
+          scrollbarColor: "rgba(0,0,0,.2) rgba(0,0,0,0)",
+          scrollbarGutter: "stable",
+          scrollbarWidth: "thin",
+          ".dark &": {
+            "&::-webkit-scrollbar": {
+              background: "rgba(0,0,0,.0)",
+            },
+            "&::-webkit-scrollbar-gutter": "stable",
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "rgba(255,255,255,.2)",
+              outline: "0px",
+              borderRadius: "9999px",
+            },
+            scrollbarColor: "rgba(255,255,255,.2) rgba(0,0,0,0)",
+            scrollbarGutter: "stable",
+            scrollbarWidth: "thin",
           },
         }}
+        onWheelCapture={(e) => {
+          if (scrollRef.current) {
+            scrollRef.current.scrollLeft += e.deltaY;
+          }
+        }}
       >
-        <Container css={{ flex: 1 }}>
+        <Container css={{ flex: 1 }} ref={containerRef}>
           <Stack
             css={{
               gap: "$3",
@@ -233,8 +266,8 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
                     <Label>Filename</Label>
                     <Input
                       value={filename}
-                      onChange={e => setFilename(e.target.value)}
-                      onKeyPress={e => {
+                      onChange={(e) => setFilename(e.target.value)}
+                      onKeyPress={(e) => {
                         if (e.key === "Enter") {
                           handleConfirm();
                         }
@@ -509,8 +542,8 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
               type="number"
               min="1"
               value={editorSettings.tabSize}
-              onChange={e =>
-                setEditorSettings(curr => ({
+              onChange={(e) =>
+                setEditorSettings((curr) => ({
                   ...curr,
                   tabSize: Number(e.target.value),
                 }))

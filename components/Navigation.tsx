@@ -340,6 +340,8 @@ const Navigation = () => {
               height: 0,
               background: "transparent",
             },
+            scrollbarColor: "transparent",
+            scrollbarWidth: "none",
           }}
         >
           <Stack
