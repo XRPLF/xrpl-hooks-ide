@@ -164,21 +164,15 @@ const HooksEditor = () => {
                 onConnection: (connection) => {
                   // create and start the language client
                   const languageClient = createLanguageClient(connection);
-                  languageClient.start();
-                  // connection.onDispose((d) => {
-                  //   console.log("disposed: ", d);
-                  // });
-                  // connection.onError((ee) => {
-                  //   console.log(ee =)
-                  // })
-                  // connection.onClose(() => {
-                  //   try {
-                  //     // disposable.stop();
-                  //     disposable.dispose();
-                  //   } catch (err) {
-                  //     console.log("err", err);
-                  //   }
-                  // });
+                  const disposable = languageClient.start();
+
+                  connection.onClose(() => {
+                    try {
+                      disposable.dispose();
+                    } catch (err) {
+                      console.log("err", err);
+                    }
+                  });
                 },
               });
             }
