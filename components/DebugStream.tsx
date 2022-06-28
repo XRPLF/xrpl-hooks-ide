@@ -33,6 +33,7 @@ const onOpen = (account: ISelect | null) => {
   // streamState.logs = [];
   streamState.status = "opened";
   streamState.statusChangeTimestamp = Date.now();
+
   pushLog(`Debug stream opened for account ${account?.value}`, {
     type: "success",
   });
@@ -53,8 +54,14 @@ const onClose = (e: CloseEvent) => {
   streamState.statusChangeTimestamp = Date.now();
 };
 const onMessage = (event: any) => {
-  pushLog(event.data);
+  // Ping returns just account address, if we get that
+  // response we don't need to log anything
+  if (event.data !== streamState.selectedAccount?.value) {
+    pushLog(event.data);
+  }
 };
+
+let interval: NodeJS.Timer | null = null;
 
 const addListeners = (account: ISelect | null) => {
   if (account?.value && streamState.socket?.url.endsWith(account?.value)) {
@@ -62,6 +69,9 @@ const addListeners = (account: ISelect | null) => {
   }
   streamState.logs = [];
   if (account?.value) {
+    if (interval) {
+      clearInterval(interval);
+    }
     if (streamState.socket) {
       streamState.socket?.removeEventListener("open", () => onOpen(account));
       streamState.socket?.removeEventListener("close", onClose);
@@ -74,6 +84,12 @@ const addListeners = (account: ISelect | null) => {
         `wss://${process.env.NEXT_PUBLIC_DEBUG_STREAM_URL}/${account?.value}`
       )
     );
+    if (streamState.socket) {
+      interval = setInterval(() => {
+        streamState.socket?.send("");
+        console.log("ping");
+      }, 10000);
+    }
 
     streamState.socket.addEventListener("open", () => onOpen(account));
     streamState.socket.addEventListener("close", onClose);
