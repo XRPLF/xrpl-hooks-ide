@@ -152,11 +152,11 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
           },
           "&::-webkit-scrollbar-gutter": "stable",
           "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "rgba(0,0,0,.1)",
+            backgroundColor: "rgba(0,0,0,.2)",
             outline: "0px",
             borderRadius: "9999px",
           },
-          scrollbarColor: "rgba(0,0,0,.1) rgba(0,0,0,0)",
+          scrollbarColor: "rgba(0,0,0,.2) rgba(0,0,0,0)",
           scrollbarGutter: "stable",
           scrollbarWidth: "thin",
           ".dark &": {
@@ -165,11 +165,11 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
             },
             "&::-webkit-scrollbar-gutter": "stable",
             "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "rgba(255,255,255,.1)",
+              backgroundColor: "rgba(255,255,255,.2)",
               outline: "0px",
               borderRadius: "9999px",
             },
-            scrollbarColor: "rgba(255,255,255,.1) rgba(0,0,0,0)",
+            scrollbarColor: "rgba(255,255,255,.2) rgba(0,0,0,0)",
             scrollbarGutter: "stable",
             scrollbarWidth: "thin",
           },
