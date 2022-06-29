@@ -118,7 +118,13 @@ export const AccountDialog = ({
                     fontFamily: "$monospace",
                   }}
                 >
-                  {activeAccount?.address}
+                  <a
+                    href={`https://${process.env.NEXT_PUBLIC_EXPLORER_URL}/${activeAccount?.address}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {activeAccount?.address}
+                  </a>
                 </Text>
               </Flex>
               <Flex css={{ marginLeft: "auto", color: "$mauve12" }}>
@@ -240,7 +246,18 @@ export const AccountDialog = ({
                   }}
                 >
                   {activeAccount && activeAccount.hooks.length > 0
-                    ? activeAccount.hooks.map((i) => truncate(i, 12)).join(",")
+                    ? activeAccount.hooks.map((i) => {
+                        return (
+                          <a
+                            key={i.index}
+                            href={`https://${process.env.NEXT_PUBLIC_EXPLORER_URL}/${i.index}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {truncate(i.HookHash, 12)}
+                          </a>
+                        );
+                      })
                     : "–"}
                 </Text>
               </Flex>
@@ -327,15 +344,21 @@ const Accounts: FC<AccountProps> = (props) => {
         });
         const objectResponses = await Promise.all(objectRequests);
         objectResponses.forEach((res: any) => {
+          console.log(res);
           const address = res?.account as string;
           const accountToUpdate = state.accounts.find(
             (acc) => acc.address === address
           );
           if (accountToUpdate) {
+            const hookObj = res.account_objects.find(
+              (ac: any) => ac?.LedgerEntryType === "Hook"
+            );
             accountToUpdate.hooks =
-              res.account_objects
-                .find((ac: any) => ac?.LedgerEntryType === "Hook")
-                ?.Hooks?.map((oo: any) => oo.Hook.HookHash) || [];
+              hookObj?.Hooks?.map((oo: any) => ({
+                HookHash: oo.Hook?.HookHash,
+                HookNamespace: oo.Hook?.HookNamespace,
+                index: hookObj.index,
+              })) || [];
           }
         });
       }

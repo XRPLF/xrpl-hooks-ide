@@ -26,13 +26,19 @@ export interface FaucetAccountRes {
   code: string;
 }
 
+export interface IHooks {
+  HookHash: string;
+  HookNamespace: string;
+  index: string;
+}
+
 export interface IAccount {
   name: string;
   address: string;
   secret: string;
   xrp: string;
   sequence: number;
-  hooks: string[];
+  hooks: IHooks[];
   isLoading: boolean;
   version?: string;
   error?: {
