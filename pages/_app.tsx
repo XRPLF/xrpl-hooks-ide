@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "react-hot-toast";
 import { useRouter } from "next/router";
 import { IdProvider } from "@radix-ui/react-id";
+import PlausibleProvider from "next-plausible";
 
 import { darkTheme, css } from "../stitches.config";
 import Navigation from "../components/Navigation";
@@ -114,6 +115,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
           media="(prefers-color-scheme: light)"
         />
       </Head>
+
       <IdProvider>
         <SessionProvider session={session}>
           <ThemeProvider
@@ -125,23 +127,28 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
               dark: darkTheme.className,
             }}
           >
-            <Navigation />
-            <Component {...pageProps} />
-            <Toaster
-              toastOptions={{
-                className: css({
-                  backgroundColor: "$mauve1",
-                  color: "$mauve10",
-                  fontSize: "$sm",
-                  zIndex: 9999,
-                  ".dark &": {
-                    backgroundColor: "$mauve4",
-                    color: "$mauve12",
-                  },
-                })(),
-              }}
-            />
-            <Alert />
+            <PlausibleProvider
+              domain="hooks-builder.xrpl.org"
+              trackOutboundLinks
+            >
+              <Navigation />
+              <Component {...pageProps} />
+              <Toaster
+                toastOptions={{
+                  className: css({
+                    backgroundColor: "$mauve1",
+                    color: "$mauve10",
+                    fontSize: "$sm",
+                    zIndex: 9999,
+                    ".dark &": {
+                      backgroundColor: "$mauve4",
+                      color: "$mauve12",
+                    },
+                  })(),
+                }}
+              />
+              <Alert />
+            </PlausibleProvider>
           </ThemeProvider>
         </SessionProvider>
       </IdProvider>
