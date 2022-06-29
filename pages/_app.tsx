@@ -147,6 +147,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
               as="a"
               href="https://github.com/XRPLF/Hooks/discussions"
               target="_blank"
+              rel="noopener noreferrer"
               css={{ position: "fixed", right: "$4", bottom: "$4" }}
             >
               <Button size="sm" variant="primary" outline>
