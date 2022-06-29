@@ -344,7 +344,6 @@ const Accounts: FC<AccountProps> = (props) => {
         });
         const objectResponses = await Promise.all(objectRequests);
         objectResponses.forEach((res: any) => {
-          console.log(res);
           const address = res?.account as string;
           const accountToUpdate = state.accounts.find(
             (acc) => acc.address === address
