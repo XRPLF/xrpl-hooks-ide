@@ -158,8 +158,8 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
                 css={{ position: "fixed", right: "$4", bottom: "$4" }}
               >
                 <Button size="sm" variant="primary" outline>
-                  <ChatCircleText size={12} style={{ marginRight: "0px" }} />
-                  Send feedback
+                  <ChatCircleText size={14} style={{ marginRight: "0px" }} />
+                  Bugs & Discussions
                 </Button>
               </Flex>
             </PlausibleProvider>
