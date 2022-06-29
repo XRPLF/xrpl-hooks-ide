@@ -73,7 +73,8 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       defaultValues: snap.deployValues?.[activeFile?.name]
         ? snap.deployValues[activeFile?.name]
         : {
-            HookNamespace: "kus",
+            HookNamespace:
+              snap.files?.[snap.activeWat]?.name?.split(".")?.[0] || "",
             Invoke: transactionOptions.filter((to) => to.label === "ttPAYMENT"),
           },
     });
