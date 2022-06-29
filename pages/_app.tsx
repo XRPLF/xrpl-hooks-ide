@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "react-hot-toast";
 import { useRouter } from "next/router";
 import { IdProvider } from "@radix-ui/react-id";
+import PlausibleProvider from "next-plausible";
 
 import { darkTheme, css } from "../stitches.config";
 import Navigation from "../components/Navigation";
@@ -116,6 +117,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
           media="(prefers-color-scheme: light)"
         />
       </Head>
+
       <IdProvider>
         <SessionProvider session={session}>
           <ThemeProvider
@@ -127,35 +129,40 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
               dark: darkTheme.className,
             }}
           >
-            <Navigation />
-            <Component {...pageProps} />
-            <Toaster
-              toastOptions={{
-                className: css({
-                  backgroundColor: "$mauve1",
-                  color: "$mauve10",
-                  fontSize: "$sm",
-                  zIndex: 9999,
-                  ".dark &": {
-                    backgroundColor: "$mauve4",
-                    color: "$mauve12",
-                  },
-                })(),
-              }}
-            />
-            <Flex
-              as="a"
-              href="https://github.com/XRPLF/Hooks/discussions"
-              target="_blank"
-              rel="noopener noreferrer"
-              css={{ position: "fixed", right: "$4", bottom: "$4" }}
+            <PlausibleProvider
+              domain="hooks-builder.xrpl.org"
+              trackOutboundLinks
             >
-              <Button size="sm" variant="primary" outline>
-                <ChatCircleText size={12} style={{ marginRight: "0px" }} />
-                Send feedback
-              </Button>
-            </Flex>
-            <Alert />
+              <Navigation />
+              <Component {...pageProps} />
+              <Toaster
+                toastOptions={{
+                  className: css({
+                    backgroundColor: "$mauve1",
+                    color: "$mauve10",
+                    fontSize: "$sm",
+                    zIndex: 9999,
+                    ".dark &": {
+                      backgroundColor: "$mauve4",
+                      color: "$mauve12",
+                    },
+                  })(),
+                }}
+              />
+              <Alert />
+              <Flex
+                as="a"
+                href="https://github.com/XRPLF/Hooks/discussions"
+                target="_blank"
+                rel="noopener noreferrer"
+                css={{ position: "fixed", right: "$4", bottom: "$4" }}
+              >
+                <Button size="sm" variant="primary" outline>
+                  <ChatCircleText size={12} style={{ marginRight: "0px" }} />
+                  Send feedback
+                </Button>
+              </Flex>
+            </PlausibleProvider>
           </ThemeProvider>
         </SessionProvider>
       </IdProvider>
