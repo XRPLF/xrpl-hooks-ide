@@ -85,6 +85,7 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
     const [formInitialized, setFormInitialized] = useState(false);
     const [estimateLoading, setEstimateLoading] = useState(false);
     const watchedFee = watch("Fee");
+
     // Update value if activeWat changes
     useEffect(() => {
       const defaultValue = snap.deployValues?.[activeFile?.name]
