@@ -18,6 +18,8 @@ import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en.json";
 import { useSnapshot } from "valtio";
 import Alert from "../components/AlertDialog";
+import { Button, Flex } from "../components";
+import { ChatCircleText } from "phosphor-react";
 
 TimeAgo.setDefaultLocale(en.locale);
 TimeAgo.addLocale(en);
@@ -38,7 +40,7 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
       if (
         !gistId &&
         router.isReady &&
-        !router.pathname.includes("/sign-in") &&
+        router.pathname.includes("/develop") &&
         !snap.files.length &&
         !snap.mainModalShowed
       ) {
@@ -148,6 +150,18 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
                 }}
               />
               <Alert />
+              <Flex
+                as="a"
+                href="https://github.com/XRPLF/Hooks/discussions"
+                target="_blank"
+                rel="noopener noreferrer"
+                css={{ position: "fixed", right: "$4", bottom: "$4" }}
+              >
+                <Button size="sm" variant="primary" outline>
+                  <ChatCircleText size={14} style={{ marginRight: "0px" }} />
+                  Bugs & Discussions
+                </Button>
+              </Flex>
             </PlausibleProvider>
           </ThemeProvider>
         </SessionProvider>

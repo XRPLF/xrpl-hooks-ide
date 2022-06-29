@@ -126,6 +126,10 @@ export const deployHook = async (
   data: SetHookData
 ) => {
   if (typeof window !== "undefined") {
+    const activeFile = state.files[state.active]?.compiledContent
+      ? state.files[state.active]
+      : state.files.filter((file) => file.compiledContent)[0];
+    state.deployValues[activeFile.name] = data;
     const tx = await prepareDeployHookTx(account, data);
     if (!tx) {
       return;

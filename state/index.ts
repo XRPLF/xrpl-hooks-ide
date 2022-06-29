@@ -52,6 +52,8 @@ export interface ILog {
   defaultCollapsed?: boolean
 }
 
+export type DeployValue = Record<IFile['name'], any>;
+
 export interface IState {
   files: IFile[];
   gistId?: string | null;
@@ -82,7 +84,8 @@ export interface IState {
   compileOptions: {
     optimizationLevel: '-O0' | '-O1' | '-O2' | '-O3' | '-O4' | '-Os';
     strip: boolean
-  }
+  },
+  deployValues: DeployValue
 }
 
 // let localStorageState: null | string = null;
@@ -116,7 +119,8 @@ let initialState: IState = {
   compileOptions: {
     optimizationLevel: '-O2',
     strip: true
-  }
+  },
+  deployValues: {}
 };
 
 let localStorageAccounts: string | null = null;

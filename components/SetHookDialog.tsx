@@ -57,7 +57,9 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
   ({ accountAddress }) => {
     const snap = useSnapshot(state);
     const account = snap.accounts.find((acc) => acc.address === accountAddress);
-
+    const activeFile = snap.files[snap.active]?.compiledContent
+      ? snap.files[snap.active]
+      : snap.files.filter((file) => file.compiledContent)[0];
     const [isSetHookDialogOpen, setIsSetHookDialogOpen] = useState(false);
     const {
       register,
@@ -68,11 +70,13 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       getValues,
       formState: { errors },
     } = useForm<SetHookData>({
-      defaultValues: {
-        HookNamespace:
-          snap.files?.[snap.activeWat]?.name?.split(".")?.[0] || "",
-        Invoke: transactionOptions.filter((to) => to.label === "ttPAYMENT"),
-      },
+      defaultValues: snap.deployValues?.[activeFile?.name]
+        ? snap.deployValues[activeFile?.name]
+        : {
+            HookNamespace:
+              snap.files?.[snap.activeWat]?.name?.split(".")?.[0] || "",
+            Invoke: transactionOptions.filter((to) => to.label === "ttPAYMENT"),
+          },
     });
     const { fields, append, remove } = useFieldArray({
       control,
@@ -81,14 +85,21 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
     const [formInitialized, setFormInitialized] = useState(false);
     const [estimateLoading, setEstimateLoading] = useState(false);
     const watchedFee = watch("Fee");
+
     // Update value if activeWat changes
     useEffect(() => {
-      setValue(
-        "HookNamespace",
-        snap.files?.[snap.activeWat]?.name?.split(".")?.[0] || ""
-      );
+      const defaultValue = snap.deployValues?.[activeFile?.name]
+        ? snap.deployValues?.[activeFile?.name].HookNamespace
+        : snap.files?.[snap.activeWat]?.name?.split(".")?.[0] || "";
+      setValue("HookNamespace", defaultValue);
       setFormInitialized(true);
-    }, [snap.activeWat, snap.files, setValue]);
+    }, [
+      snap.activeWat,
+      snap.files,
+      setValue,
+      activeFile?.name,
+      snap.deployValues,
+    ]);
     useEffect(() => {
       if (
         watchedFee &&
@@ -108,7 +119,9 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
     const [hashedNamespace, setHashedNamespace] = useState("");
     const namespace = watch(
       "HookNamespace",
-      snap.files?.[snap.active]?.name?.split(".")?.[0] || ""
+      snap.deployValues?.[activeFile?.name]
+        ? snap.deployValues?.[activeFile?.name].HookNamespace
+        : snap.files?.[snap.activeWat]?.name?.split(".")?.[0] || ""
     );
     const calculateHashedValue = useCallback(async () => {
       const hashedVal = await sha256(namespace);
@@ -191,9 +204,6 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                   <Controller
                     name="Invoke"
                     control={control}
-                    defaultValue={transactionOptions.filter(
-                      (to) => to.label === "ttPAYMENT"
-                    )}
                     render={({ field }) => (
                       <Select
                         {...field}
@@ -210,9 +220,6 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                   <Input
                     {...register("HookNamespace", { required: true })}
                     autoComplete={"off"}
-                    defaultValue={
-                      snap.files?.[snap.activeWat]?.name?.split(".")?.[0] || ""
-                    }
                   />
                   {errors.HookNamespace?.type === "required" && (
                     <Box css={{ display: "inline", color: "$red11" }}>
