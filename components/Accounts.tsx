@@ -116,6 +116,7 @@ export const AccountDialog = ({
                 <Text
                   css={{
                     fontFamily: "$monospace",
+                    a: { "&:hover": { textDecoration: "underline" } },
                   }}
                 >
                   <a
@@ -221,7 +222,11 @@ export const AccountDialog = ({
                   </Button>
                 </Text>
               </Flex>
-              <Flex css={{ marginLeft: "auto" }}>
+              <Flex
+                css={{
+                  marginLeft: "auto",
+                }}
+              >
                 <a
                   href={`https://${process.env.NEXT_PUBLIC_EXPLORER_URL}/${activeAccount?.address}`}
                   target="_blank"
@@ -243,6 +248,7 @@ export const AccountDialog = ({
                 <Text
                   css={{
                     fontFamily: "$monospace",
+                    a: { "&:hover": { textDecoration: "underline" } },
                   }}
                 >
                   {activeAccount && activeAccount.hooks.length > 0
