@@ -249,12 +249,12 @@ export const AccountDialog = ({
                     ? activeAccount.hooks.map((i) => {
                         return (
                           <a
-                            key={i.index}
-                            href={`https://${process.env.NEXT_PUBLIC_EXPLORER_URL}/${i.index}`}
+                            key={i}
+                            href={`https://${process.env.NEXT_PUBLIC_EXPLORER_URL}/${i}`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            {truncate(i.HookHash, 12)}
+                            {truncate(i, 12)}
                           </a>
                         );
                       })
@@ -349,15 +349,10 @@ const Accounts: FC<AccountProps> = (props) => {
             (acc) => acc.address === address
           );
           if (accountToUpdate) {
-            const hookObj = res.account_objects.find(
-              (ac: any) => ac?.LedgerEntryType === "Hook"
-            );
             accountToUpdate.hooks =
-              hookObj?.Hooks?.map((oo: any) => ({
-                HookHash: oo.Hook?.HookHash,
-                HookNamespace: oo.Hook?.HookNamespace,
-                index: hookObj.index,
-              })) || [];
+              res.account_objects
+                .find((ac: any) => ac?.LedgerEntryType === "Hook")
+                ?.Hooks?.map((oo: any) => oo.Hook.HookHash) || [];
           }
         });
       }
