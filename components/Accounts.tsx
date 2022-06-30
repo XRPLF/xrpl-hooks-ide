@@ -116,9 +116,16 @@ export const AccountDialog = ({
                 <Text
                   css={{
                     fontFamily: "$monospace",
+                    a: { "&:hover": { textDecoration: "underline" } },
                   }}
                 >
-                  {activeAccount?.address}
+                  <a
+                    href={`https://${process.env.NEXT_PUBLIC_EXPLORER_URL}/${activeAccount?.address}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {activeAccount?.address}
+                  </a>
                 </Text>
               </Flex>
               <Flex css={{ marginLeft: "auto", color: "$mauve12" }}>
@@ -215,7 +222,11 @@ export const AccountDialog = ({
                   </Button>
                 </Text>
               </Flex>
-              <Flex css={{ marginLeft: "auto" }}>
+              <Flex
+                css={{
+                  marginLeft: "auto",
+                }}
+              >
                 <a
                   href={`https://${process.env.NEXT_PUBLIC_EXPLORER_URL}/${activeAccount?.address}`}
                   target="_blank"
@@ -237,10 +248,22 @@ export const AccountDialog = ({
                 <Text
                   css={{
                     fontFamily: "$monospace",
+                    a: { "&:hover": { textDecoration: "underline" } },
                   }}
                 >
                   {activeAccount && activeAccount.hooks.length > 0
-                    ? activeAccount.hooks.map((i) => truncate(i, 12)).join(",")
+                    ? activeAccount.hooks.map((i) => {
+                        return (
+                          <a
+                            key={i}
+                            href={`https://${process.env.NEXT_PUBLIC_EXPLORER_URL}/${i}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {truncate(i, 12)}
+                          </a>
+                        );
+                      })
                     : "–"}
                 </Text>
               </Flex>
