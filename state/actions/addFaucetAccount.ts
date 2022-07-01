@@ -27,7 +27,7 @@ export const names = [
  * new account with 10 000 XRP. Hooks Testnet /newcreds endpoint
  * is protected with CORS so that's why we did our own endpoint
  */
-export const addFaucetAccount = async (showToast: boolean = false) => {
+export const addFaucetAccount = async (name?: string, showToast: boolean = false) => {
   // Lets limit the number of faucet accounts to 5 for now
   if (state.accounts.length > 5) {
     return toast.error("You can only have maximum 6 accounts");
@@ -52,7 +52,7 @@ export const addFaucetAccount = async (showToast: boolean = false) => {
       }
       const currNames = state.accounts.map(acc => acc.name);
       state.accounts.push({
-        name: names.filter(name => !currNames.includes(name))[0],
+        name: name || names.filter(name => !currNames.includes(name))[0],
         xrp: (json.xrp || 0 * 1000000).toString(),
         address: json.address,
         secret: json.secret,
