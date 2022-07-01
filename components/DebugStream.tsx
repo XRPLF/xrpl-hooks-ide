@@ -87,7 +87,7 @@ const addListeners = (account: ISelect | null) => {
     if (streamState.socket) {
       interval = setInterval(() => {
         streamState.socket?.send("");
-      }, 10000);
+      }, 90000);
     }
 
     streamState.socket.addEventListener("open", () => onOpen(account));
