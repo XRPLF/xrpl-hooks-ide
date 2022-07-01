@@ -548,9 +548,9 @@ const ImportAccountDialog = ({
           {btnText}
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogTitle>{title}</DialogTitle>
-        <DialogDescription>
+      <DialogContent aria-describedby={undefined}>
+        <DialogTitle css={{mb: '$4'}}>{title}</DialogTitle>
+        <Flex column>
           <Box css={{ mb: "$2" }}>
             <Label>Account name</Label>
             <Input
@@ -575,7 +575,7 @@ const ImportAccountDialog = ({
               />
             </Box>
           )}
-        </DialogDescription>
+        </Flex>
 
         <Flex
           css={{
