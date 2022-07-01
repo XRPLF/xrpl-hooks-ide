@@ -37,7 +37,8 @@ interface Props {
   children: ReactElement<TabProps>[];
   keepAllAlive?: boolean;
   defaultExtension?: string;
-  forceDefaultExtension?: boolean;
+  appendDefaultExtension?: boolean;
+  allowedExtensions?: string[];
   onCreateNewTab?: (name: string) => any;
   onCloseTab?: (index: number, header?: string) => any;
   onChangeActive?: (index: number, header?: string) => any;
@@ -55,7 +56,8 @@ export const Tabs = ({
   onCloseTab,
   onChangeActive,
   defaultExtension = "",
-  forceDefaultExtension,
+  appendDefaultExtension = false,
+  allowedExtensions,
 }: Props) => {
   const [active, setActive] = useState(activeIndex || 0);
   const tabs: TabProps[] = children.map(elem => elem.props);
@@ -86,9 +88,13 @@ export const Tabs = ({
       if (tabs.find(tab => tab.header === tabname)) {
         return { error: "Name already exists." };
       }
+      const ext = tabname.split(".").pop() || "";
+      if (allowedExtensions && !allowedExtensions.includes(ext)) {
+        return { error: "This file extension is not allowed!" };
+      }
       return { error: null };
     },
-    [tabs]
+    [allowedExtensions, tabs]
   );
 
   const handleActiveChange = useCallback(
@@ -101,9 +107,11 @@ export const Tabs = ({
 
   const handleCreateTab = useCallback(() => {
     // add default extension in case omitted
-    let _tabname = tabname.includes(".") ? tabname : tabname + defaultExtension;
-    if (forceDefaultExtension && !_tabname.endsWith(defaultExtension)) {
-      _tabname = _tabname + defaultExtension;
+    let _tabname = tabname.includes(".")
+      ? tabname
+      : `${tabname}.${defaultExtension}`;
+    if (appendDefaultExtension && !_tabname.endsWith(defaultExtension)) {
+      _tabname = `${_tabname}.${defaultExtension}`;
     }
 
     const chk = validateTabname(_tabname);
@@ -122,7 +130,7 @@ export const Tabs = ({
   }, [
     tabname,
     defaultExtension,
-    forceDefaultExtension,
+    appendDefaultExtension,
     validateTabname,
     onCreateNewTab,
     handleActiveChange,

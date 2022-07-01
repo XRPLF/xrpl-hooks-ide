@@ -82,8 +82,8 @@ const Test = () => {
                   if (header) transactionsState.activeHeader = header;
                 }}
                 keepAllAlive
-                forceDefaultExtension
-                defaultExtension=".json"
+                defaultExtension="json"
+                allowedExtensions={['json']}
                 onCreateNewTab={(header) => modifyTransaction(header, {})}
                 onCloseTab={(idx, header) =>
                   header && modifyTransaction(header, undefined)
