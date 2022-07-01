@@ -31,7 +31,7 @@ import transactionsData from "../content/transactions.json";
 import { SetHookDialog } from "./SetHookDialog";
 import { addFunds } from "../state/actions/addFaucetAccount";
 import { deleteHook } from "../state/actions/deployHook";
-import { capitalize } from '../utils/helpers';
+import { capitalize } from "../utils/helpers";
 
 export const AccountDialog = ({
   activeAccountAddress,
@@ -523,28 +523,23 @@ const ImportAccountDialog = ({
 }: {
   type?: "import" | "create";
 }) => {
-  const [value, setValue] = useState("");
+  const [secret, setSecret] = useState("");
+  const [name, setName] = useState("");
 
   const btnText = type === "import" ? "Import" : "Create";
   const title = type === "import" ? "Import Account" : "Create Account";
-  const labelText = type === "import" ? "Account secret" : "Account Name";
-  const cancelText = type === "import" ? "Cancel" : "Skip";
 
   const handleSubmit = async () => {
     if (type === "create") {
-      const name = capitalize(value);
-      await addFaucetAccount(name, true);
-      setValue("");
+      const value = capitalize(name);
+      await addFaucetAccount(value, true);
+      setName("");
+      setSecret("");
       return;
     }
-    importAccount(value);
-    setValue("");
-  };
-  const handleCancel = () => {
-    setValue("");
-    if (type === "create") {
-      addFaucetAccount(undefined, true);
-    }
+    importAccount(secret, name);
+    setName("");
+    setSecret("");
   };
   return (
     <Dialog>
@@ -556,24 +551,29 @@ const ImportAccountDialog = ({
       <DialogContent>
         <DialogTitle>{title}</DialogTitle>
         <DialogDescription>
-          <Label>{labelText}</Label>
-          {type === "import" ? (
-            <Input
-              name="secret"
-              type="password"
-              autoComplete="new-password"
-              value={value}
-              onChange={e => setValue(e.target.value)}
-            />
-          ) : (
+          <Box css={{ mb: "$2" }}>
+            <Label>Account name</Label>
             <Input
               name="name"
               type="text"
-              autoComplete="false"
+              autoComplete="off"
               autoCapitalize="on"
-              value={value}
-              onChange={e => setValue(e.target.value)}
+              value={name}
+              onChange={e => setName(e.target.value)}
             />
+          </Box>
+          {type === "import" && (
+            <Box>
+              <Label>Account secret</Label>
+              <Input
+                required
+                name="secret"
+                type="password"
+                autoComplete="new-password"
+                value={secret}
+                onChange={e => setSecret(e.target.value)}
+              />
+            </Box>
           )}
         </DialogDescription>
 
@@ -585,12 +585,10 @@ const ImportAccountDialog = ({
           }}
         >
           <DialogClose asChild>
-            <Button outline onClick={handleCancel}>
-              {cancelText}
-            </Button>
+            <Button outline>Cancel</Button>
           </DialogClose>
           <DialogClose asChild>
-            <Button variant="primary" onClick={handleSubmit}>
+            <Button type="submit" variant="primary" onClick={handleSubmit}>
               {title}
             </Button>
           </DialogClose>
