@@ -22,12 +22,12 @@ import {
 import { TTS, tts } from "../utils/hookOnCalculator";
 import { deployHook } from "../state/actions";
 import { useSnapshot } from "valtio";
-import state from "../state";
+import state, { SelectOption } from "../state";
 import toast from "react-hot-toast";
 import { prepareDeployHookTx, sha256 } from "../state/actions/deployHook";
 import estimateFee from "../utils/estimateFee";
 
-const transactionOptions = Object.keys(tts).map((key) => ({
+const transactionOptions = Object.keys(tts).map(key => ({
   label: key,
   value: key as keyof TTS,
 }));
@@ -56,11 +56,22 @@ export type SetHookData = {
 export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
   ({ accountAddress }) => {
     const snap = useSnapshot(state);
-    const account = snap.accounts.find((acc) => acc.address === accountAddress);
     const activeFile = snap.files[snap.active]?.compiledContent
       ? snap.files[snap.active]
-      : snap.files.filter((file) => file.compiledContent)[0];
+      : snap.files.filter(file => file.compiledContent)[0];
     const [isSetHookDialogOpen, setIsSetHookDialogOpen] = useState(false);
+
+    const accountOptions: SelectOption[] = snap.accounts.map(acc => ({
+      label: acc.name,
+      value: acc.address,
+    }));
+
+    const [selectedAccount, setSelectedAccount] = useState(
+      accountOptions.find(acc => acc.value === accountAddress)
+    );
+    const account = snap.accounts.find(
+      acc => acc.address === selectedAccount?.value
+    );
     const {
       register,
       handleSubmit,
@@ -75,7 +86,7 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
         : {
             HookNamespace:
               snap.files?.[snap.activeWat]?.name?.split(".")?.[0] || "",
-            Invoke: transactionOptions.filter((to) => to.label === "ttPAYMENT"),
+            Invoke: transactionOptions.filter(to => to.label === "ttPAYMENT"),
           },
     });
     const { fields, append, remove } = useFieldArray({
@@ -149,14 +160,10 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formInitialized]);
 
-    if (!account) {
-      return null;
-    }
-
     const tooLargeFile = () => {
       const activeFile = snap.files[snap.active].compiledContent
         ? snap.files[snap.active]
-        : snap.files.filter((file) => file.compiledContent)[0];
+        : snap.files.filter(file => file.compiledContent)[0];
       return Boolean(
         activeFile?.compiledContent?.byteLength &&
           activeFile?.compiledContent?.byteLength >= 64000
@@ -165,8 +172,9 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
 
     const onSubmit: SubmitHandler<SetHookData> = async (data) => {
       const currAccount = state.accounts.find(
-        (acc) => acc.address === account.address
+        (acc) => acc.address === account?.address
       );
+      if (!account) return;
       if (currAccount) currAccount.isLoading = true;
       const res = await deployHook(account, data);
       if (currAccount) currAccount.isLoading = false;
@@ -186,8 +194,9 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
             uppercase
             variant={"secondary"}
             disabled={
+              !account ||
               account.isLoading ||
-              !snap.files.filter((file) => file.compiledWatContent).length ||
+              !snap.files.filter(file => file.compiledWatContent).length ||
               tooLargeFile()
             }
           >
@@ -199,6 +208,17 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
             <DialogTitle>Deploy configuration</DialogTitle>
             <DialogDescription as="div">
               <Stack css={{ width: "100%", flex: 1 }}>
+                <Box css={{ width: "100%" }}>
+                  <Label>Account</Label>
+                  <Select
+                    instanceId="deploy-account"
+                    placeholder="Select account"
+                    hideSelectedOptions
+                    options={accountOptions}
+                    value={selectedAccount}
+                    onChange={(acc: any) => setSelectedAccount(acc)}
+                  />
+                </Box>
                 <Box css={{ width: "100%" }}>
                   <Label>Invoke on transactions</Label>
                   <Controller
@@ -282,7 +302,7 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                       type="number"
                       {...register("Fee", { required: true })}
                       autoComplete={"off"}
-                      onKeyPress={(e) => {
+                      onKeyPress={e => {
                         if (e.key === "." || e.key === ",") {
                           e.preventDefault();
                         }
@@ -314,8 +334,9 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                         alignContent: "center",
                         display: "flex",
                       }}
-                      onClick={async (e) => {
+                      onClick={async e => {
                         e.preventDefault();
+                        if (!account) return;
                         setEstimateLoading(true);
                         const formValues = getValues();
                         try {
@@ -414,7 +435,7 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
               <Button
                 variant="primary"
                 type="submit"
-                isLoading={account.isLoading}
+                isLoading={account?.isLoading}
               >
                 Set Hook
               </Button>
