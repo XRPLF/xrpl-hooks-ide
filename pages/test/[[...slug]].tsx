@@ -76,14 +76,15 @@ const Test = () => {
           >
             <Box css={{ width: "55%", px: "$2" }}>
               <Tabs
+                label='Transaction'
                 activeHeader={activeHeader}
                 // TODO make header a required field
                 onChangeActive={(idx, header) => {
                   if (header) transactionsState.activeHeader = header;
                 }}
                 keepAllAlive
-                forceDefaultExtension
-                defaultExtension=".json"
+                defaultExtension="json"
+                allowedExtensions={['json']}
                 onCreateNewTab={(header) => modifyTransaction(header, {})}
                 onCloseTab={(idx, header) =>
                   header && modifyTransaction(header, undefined)
