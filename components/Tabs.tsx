@@ -31,6 +31,7 @@ interface TabProps {
 
 // TODO customise messages shown
 interface Props {
+  label?: string;
   activeIndex?: number;
   activeHeader?: string;
   headless?: boolean;
@@ -47,6 +48,7 @@ interface Props {
 export const Tab = (props: TabProps) => null;
 
 export const Tabs = ({
+  label = "Tab",
   children,
   activeIndex,
   activeHeader,
@@ -214,13 +216,13 @@ export const Tabs = ({
                   size="sm"
                   css={{ alignItems: "center", px: "$2", mr: "$3" }}
                 >
-                  <Plus size="16px" /> {tabs.length === 0 && "Add new tab"}
+                  <Plus size="16px" /> {tabs.length === 0 && `Add new ${label.toLocaleLowerCase()}`}
                 </Button>
               </DialogTrigger>
               <DialogContent>
-                <DialogTitle>Create new tab</DialogTitle>
+                <DialogTitle>Create new {label.toLocaleLowerCase()}</DialogTitle>
                 <DialogDescription>
-                  <Label>Tabname</Label>
+                  <Label>{label} name</Label>
                   <Input
                     value={tabname}
                     onChange={e => setTabname(e.target.value)}

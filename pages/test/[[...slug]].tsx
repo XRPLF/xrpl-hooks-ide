@@ -76,6 +76,7 @@ const Test = () => {
           >
             <Box css={{ width: "55%", px: "$2" }}>
               <Tabs
+                label='Transaction'
                 activeHeader={activeHeader}
                 // TODO make header a required field
                 onChangeActive={(idx, header) => {
