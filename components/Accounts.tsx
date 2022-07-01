@@ -530,10 +530,11 @@ const ImportAccountDialog = ({
   const labelText = type === "import" ? "Account secret" : "Account Name";
   const cancelText = type === "import" ? "Cancel" : "Skip";
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (type === "create") {
       const name = capitalize(value);
-      addFaucetAccount(name, true);
+      await addFaucetAccount(name, true);
+      setValue("");
       return;
     }
     importAccount(value);
