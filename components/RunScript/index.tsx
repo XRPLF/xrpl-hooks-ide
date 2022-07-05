@@ -213,7 +213,6 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
           <Stack css={{ width: "100%" }}>
             {Object.keys(fields).map(key => {
               const { name, value, type, description } = fields[key];
-              console.log(value)
 
               const isAccount = type?.startsWith("Account");
               const isAccountSecret =
