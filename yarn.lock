@@ -3480,7 +3480,7 @@ react-select@^5.2.1:
 
 react-split@^2.0.14:
   version "2.0.14"
-  resolved "https://registry.npmjs.org/react-split/-/react-split-2.0.14.tgz"
+  resolved "https://registry.yarnpkg.com/react-split/-/react-split-2.0.14.tgz#ef198259bf43264d605f792fb3384f15f5b34432"
   integrity sha512-bKWydgMgaKTg/2JGQnaJPg51T6dmumTWZppFgEbbY0Fbme0F5TuatAScCLaqommbGQQf/ZT1zaejuPDriscISA==
   dependencies:
     prop-types "^15.5.7"

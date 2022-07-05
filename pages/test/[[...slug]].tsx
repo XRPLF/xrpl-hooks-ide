@@ -45,7 +45,7 @@ const Test = () => {
             ? [50, 20, 30]
             : hasScripts
             ? [50, 20, 50]
-            : [50, 50]
+            : [50, 50, 0]
         }
         gutterSize={4}
         gutterAlign="center"
