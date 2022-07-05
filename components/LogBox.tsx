@@ -6,7 +6,7 @@ import {
   useState,
   useCallback,
 } from "react";
-import { Notepad, Prohibit } from "phosphor-react";
+import { IconProps, Notepad, Prohibit } from "phosphor-react";
 import useStayScrolled from "react-stay-scrolled";
 import NextLink from "next/link";
 
@@ -24,6 +24,7 @@ interface ILogBox {
   logs: ILog[];
   renderNav?: () => ReactNode;
   enhanced?: boolean;
+  Icon?: FC<IconProps>
 }
 
 const LogBox: FC<ILogBox> = ({
@@ -33,6 +34,7 @@ const LogBox: FC<ILogBox> = ({
   children,
   renderNav,
   enhanced,
+  Icon = Notepad
 }) => {
   const logRef = useRef<HTMLPreElement>(null);
   const { stayScrolled /*, scrollBottom*/ } = useStayScrolled(logRef);
@@ -82,14 +84,14 @@ const LogBox: FC<ILogBox> = ({
               gap: "$3",
             }}
           >
-            <Notepad size="15px" /> <Text css={{ lineHeight: 1 }}>{title}</Text>
+            <Icon size="15px" /> <Text css={{ lineHeight: 1 }}>{title}</Text>
           </Heading>
           <Flex
             row
             align="center"
-            css={{
-              width: "50%", // TODO make it max without breaking layout!
-            }}
+            // css={{
+            //   maxWidth: "100%", // TODO make it max without breaking layout!
+            // }}
           >
             {renderNav?.()}
           </Flex>
