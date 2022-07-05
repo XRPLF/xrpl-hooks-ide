@@ -215,8 +215,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
               const { name, value, type, description } = fields[key];
 
               const isAccount = type?.startsWith("Account");
-              const isAccountSecret =
-                type === "Account.secret" || type === "Account";
+              const isAccountSecret = type === "Account.secret";
 
               const accountField =
                 (isAccount && type?.split(".")[1]) || "address";
