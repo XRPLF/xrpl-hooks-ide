@@ -68,6 +68,13 @@ const generateHtmlTemplate = (code: string, data?: Record<string, any>) => {
       var process = '${processString || "{}"}';
       process = JSON.parse(process);
       window.process = process
+
+      function windowErrorHandler(event) {
+        event.preventDefault() // to prevent automatically logging to console
+        console.error(event.error.toString())
+      }
+
+      window.addEventListener('error', windowErrorHandler);
     </script>
 
     <script type="module">
