@@ -30,7 +30,7 @@ const generateHtmlTemplate = (code: string, data?: Record<string, any>) => {
   const process = { env: { NODE_ENV: "production" } } as any;
   if (data) {
     Object.keys(data).forEach(key => {
-      process[key] = data[key];
+      process.env[key] = data[key];
     });
   }
   processString = JSON.stringify(process);
