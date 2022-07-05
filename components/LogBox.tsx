@@ -24,7 +24,7 @@ interface ILogBox {
   logs: ILog[];
   renderNav?: () => ReactNode;
   enhanced?: boolean;
-  Icon?: FC<IconProps>
+  Icon?: FC<IconProps>;
 }
 
 const LogBox: FC<ILogBox> = ({
@@ -34,7 +34,7 @@ const LogBox: FC<ILogBox> = ({
   children,
   renderNav,
   enhanced,
-  Icon = Notepad
+  Icon = Notepad,
 }) => {
   const logRef = useRef<HTMLPreElement>(null);
   const { stayScrolled /*, scrollBottom*/ } = useStayScrolled(logRef);
@@ -164,11 +164,11 @@ export const Log: FC<ILog> = ({
     (str?: string): ReactNode => {
       if (!str || !accounts.length) return null;
 
-      const pattern = `(${accounts.map((acc) => acc.address).join("|")})`;
+      const pattern = `(${accounts.map(acc => acc.address).join("|")})`;
       const res = regexifyString({
         pattern: new RegExp(pattern, "gim"),
         decorator: (match, idx) => {
-          const name = accounts.find((acc) => acc.address === match)?.name;
+          const name = accounts.find(acc => acc.address === match)?.name;
           return (
             <Link
               key={match + idx}
@@ -190,13 +190,13 @@ export const Log: FC<ILog> = ({
   );
 
   let message: ReactNode;
-  
-  if (typeof _message === 'string') {
+
+  if (typeof _message === "string") {
     _message = _message.trim().replace(/\n /gi, "\n");
-    message = enrichAccounts(_message)
-  }
-  else {
-    message = _message
+    if (_message) message = enrichAccounts(_message);
+    else message = <Text muted>{'""'}</Text>
+  } else {
+    message = _message;
   }
 
   const jsonData = enrichAccounts(_jsonData);
