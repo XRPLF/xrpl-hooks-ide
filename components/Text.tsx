@@ -7,20 +7,30 @@ const Text = styled("span", {
   variants: {
     small: {
       true: {
-        fontSize: '$xs'
-      }
+        fontSize: "$xs",
+      },
     },
     muted: {
       true: {
-        color: '$mauve9'
-      }
+        color: "$mauve9",
+      },
+    },
+    error: {
+      true: {
+        color: "$error",
+      },
     },
     monospace: {
       true: {
-        fontFamily: '$monospace'
+        fontFamily: "$monospace",
+      },
+    },
+    block: {
+      true: {
+        display: "block",
       }
     }
-  }
+  },
 });
 
 export default Text;
