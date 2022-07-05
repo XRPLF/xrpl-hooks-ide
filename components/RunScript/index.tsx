@@ -23,7 +23,7 @@ import { useSnapshot } from "valtio";
 import Select from "../Select";
 import Text from "../Text";
 import { saveFile } from "../../state/actions/saveFile";
-import { getTags } from "../../utils/comment-parser";
+import { getErrors, getTags } from "../../utils/comment-parser";
 
 const generateHtmlTemplate = (code: string, data?: Record<string, any>) => {
   let processString: string | undefined;
@@ -105,31 +105,28 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const getFields = useCallback(() => {
-    try {
-      const inputTags = ["input", "param", "arg", "argument"];
-      const tags = getTags(content)
-        .filter(tag => inputTags.includes(tag.tag))
-        .filter(tag => !!tag.name);
+    const inputTags = ["input", "param", "arg", "argument"];
+    const tags = getTags(content)
+      .filter(tag => inputTags.includes(tag.tag))
+      .filter(tag => !!tag.name);
 
-      let _fields = tags.map(tag => ({
-        name: tag.name,
-        value: tag.default || "",
-        type: tag.type,
-        description: tag.description,
-      }));
+    let _fields = tags.map(tag => ({
+      name: tag.name,
+      value: tag.default || "",
+      type: tag.type,
+      description: tag.description,
+    }));
 
-      const fields: Fields = _fields.reduce((acc, field) => {
-        acc[field.name] = field;
-        return acc;
-      }, {} as Fields);
+    const fields: Fields = _fields.reduce((acc, field) => {
+      acc[field.name] = field;
+      return acc;
+    }, {} as Fields);
 
-      setTemplateError(""); // TODO
-      return fields;
-    } catch (err) {
-      console.log(err);
-      setTemplateError("Could not parse template");
-      return undefined;
-    }
+    const error = getErrors(content);
+    if (error) setTemplateError(error.message);
+    else setTemplateError("");
+
+    return fields;
   }, [content]);
 
   const runScript = () => {
@@ -204,14 +201,18 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
             {templateError && (
               <Box
                 as="span"
-                css={{ display: "block", color: "$error", mt: "$3" }}
+                css={{
+                  display: "block",
+                  color: "$error",
+                  mt: "$3",
+                  whiteSpace: "pre",
+                }}
               >
-                (TODO)Error occured while parsing JSDOC tags, modify script and
-                try again!
+                {templateError}
               </Box>
             )}
             {Object.keys(fields).length > 0 && (
-              <Box css={{ mt: "$2" }}>
+              <Box css={{ mt: "$4", mb: 0 }}>
                 Fill in the following parameters to run the script.
               </Box>
             )}
