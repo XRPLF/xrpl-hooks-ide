@@ -8,7 +8,7 @@ import {
 import state, { IAccount, IFile, ILog } from "../../state";
 import Button from "../Button";
 import Box from "../Box";
-import Input from "../Input";
+import Input, { Label } from "../Input";
 import Stack from "../Stack";
 import {
   Dialog,
@@ -230,12 +230,12 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
 
               return (
                 <Box key={name} css={{ width: "100%" }}>
-                  <label>
+                  <Label css={{display: 'flex', justifyContent: 'space-between'}}>
                     {description || name}{" "}
                     {isAccountSecret && (
-                      <Text error>(Script can access account secret key)</Text>
+                      <Text error small css={{alignSelf: 'end'}}>can access account secret key</Text>
                     )}
-                  </label>
+                  </Label>
                   {isAccount ? (
                     <Select
                       css={{ mt: "$1" }}
