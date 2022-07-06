@@ -3,6 +3,7 @@ import {
   HTMLInputTypeAttribute,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import state, { IAccount, IFile, ILog } from "../../state";
@@ -24,6 +25,7 @@ import Select from "../Select";
 import Text from "../Text";
 import { saveFile } from "../../state/actions/saveFile";
 import { getErrors, getTags } from "../../utils/comment-parser";
+import toast from "react-hot-toast";
 
 const generateHtmlTemplate = (code: string, data?: Record<string, any>) => {
   let processString: string | undefined;
@@ -94,6 +96,7 @@ type Fields = Record<
     value: string;
     type?: "Account" | `Account.${keyof IAccount}` | HTMLInputTypeAttribute;
     description?: string;
+    required?: boolean;
   }
 >;
 
@@ -115,6 +118,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
       value: tag.default || "",
       type: tag.type,
       description: tag.description,
+      required: !tag.optional,
     }));
 
     const fields: Fields = _fields.reduce((acc, field) => {
@@ -129,7 +133,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
     return fields;
   }, [content]);
 
-  const runScript = () => {
+  const runScript = useCallback(() => {
     try {
       let data: any = {};
       Object.keys(fields).forEach(key => {
@@ -150,7 +154,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
         { type: "error", message: err?.message || "Could not parse template" },
       ];
     }
-  };
+  }, [content, fields, snap.scriptLogs]);
 
   useEffect(() => {
     const handleEvent = (e: any) => {
@@ -176,6 +180,20 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
     label: acc.name,
     value: acc.address,
   }));
+
+  const isDisabled = useMemo(
+    () => Object.values(fields).some(field => field.required && !field.value),
+    [fields]
+  );
+
+  const handleRun = useCallback(() => {
+    if (isDisabled)
+      return toast.error("Please fill in all the require fields.");
+
+    state.scriptLogs = [];
+    runScript();
+    setIsDialogOpen(false);
+  }, [isDisabled, runScript]);
 
   return (
     <>
@@ -220,7 +238,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
 
           <Stack css={{ width: "100%" }}>
             {Object.keys(fields).map(key => {
-              const { name, value, type, description } = fields[key];
+              const { name, value, type, description, required } = fields[key];
 
               const isAccount = type?.startsWith("Account");
               const isAccountSecret = type === "Account.secret";
@@ -230,10 +248,16 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
 
               return (
                 <Box key={name} css={{ width: "100%" }}>
-                  <Label css={{display: 'flex', justifyContent: 'space-between'}}>
-                    {description || name}{" "}
+                  <Label
+                    css={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <span>
+                      {description || name} {required && <Text error>*</Text>}
+                    </span>
                     {isAccountSecret && (
-                      <Text error small css={{alignSelf: 'end'}}>can access account secret key</Text>
+                      <Text error small css={{ alignSelf: "end" }}>
+                        can access account secret key
+                      </Text>
                     )}
                   </Label>
                   {isAccount ? (
@@ -277,16 +301,8 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
               </DialogClose>
               <Button
                 variant="primary"
-                isDisabled={
-                  (Object.entries(fields).length > 0 &&
-                    Object.entries(fields).some(([key, obj]) => !obj.value)) ||
-                  Boolean(templateError)
-                }
-                onClick={() => {
-                  state.scriptLogs = [];
-                  runScript();
-                  setIsDialogOpen(false);
-                }}
+                isDisabled={isDisabled}
+                onClick={handleRun}
               >
                 Run script
               </Button>
