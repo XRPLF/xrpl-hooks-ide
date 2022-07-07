@@ -3,7 +3,6 @@ import {
   HTMLInputTypeAttribute,
   useCallback,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import state, { IAccount, IFile, ILog } from "../../state";
@@ -181,9 +180,8 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
     value: acc.address,
   }));
 
-  const isDisabled = useMemo(
-    () => Object.values(fields).some(field => field.required && !field.value),
-    [fields]
+  const isDisabled = Object.values(fields).some(
+    field => field.required && !field.value
   );
 
   const handleRun = useCallback(() => {
