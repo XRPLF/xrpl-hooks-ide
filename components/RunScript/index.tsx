@@ -73,7 +73,7 @@ const generateHtmlTemplate = (code: string, data?: Record<string, any>) => {
 
       function windowErrorHandler(event) {
         event.preventDefault() // to prevent automatically logging to console
-        console.error(event.error.toString())
+        console.error(event.error?.toString())
       }
 
       window.addEventListener('error', windowErrorHandler);
