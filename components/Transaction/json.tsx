@@ -1,9 +1,4 @@
-import Editor, { loader, useMonaco } from "@monaco-editor/react";
 import { FC, useCallback, useEffect, useState } from "react";
-import { useTheme } from "next-themes";
-
-import dark from "../../theme/editor/amy.json";
-import light from "../../theme/editor/xcode_default.json";
 import { useSnapshot } from "valtio";
 import state, {
   prepareState,
@@ -11,18 +6,13 @@ import state, {
   TransactionState,
 } from "../../state";
 import Text from "../Text";
-import Flex from "../Flex";
-import { Link } from "..";
+import { Flex, Link } from "..";
 import { showAlert } from "../../state/actions/showAlert";
 import { parseJSON } from "../../utils/json";
 import { extractSchemaProps } from "../../utils/schema";
 import amountSchema from "../../content/amount-schema.json";
-
-loader.config({
-  paths: {
-    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.30.1/min/vs",
-  },
-});
+import Monaco from "../Monaco";
+import type monaco from "monaco-editor";
 
 interface JsonProps {
   value?: string;
@@ -40,7 +30,6 @@ export const TxJson: FC<JsonProps> = ({
 }) => {
   const { editorSettings, accounts } = useSnapshot(state);
   const { editorValue = value, estimatedFee } = txState;
-  const { theme } = useTheme();
   const [hasUnsaved, setHasUnsaved] = useState(false);
   const [currTxType, setCurrTxType] = useState<string | undefined>(
     txState.selectedTransaction?.value
@@ -94,9 +83,6 @@ export const TxJson: FC<JsonProps> = ({
       onCancel: () => setState({ viewType: "json", editorSavedValue: value }),
     });
   };
-
-  const path = `file:///${header}`;
-  const monaco = useMonaco();
 
   const getSchemas = useCallback(async (): Promise<any[]> => {
     const txObj = transactionsData.find(
@@ -177,55 +163,63 @@ export const TxJson: FC<JsonProps> = ({
     ];
   }, [accounts, currTxType, estimatedFee, header]);
 
+  const [monacoInst, setMonacoInst] = useState<typeof monaco>();
   useEffect(() => {
-    if (!monaco) return;
+    if (!monacoInst) return;
     getSchemas().then(schemas => {
-      monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+      monacoInst.languages.json.jsonDefaults.setDiagnosticsOptions({
         validate: true,
         schemas,
       });
     });
-  }, [getSchemas, monaco]);
+  }, [getSchemas, monacoInst]);
 
   return (
-    <Flex
-      fluid
-      column
-      css={{ height: "calc(100% - 45px)", position: "relative" }}
-    >
-      <Editor
-        className="hooks-editor"
-        language={"json"}
-        path={path}
-        height="100%"
-        beforeMount={monaco => {
-          monaco.editor.defineTheme("dark", dark as any);
-          monaco.editor.defineTheme("light", light as any);
-        }}
-        value={editorValue}
-        onChange={val => setState({ editorValue: val })}
-        onMount={(editor, monaco) => {
-          editor.updateOptions({
-            minimap: { enabled: false },
-            glyphMargin: true,
-            tabSize: editorSettings.tabSize,
-            dragAndDrop: true,
-            fontSize: 14,
-          });
+    <Monaco
+      rootProps={{
+        css: { height: "calc(100% - 45px)" },
+      }}
+      language={"json"}
+      id={header}
+      height="100%"
+      value={editorValue}
+      onChange={val => setState({ editorValue: val })}
+      onMount={(editor, monaco) => {
+        editor.updateOptions({
+          minimap: { enabled: false },
+          glyphMargin: true,
+          tabSize: editorSettings.tabSize,
+          dragAndDrop: true,
+          fontSize: 14,
+        });
 
-          // register onExit cb
-          const model = editor.getModel();
-          model?.onWillDispose(() => onExit(model.getValue()));
-        }}
-        theme={theme === "dark" ? "dark" : "light"}
-      />
-      {hasUnsaved && (
-        <Text muted small css={{ position: "absolute", bottom: 0, right: 0 }}>
-          This file has unsaved changes.{" "}
-          <Link onClick={() => saveState(editorValue, currTxType)}>save</Link>{" "}
-          <Link onClick={discardChanges}>discard</Link>
-        </Text>
-      )}
-    </Flex>
+        setMonacoInst(monaco);
+        // register onExit cb
+        const model = editor.getModel();
+        model?.onWillDispose(() => onExit(model.getValue()));
+      }}
+      overlay={
+        hasUnsaved ? (
+          <Flex
+            row
+            align="center"
+            css={{ fontSize: "$xs", color: "$textMuted" }}
+          >
+            <Text muted small>
+              This file has unsaved changes.
+            </Text>
+            <Link
+              css={{ ml: "$1" }}
+              onClick={() => saveState(editorValue, currTxType)}
+            >
+              save
+            </Link>
+            <Link css={{ ml: "$1" }} onClick={discardChanges}>
+              discard
+            </Link>
+          </Flex>
+        ) : undefined
+      }
+    />
   );
 };
