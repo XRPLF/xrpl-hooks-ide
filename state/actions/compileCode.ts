@@ -20,7 +20,7 @@ export const compileCode = async (activeId: number) => {
   }
   // Bail out if we're already compiling
   if (state.compiling) {
-    // if compiling is ongoing return
+    // if compiling is ongoing return // TODO Inform user about it.
     return;
   }
   // Set loading state to true

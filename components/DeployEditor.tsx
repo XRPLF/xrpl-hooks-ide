@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSnapshot, ref } from "valtio";
+import { useSnapshot } from "valtio";
 
 import { useTheme } from "next-themes";
 import { useRouter } from "next/router";

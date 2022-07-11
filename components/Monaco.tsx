@@ -62,7 +62,9 @@ const Monaco: FC<MonacoProps> = ({
         {...rest}
       />
       {overlay && (
-        <Flex css={{ position: "absolute", bottom: 0, right: 0 }}>
+        <Flex
+          css={{ position: "absolute", bottom: 0, right: 0, width: "100%" }}
+        >
           {overlay}
         </Flex>
       )}

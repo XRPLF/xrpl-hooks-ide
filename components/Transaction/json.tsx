@@ -203,7 +203,7 @@ export const TxJson: FC<JsonProps> = ({
           <Flex
             row
             align="center"
-            css={{ fontSize: "$xs", color: "$textMuted" }}
+            css={{ fontSize: "$xs", color: "$textMuted", ml: 'auto' }}
           >
             <Text muted small>
               This file has unsaved changes.
