@@ -1,7 +1,6 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { useSnapshot, ref } from "valtio";
-import Editor, { loader } from "@monaco-editor/react";
-import type monaco from "monaco-editor";
+
 import { useTheme } from "next-themes";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
@@ -10,24 +9,16 @@ import filesize from "filesize";
 
 import Box from "./Box";
 import Container from "./Container";
-import dark from "../theme/editor/amy.json";
-import light from "../theme/editor/xcode_default.json";
 import state from "../state";
 import wat from "../utils/wat-highlight";
 
 import EditorNavigation from "./EditorNavigation";
 import { Button, Text, Link, Flex } from ".";
-
-loader.config({
-  paths: {
-    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.30.1/min/vs",
-  },
-});
+import Monaco from "./Monaco";
 
 const FILESIZE_BREAKPOINTS: [number, number] = [2 * 1024, 5 * 1024];
 
 const DeployEditor = () => {
-  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
   const snap = useSnapshot(state);
   const router = useRouter();
   const { theme } = useTheme();
@@ -36,7 +27,7 @@ const DeployEditor = () => {
 
   const activeFile = snap.files[snap.active]?.compiledContent
     ? snap.files[snap.active]
-    : snap.files.filter((file) => file.compiledContent)[0];
+    : snap.files.filter(file => file.compiledContent)[0];
   const compiledSize = activeFile?.compiledContent?.byteLength || 0;
   const color =
     compiledSize > FILESIZE_BREAKPOINTS[1]
@@ -99,7 +90,7 @@ const DeployEditor = () => {
     </Text>
   );
   const isContent =
-    snap.files?.filter((file) => file.compiledWatContent).length > 0 &&
+    snap.files?.filter(file => file.compiledWatContent).length > 0 &&
     router.isReady;
   return (
     <Box
@@ -126,26 +117,18 @@ const DeployEditor = () => {
         ) : !showContent ? (
           CompiledStatView
         ) : (
-          <Editor
+          <Monaco
             className="hooks-editor"
             defaultLanguage={"wat"}
             language={"wat"}
             path={`file://tmp/c/${activeFile?.name}.wat`}
             value={activeFile?.compiledWatContent || ""}
-            beforeMount={(monaco) => {
+            beforeMount={monaco => {
               monaco.languages.register({ id: "wat" });
               monaco.languages.setLanguageConfiguration("wat", wat.config);
               monaco.languages.setMonarchTokensProvider("wat", wat.tokens);
-              if (!state.editorCtx) {
-                state.editorCtx = ref(monaco.editor);
-                // @ts-expect-error
-                monaco.editor.defineTheme("dark", dark);
-                // @ts-expect-error
-                monaco.editor.defineTheme("light", light);
-              }
             }}
-            onMount={(editor, monaco) => {
-              editorRef.current = editor;
+            onMount={editor => {
               editor.updateOptions({
                 glyphMargin: true,
                 readOnly: true,

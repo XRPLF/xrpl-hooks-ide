@@ -1,4 +1,5 @@
 import Editor, { loader, EditorProps, Monaco } from "@monaco-editor/react";
+import { CSS } from "@stitches/react";
 import type monaco from "monaco-editor";
 import { useTheme } from "next-themes";
 import { FC, MutableRefObject, ReactNode } from "react";
@@ -8,7 +9,7 @@ import light from "../theme/editor/xcode_default.json";
 
 export type MonacoProps = EditorProps & {
   id?: string;
-  rootProps?: object;
+  rootProps?: { css: CSS } & Record<string, any>;
   overlay?: ReactNode;
   editorRef?: MutableRefObject<monaco.editor.IStandaloneCodeEditor>;
   monacoRef?: MutableRefObject<typeof monaco>;
@@ -38,7 +39,16 @@ const Monaco: FC<MonacoProps> = ({
     monaco.editor.defineTheme("light", light as any);
   };
   return (
-    <Flex fluid column style={{ position: "relative" }} {...rootProps}>
+    <Flex
+      fluid
+      column
+      {...rootProps}
+      css={{
+        position: "relative",
+        height: "100%",
+        ...rootProps?.css,
+      }}
+    >
       <Editor
         className={className}
         language={language}
