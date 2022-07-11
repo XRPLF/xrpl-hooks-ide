@@ -5,7 +5,7 @@ import state from '../index';
 import { names } from './addFaucetAccount';
 
 // Adds test account to global state with secret key
-export const importAccount = (secret: string) => {
+export const importAccount = (secret: string, name?: string) => {
   if (!secret) {
     return toast.error("You need to add secret!");
   }
@@ -27,7 +27,7 @@ export const importAccount = (secret: string) => {
     return toast.error(`Couldn't create account!`);
   }
   state.accounts.push({
-    name: names[state.accounts.length],
+    name: name || names[state.accounts.length],
     address: account.address || "",
     secret: account.secret.familySeed || "",
     xrp: "0",

@@ -31,6 +31,7 @@ import transactionsData from "../content/transactions.json";
 import { SetHookDialog } from "./SetHookDialog";
 import { addFunds } from "../state/actions/addFaucetAccount";
 import { deleteHook } from "../state/actions/deployHook";
+import { capitalize } from "../utils/helpers";
 
 export const AccountDialog = ({
   activeAccountAddress,
@@ -42,12 +43,12 @@ export const AccountDialog = ({
   const snap = useSnapshot(state);
   const [showSecret, setShowSecret] = useState(false);
   const activeAccount = snap.accounts.find(
-    (account) => account.address === activeAccountAddress
+    account => account.address === activeAccountAddress
   );
   return (
     <Dialog
       open={Boolean(activeAccountAddress)}
-      onOpenChange={(open) => {
+      onOpenChange={open => {
         setShowSecret(false);
         !open && setActiveAccountAddress(null);
       }}
@@ -99,7 +100,7 @@ export const AccountDialog = ({
               tabIndex={-1}
               onClick={() => {
                 const index = state.accounts.findIndex(
-                  (acc) => acc.address === activeAccount?.address
+                  acc => acc.address === activeAccount?.address
                 );
                 state.accounts.splice(index, 1);
               }}
@@ -165,7 +166,7 @@ export const AccountDialog = ({
                     }}
                     ghost
                     size="xs"
-                    onClick={() => setShowSecret((curr) => !curr)}
+                    onClick={() => setShowSecret(curr => !curr)}
                   >
                     {showSecret ? "Hide" : "Show"}
                   </Button>
@@ -252,7 +253,7 @@ export const AccountDialog = ({
                   }}
                 >
                   {activeAccount && activeAccount.hooks.length > 0
-                    ? activeAccount.hooks.map((i) => {
+                    ? activeAccount.hooks.map(i => {
                         return (
                           <a
                             key={i}
@@ -301,7 +302,7 @@ interface AccountProps {
   showHookStats?: boolean;
 }
 
-const Accounts: FC<AccountProps> = (props) => {
+const Accounts: FC<AccountProps> = props => {
   const snap = useSnapshot(state);
   const [activeAccountAddress, setActiveAccountAddress] = useState<
     string | null
@@ -309,7 +310,7 @@ const Accounts: FC<AccountProps> = (props) => {
   useEffect(() => {
     const fetchAccInfo = async () => {
       if (snap.clientStatus === "online") {
-        const requests = snap.accounts.map((acc) =>
+        const requests = snap.accounts.map(acc =>
           snap.client?.send({
             id: `hooks-builder-req-info-${acc.address}`,
             command: "account_info",
@@ -322,7 +323,7 @@ const Accounts: FC<AccountProps> = (props) => {
           const balance = res?.account_data?.Balance as string;
           const sequence = res?.account_data?.Sequence as number;
           const accountToUpdate = state.accounts.find(
-            (acc) => acc.address === address
+            acc => acc.address === address
           );
           if (accountToUpdate) {
             accountToUpdate.xrp = balance;
@@ -330,7 +331,7 @@ const Accounts: FC<AccountProps> = (props) => {
             accountToUpdate.error = null;
           } else {
             const oldAccount = state.accounts.find(
-              (acc) => acc.address === res?.account
+              acc => acc.address === res?.account
             );
             if (oldAccount) {
               oldAccount.xrp = "0";
@@ -341,7 +342,7 @@ const Accounts: FC<AccountProps> = (props) => {
             }
           }
         });
-        const objectRequests = snap.accounts.map((acc) => {
+        const objectRequests = snap.accounts.map(acc => {
           return snap.client?.send({
             id: `hooks-builder-req-objects-${acc.address}`,
             command: "account_objects",
@@ -352,7 +353,7 @@ const Accounts: FC<AccountProps> = (props) => {
         objectResponses.forEach((res: any) => {
           const address = res?.account as string;
           const accountToUpdate = state.accounts.find(
-            (acc) => acc.address === address
+            acc => acc.address === address
           );
           if (accountToUpdate) {
             accountToUpdate.hooks =
@@ -416,9 +417,7 @@ const Accounts: FC<AccountProps> = (props) => {
             <Wallet size="15px" /> <Text css={{ lineHeight: 1 }}>Accounts</Text>
           </Heading>
           <Flex css={{ ml: "auto", gap: "$3", marginRight: "$3" }}>
-            <Button ghost size="sm" onClick={() => addFaucetAccount(true)}>
-              Create
-            </Button>
+            <ImportAccountDialog type="create" />
             <ImportAccountDialog />
           </Flex>
         </Flex>
@@ -435,7 +434,7 @@ const Accounts: FC<AccountProps> = (props) => {
             overflowY: "auto",
           }}
         >
-          {snap.accounts.map((account) => (
+          {snap.accounts.map(account => (
             <Flex
               column
               key={account.address + account.name}
@@ -488,7 +487,7 @@ const Accounts: FC<AccountProps> = (props) => {
                 {!props.hideDeployBtn && (
                   <div
                     className="hook-deploy-button"
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                     }}
                   >
@@ -514,32 +513,71 @@ const Accounts: FC<AccountProps> = (props) => {
   );
 };
 
-export const transactionsOptions = transactionsData.map((tx) => ({
+export const transactionsOptions = transactionsData.map(tx => ({
   value: tx.TransactionType,
   label: tx.TransactionType,
 }));
 
-const ImportAccountDialog = () => {
-  const [value, setValue] = useState("");
+const ImportAccountDialog = ({
+  type = "import",
+}: {
+  type?: "import" | "create";
+}) => {
+  const [secret, setSecret] = useState("");
+  const [name, setName] = useState("");
+
+  const btnText = type === "import" ? "Import" : "Create";
+  const title = type === "import" ? "Import Account" : "Create Account";
+
+  const handleSubmit = async () => {
+    if (type === "create") {
+      const value = capitalize(name);
+      await addFaucetAccount(value, true);
+      setName("");
+      setSecret("");
+      return;
+    }
+    importAccount(secret, name);
+    setName("");
+    setSecret("");
+  };
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button ghost size="sm">
-          Import
+          {btnText}
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogTitle>Import account</DialogTitle>
-        <DialogDescription>
-          <Label>Add account secret</Label>
-          <Input
-            name="secret"
-            type="password"
-            autoComplete="new-password"
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-          />
-        </DialogDescription>
+      <DialogContent aria-describedby={undefined}>
+        <DialogTitle css={{ mb: "$4" }}>{title}</DialogTitle>
+        <Flex column>
+          <Box css={{ mb: "$2" }}>
+            <Label>
+              Account name <Text muted>(optional)</Text>
+            </Label>
+            <Input
+              name="name"
+              type="text"
+              autoComplete="off"
+              autoCapitalize="on"
+              value={name}
+              onChange={e => setName(e.target.value)}
+            />
+          </Box>
+          {type === "import" && (
+            <Box>
+              <Label>Account secret</Label>
+              <Input
+                required
+                name="secret"
+                type="password"
+                autoComplete="new-password"
+                value={secret}
+                onChange={e => setSecret(e.target.value)}
+              />
+            </Box>
+          )}
+        </Flex>
 
         <Flex
           css={{
@@ -552,14 +590,8 @@ const ImportAccountDialog = () => {
             <Button outline>Cancel</Button>
           </DialogClose>
           <DialogClose asChild>
-            <Button
-              variant="primary"
-              onClick={() => {
-                importAccount(value);
-                setValue("");
-              }}
-            >
-              Import account
+            <Button type="submit" variant="primary" onClick={handleSubmit}>
+              {title}
             </Button>
           </DialogClose>
         </Flex>
