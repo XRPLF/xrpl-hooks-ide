@@ -8,9 +8,6 @@ module.exports = {
     config.resolve.alias["vscode"] = require.resolve(
       "@codingame/monaco-languageclient/lib/vscode-compatibility"
     );
-    config.resolve.alias["handlebars"] = require.resolve(
-      "handlebars/dist/handlebars.js"
-    );
     if (!isServer) {
       config.resolve.fallback.fs = false;
     }

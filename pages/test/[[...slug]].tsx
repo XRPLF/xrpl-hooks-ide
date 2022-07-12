@@ -6,8 +6,9 @@ import Transaction from "../../components/Transaction";
 import state from "../../state";
 import { getSplit, saveSplit } from "../../state/actions/persistSplits";
 import { transactionsState, modifyTransaction } from "../../state";
-import LogBoxForScripts from "../../components/LogBoxForScripts";
 import { useEffect, useState } from "react";
+import { FileJs } from "phosphor-react";
+import RunScript from '../../components/RunScript';
 
 const DebugStream = dynamic(() => import("../../components/DebugStream"), {
   ssr: false,
@@ -33,7 +34,17 @@ const Test = () => {
     return null;
   }
   const hasScripts = Boolean(
-    snap.files.filter((f) => f.name.toLowerCase()?.endsWith(".js")).length
+    snap.files.filter(f => f.name.toLowerCase()?.endsWith(".js")).length
+  );
+
+  const renderNav = () => (
+    <Flex css={{ gap: "$3" }}>
+      {snap.files
+        .filter(f => f.name.endsWith(".js"))
+        .map(file => (
+          <RunScript file={file} key={file.name} />
+        ))}
+    </Flex>
   );
 
   return (
@@ -50,7 +61,7 @@ const Test = () => {
         gutterSize={4}
         gutterAlign="center"
         style={{ height: "calc(100vh - 60px)" }}
-        onDragEnd={(e) => saveSplit("testVertical", e)}
+        onDragEnd={e => saveSplit("testVertical", e)}
       >
         <Flex
           row
@@ -72,11 +83,11 @@ const Test = () => {
               width: "100%",
               height: "100%",
             }}
-            onDragEnd={(e) => saveSplit("testHorizontal", e)}
+            onDragEnd={e => saveSplit("testHorizontal", e)}
           >
             <Box css={{ width: "55%", px: "$2" }}>
               <Tabs
-                label='Transaction'
+                label="Transaction"
                 activeHeader={activeHeader}
                 // TODO make header a required field
                 onChangeActive={(idx, header) => {
@@ -84,8 +95,8 @@ const Test = () => {
                 }}
                 keepAllAlive
                 defaultExtension="json"
-                allowedExtensions={['json']}
-                onCreateNewTab={(header) => modifyTransaction(header, {})}
+                allowedExtensions={["json"]}
+                onCreateNewTab={header => modifyTransaction(header, {})}
                 onCloseTab={(idx, header) =>
                   header && modifyTransaction(header, undefined)
                 }
@@ -111,10 +122,12 @@ const Test = () => {
               flexDirection: "column",
             }}
           >
-            <LogBoxForScripts
+            <LogBox
+              Icon={FileJs}
               title="Helper scripts"
               logs={snap.scriptLogs}
               clearLog={() => (state.scriptLogs = [])}
+              renderNav={renderNav}
             />
           </Flex>
         ) : null}

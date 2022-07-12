@@ -1,10 +1,14 @@
-import * as Handlebars from "handlebars";
 import { Play, X } from "phosphor-react";
-import { useCallback, useEffect, useState } from "react";
-import state, { IFile, ILog } from "../../state";
+import {
+  HTMLInputTypeAttribute,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+import state, { IAccount, IFile, ILog } from "../../state";
 import Button from "../Button";
 import Box from "../Box";
-import Input from "../Input";
+import Input, { Label } from "../Input";
 import Stack from "../Stack";
 import {
   Dialog,
@@ -17,16 +21,21 @@ import {
 import Flex from "../Flex";
 import { useSnapshot } from "valtio";
 import Select from "../Select";
+import Text from "../Text";
 import { saveFile } from "../../state/actions/saveFile";
+import { getErrors, getTags } from "../../utils/comment-parser";
+import toast from "react-hot-toast";
 
-Handlebars.registerHelper(
-  "customize_input",
-  function (/* dynamic arguments */) {
-    return new Handlebars.SafeString(arguments[0]);
+const generateHtmlTemplate = (code: string, data?: Record<string, any>) => {
+  let processString: string | undefined;
+  const process = { env: { NODE_ENV: "production" } } as any;
+  if (data) {
+    Object.keys(data).forEach(key => {
+      process.env[key] = data[key];
+    });
   }
-);
+  processString = JSON.stringify(process);
 
-const generateHtmlTemplate = (code: string) => {
   return `
   <html>
   <head>
@@ -55,8 +64,21 @@ const generateHtmlTemplate = (code: string) => {
         parent.window.postMessage({ type: 'warning', args: args || [] }, '*');
         warnLog.apply(console, args);
       }
+
+     
+      var process = '${processString || "{}"}';
+      process = JSON.parse(process);
+      window.process = process
+
+      function windowErrorHandler(event) {
+        event.preventDefault() // to prevent automatically logging to console
+        console.error(event.error?.toString())
+      }
+
+      window.addEventListener('error', windowErrorHandler);
     </script>
-    <script type="module">   
+
+    <script type="module">
       ${code}
     </script>
   </head>
@@ -69,72 +91,57 @@ const generateHtmlTemplate = (code: string) => {
 type Fields = Record<
   string,
   {
-    key: string;
+    name: string;
     value: string;
-    label?: string;
-    type?: string;
-    attach?: "account_secret" | "account_address" | string;
+    type?: "Account" | `Account.${keyof IAccount}` | HTMLInputTypeAttribute;
+    description?: string;
+    required?: boolean;
   }
 >;
 
 const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
   const snap = useSnapshot(state);
   const [templateError, setTemplateError] = useState("");
-  const getFieldValues = useCallback(() => {
-    try {
-      const parsed = Handlebars.parse(content);
-      const names = parsed.body
-        .filter((i) => i.type === "MustacheStatement")
-        .map((block) => {
-          // @ts-expect-error
-          const type = block.hash?.pairs?.find((i) => i.key == "type");
-          // @ts-expect-error
-          const attach = block.hash?.pairs?.find((i) => i.key == "attach");
-          // @ts-expect-error
-          const label = block.hash?.pairs?.find((i) => i.key == "label");
-          const key =
-            // @ts-expect-error
-            block?.path?.original === "customize_input"
-              ? // @ts-expect-error
-                block?.params?.[0].original
-              : // @ts-expect-error
-                block?.path?.original;
-          return {
-            key,
-            label: label?.value?.original || key,
-            attach: attach?.value?.original,
-            type: type?.value?.original,
-            value: "",
-          };
-        });
-      const defaultState: Fields = {};
-
-      if (names) {
-        names.forEach((field) => (defaultState[field.key] = field));
-      }
-      setTemplateError("");
-      return defaultState;
-    } catch (err) {
-      console.log(err);
-      setTemplateError("Could not parse template");
-      return undefined;
-    }
-  }, [content]);
-
-  // const defaultFieldValues = getFieldValues();
-
   const [fields, setFields] = useState<Fields>({});
   const [iFrameCode, setIframeCode] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const runScript = () => {
-    const fieldsToSend: Record<string, string> = {};
-    Object.entries(fields).map(([key, obj]) => {
-      fieldsToSend[key] = obj.value;
-    });
-    const template = Handlebars.compile(content, { strict: false });
+
+  const getFields = useCallback(() => {
+    const inputTags = ["input", "param", "arg", "argument"];
+    const tags = getTags(content)
+      .filter(tag => inputTags.includes(tag.tag))
+      .filter(tag => !!tag.name);
+
+    let _fields = tags.map(tag => ({
+      name: tag.name,
+      value: tag.default || "",
+      type: tag.type,
+      description: tag.description,
+      required: !tag.optional,
+    }));
+
+    const fields: Fields = _fields.reduce((acc, field) => {
+      acc[field.name] = field;
+      return acc;
+    }, {} as Fields);
+
+    const error = getErrors(content);
+    if (error) setTemplateError(error.message);
+    else setTemplateError("");
+
+    return fields;
+  }, [content]);
+
+  const runScript = useCallback(() => {
     try {
-      const code = template(fieldsToSend);
-      setIframeCode(generateHtmlTemplate(code));
+      let data: any = {};
+      Object.keys(fields).forEach(key => {
+        data[key] = fields[key].value;
+      });
+      const template = generateHtmlTemplate(content, data);
+
+      setIframeCode(template);
+
       state.scriptLogs = [
         ...snap.scriptLogs,
         { type: "success", message: "Started running..." },
@@ -146,7 +153,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
         { type: "error", message: err?.message || "Could not parse template" },
       ];
     }
-  };
+  }, [content, fields, snap.scriptLogs]);
 
   useEffect(() => {
     const handleEvent = (e: any) => {
@@ -163,16 +170,28 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
   }, [snap.scriptLogs]);
 
   useEffect(() => {
-    const newDefaultState = getFieldValues();
-    setFields(newDefaultState || {});
-  }, [content, setFields, getFieldValues]);
+    const defaultFields = getFields() || {};
+    setFields(defaultFields);
+  }, [content, setFields, getFields]);
 
-  const options = snap.accounts?.map((acc) => ({
+  const accOptions = snap.accounts?.map(acc => ({
+    ...acc,
     label: acc.name,
-    secret: acc.secret,
-    address: acc.address,
     value: acc.address,
   }));
+
+  const isDisabled = Object.values(fields).some(
+    field => field.required && !field.value
+  );
+
+  const handleRun = useCallback(() => {
+    if (isDisabled)
+      return toast.error("Please fill in all the required fields.");
+
+    state.scriptLogs = [];
+    runScript();
+    setIsDialogOpen(false);
+  }, [isDisabled, runScript]);
 
   return (
     <>
@@ -191,74 +210,87 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
         <DialogContent>
           <DialogTitle>Run {name} script</DialogTitle>
           <DialogDescription>
-            You are about to run scripts provided by the developer of the hook,
-            make sure you know what you are doing.
-            <br />
+            <Box>
+              You are about to run scripts provided by the developer of the
+              hook, make sure you trust the author before you continue.
+            </Box>
             {templateError && (
               <Box
                 as="span"
-                css={{ display: "block", color: "$error", mt: "$3" }}
+                css={{
+                  display: "block",
+                  color: "$error",
+                  mt: "$3",
+                  whiteSpace: "pre",
+                }}
               >
-                Error occured while parsing template, modify script and try
-                again!
+                {templateError}
               </Box>
             )}
-            <br />
-            {Object.keys(fields).length > 0
-              ? `You also need to fill in following parameters to run the script`
-              : ""}
-          </DialogDescription>
-          <Stack css={{ width: "100%" }}>
-            {Object.keys(fields).map((key) => (
-              <Box key={key} css={{ width: "100%" }}>
-                <label>
-                  {fields[key]?.label || key}{" "}
-                  {fields[key].attach === "account_secret" &&
-                    `(Script uses account secret)`}
-                </label>
-                {fields[key].attach === "account_secret" ||
-                fields[key].attach === "account_address" ? (
-                  <Select
-                    css={{ mt: "$1" }}
-                    options={options}
-                    onChange={(val: any) => {
-                      setFields({
-                        ...fields,
-                        [key]: {
-                          ...fields[key],
-                          value:
-                            fields[key].attach === "account_secret"
-                              ? val.secret
-                              : val.address,
-                        },
-                      });
-                    }}
-                    value={options.find(
-                      (opt) =>
-                        opt.address === fields[key].value ||
-                        opt.secret === fields[key].value
-                    )}
-                  />
-                ) : (
-                  <Input
-                    type={fields[key].type || "text"}
-                    value={
-                      typeof fields[key].value !== "string"
-                        ? // @ts-expect-error
-                          fields[key].value.value
-                        : fields[key].value
-                    }
-                    css={{ mt: "$1" }}
-                    onChange={(e) => {
-                      setFields({
-                        ...fields,
-                        [key]: { ...fields[key], value: e.target.value },
-                      });
-                    }}
-                  />
-                )}
+            {Object.keys(fields).length > 0 && (
+              <Box css={{ mt: "$4", mb: 0 }}>
+                Fill in the following parameters to run the script.
               </Box>
-            ))}
+            )}
+          </DialogDescription>
+
+          <Stack css={{ width: "100%" }}>
+            {Object.keys(fields).map(key => {
+              const { name, value, type, description, required } = fields[key];
+
+              const isAccount = type?.startsWith("Account");
+              const isAccountSecret = type === "Account.secret";
+
+              const accountField =
+                (isAccount && type?.split(".")[1]) || "address";
+
+              return (
+                <Box key={name} css={{ width: "100%" }}>
+                  <Label
+                    css={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <span>
+                      {description || name} {required && <Text error>*</Text>}
+                    </span>
+                    {isAccountSecret && (
+                      <Text error small css={{ alignSelf: "end" }}>
+                        can access account secret key
+                      </Text>
+                    )}
+                  </Label>
+                  {isAccount ? (
+                    <Select
+                      css={{ mt: "$1" }}
+                      options={accOptions}
+                      onChange={(val: any) => {
+                        setFields({
+                          ...fields,
+                          [key]: {
+                            ...fields[key],
+                            value: val[accountField],
+                          },
+                        });
+                      }}
+                      value={accOptions.find(
+                        (acc: any) => acc[accountField] === value
+                      )}
+                    />
+                  ) : (
+                    <Input
+                      type={type || "text"}
+                      value={value}
+                      css={{ mt: "$1" }}
+                      onChange={e => {
+                        setFields({
+                          ...fields,
+                          [key]: { ...fields[key], value: e.target.value },
+                        });
+                      }}
+                    />
+                  )}
+                </Box>
+              );
+            })}
             <Flex
               css={{ justifyContent: "flex-end", width: "100%", gap: "$3" }}
             >
@@ -267,16 +299,8 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
               </DialogClose>
               <Button
                 variant="primary"
-                isDisabled={
-                  (Object.entries(fields).length > 0 &&
-                    Object.entries(fields).some(([key, obj]) => !obj.value)) ||
-                  Boolean(templateError)
-                }
-                onClick={() => {
-                  state.scriptLogs = [];
-                  runScript();
-                  setIsDialogOpen(false);
-                }}
+                isDisabled={isDisabled}
+                onClick={handleRun}
               >
                 Run script
               </Button>

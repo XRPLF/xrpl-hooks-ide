@@ -13,13 +13,13 @@ export const templateFileIds = {
 
     },
     'firewall': {
-        id: '741816f53eddac862ef1ba400e1b9b84',
+        id: '1cc30f39c8a0b9c55b88c312669ca45e',  // Forked
         name: 'Firewall',
         description: 'This Hook essentially checks a blacklist of accounts',
         icon: Firewall
     },
     'notary': {
-        id: '0dfe12adb0aa75cff24c3c19497fb95a',
+        id: '87b6f5a8c2f5038fb0f20b8b510efa10', // Forked
         name: 'Notary',
         description: 'Collecting signatures for multi-sign transactions',
         icon: Notary
@@ -31,7 +31,7 @@ export const templateFileIds = {
         icon: Carbon
     },
     'peggy': {
-        id: '52e61c02e777c44c913808981a4ca61f',
+        id: '049784a83fa068faf7912f663f7b6471', // Forked
         name: 'Peggy',
         description: 'An oracle based stable coin hook',
         icon: Peggy

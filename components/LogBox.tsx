@@ -6,7 +6,7 @@ import {
   useState,
   useCallback,
 } from "react";
-import { Notepad, Prohibit } from "phosphor-react";
+import { IconProps, Notepad, Prohibit } from "phosphor-react";
 import useStayScrolled from "react-stay-scrolled";
 import NextLink from "next/link";
 
@@ -24,6 +24,7 @@ interface ILogBox {
   logs: ILog[];
   renderNav?: () => ReactNode;
   enhanced?: boolean;
+  Icon?: FC<IconProps>;
 }
 
 const LogBox: FC<ILogBox> = ({
@@ -33,6 +34,7 @@ const LogBox: FC<ILogBox> = ({
   children,
   renderNav,
   enhanced,
+  Icon = Notepad,
 }) => {
   const logRef = useRef<HTMLPreElement>(null);
   const { stayScrolled /*, scrollBottom*/ } = useStayScrolled(logRef);
@@ -82,14 +84,14 @@ const LogBox: FC<ILogBox> = ({
               gap: "$3",
             }}
           >
-            <Notepad size="15px" /> <Text css={{ lineHeight: 1 }}>{title}</Text>
+            <Icon size="15px" /> <Text css={{ lineHeight: 1 }}>{title}</Text>
           </Heading>
           <Flex
             row
             align="center"
-            css={{
-              width: "50%", // TODO make it max without breaking layout!
-            }}
+            // css={{
+            //   maxWidth: "100%", // TODO make it max without breaking layout!
+            // }}
           >
             {renderNav?.()}
           </Flex>
@@ -162,11 +164,11 @@ export const Log: FC<ILog> = ({
     (str?: string): ReactNode => {
       if (!str || !accounts.length) return null;
 
-      const pattern = `(${accounts.map((acc) => acc.address).join("|")})`;
+      const pattern = `(${accounts.map(acc => acc.address).join("|")})`;
       const res = regexifyString({
         pattern: new RegExp(pattern, "gim"),
         decorator: (match, idx) => {
-          const name = accounts.find((acc) => acc.address === match)?.name;
+          const name = accounts.find(acc => acc.address === match)?.name;
           return (
             <Link
               key={match + idx}
@@ -188,13 +190,13 @@ export const Log: FC<ILog> = ({
   );
 
   let message: ReactNode;
-  
-  if (typeof _message === 'string') {
+
+  if (typeof _message === "string") {
     _message = _message.trim().replace(/\n /gi, "\n");
-    message = enrichAccounts(_message)
-  }
-  else {
-    message = _message
+    if (_message) message = enrichAccounts(_message);
+    else message = <Text muted>{'""'}</Text>
+  } else {
+    message = _message;
   }
 
   const jsonData = enrichAccounts(_jsonData);

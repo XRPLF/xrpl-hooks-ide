@@ -1,14 +1,13 @@
 import { Label } from "@radix-ui/react-label";
 import type { NextPage } from "next";
 import dynamic from "next/dynamic";
-import { Gear, Play } from "phosphor-react";
+import { FileJs, Gear, Play } from "phosphor-react";
 import Hotkeys from "react-hot-keys";
 import Split from "react-split";
 import { useSnapshot } from "valtio";
 import { ButtonGroup, Flex } from "../../components";
 import Box from "../../components/Box";
 import Button from "../../components/Button";
-import LogBoxForScripts from "../../components/LogBoxForScripts";
 import Popover from "../../components/Popover";
 import RunScript from "../../components/RunScript";
 import state from "../../state";
@@ -244,8 +243,8 @@ const Home: NextPage = () => {
               flex: 1,
             }}
           >
-            <LogBoxForScripts
-              showButtons={false}
+            <LogBox
+              Icon={FileJs}
               title="Script Log"
               logs={snap.scriptLogs}
               clearLog={() => (state.scriptLogs = [])}
