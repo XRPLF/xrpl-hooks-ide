@@ -23,11 +23,7 @@ export const tts = {
   ttNFTOKEN_BURN: 26,
   ttNFTOKEN_CREATE_OFFER: 27,
   ttNFTOKEN_CANCEL_OFFER: 28,
-  ttNFTOKEN_ACCEPT_OFFER: 29,
-//   ttAMENDMENT: 100,
-//   ttFEE: 101,
-//   ttUNL_MODIFY: 102,
-//   ttEMIT_FAILURE: 103,
+  ttNFTOKEN_ACCEPT_OFFER: 29
 };
 
 export type TTS = typeof tts;
