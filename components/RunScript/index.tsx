@@ -186,7 +186,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
 
   const handleRun = useCallback(() => {
     if (isDisabled)
-      return toast.error("Please fill in all the require fields.");
+      return toast.error("Please fill in all the required fields.");
 
     state.scriptLogs = [];
     runScript();
