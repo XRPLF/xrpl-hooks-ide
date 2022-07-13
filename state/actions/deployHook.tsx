@@ -189,7 +189,7 @@ export const deployHook = async (
       console.log(err);
       state.deployLogs.push({
         type: "error",
-        message: "Error occured while deploying",
+        message: "Error occurred while deploying",
       });
     }
     if (currentAccount) {
@@ -272,10 +272,10 @@ export const deleteHook = async (account: IAccount & { name?: string }) => {
       }
     } catch (err) {
       console.log(err);
-      toast.error("Error occured while deleting hoook", { id: toastId });
+      toast.error("Error occurred while deleting hook", { id: toastId });
       state.deployLogs.push({
         type: "error",
-        message: "Error occured while deleting hook",
+        message: "Error occurred while deleting hook",
       });
     }
     if (currentAccount) {

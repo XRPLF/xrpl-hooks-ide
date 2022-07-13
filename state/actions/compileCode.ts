@@ -103,7 +103,7 @@ export const compileCode = async (activeId: number) => {
       });
     }
     state.compiling = false;
-    toast.error(`Error occured while compiling!`, { position: "bottom-center" });
+    toast.error(`Error occurred while compiling!`, { position: "bottom-center" });
     file.containsErrors = true
   }
 };
