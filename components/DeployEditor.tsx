@@ -78,7 +78,7 @@ const DeployEditor = () => {
       {isContentChanged && (
         <Text warning>
           File contents were changed after last compile, compile again to
-          incoperate your latest changes in the build.
+          incorporate your latest changes in the build.
         </Text>
       )}
     </Flex>
