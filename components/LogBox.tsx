@@ -25,7 +25,6 @@ interface ILogBox {
   renderNav?: () => ReactNode;
   enhanced?: boolean;
   Icon?: FC<IconProps>;
-  children?: ReactNode;
 }
 
 const LogBox: FC<ILogBox> = ({

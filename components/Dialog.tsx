@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import * as Stiches from "@stitches/react";
 import { keyframes } from "@stitches/react";
 import { blackA } from "@radix-ui/colors";
@@ -58,7 +58,7 @@ const StyledContent = styled(DialogPrimitive.Content, {
   },
 });
 
-const Content: React.FC<{ css?: Stiches.CSS, children: ReactNode }> = ({ css, children }) => {
+const Content: React.FC<{ css?: Stiches.CSS }> = ({ css, children }) => {
   return (
     <StyledOverlay>
       <StyledContent css={css}>{children}</StyledContent>
