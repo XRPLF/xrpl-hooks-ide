@@ -80,6 +80,13 @@
     "Fulfillment": "A0028000"
   },
   {
+    "TransactionType": "NFTokenMint",
+    "Account": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
+    "Fee": "10",
+    "NFTokenTaxon": 0,
+    "URI": "697066733A2F2F516D614374444B5A4656767666756676626479346573745A626851483744586831364354707631686F776D424779"
+  },
+  {
     "TransactionType": "NFTokenBurn",
     "Account": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
     "Fee": "10",
@@ -92,7 +99,7 @@
   {
     "TransactionType": "NFTokenCancelOffer",
     "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
-    "NFTokenID": "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007"
+    "NFTokenOffers": ["000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007"]
   },
   {
     "TransactionType": "NFTokenCreateOffer",
