@@ -18,7 +18,12 @@ export const tts = {
   ttDEPOSIT_PREAUTH: 19,
   ttTRUST_SET: 20,
   ttACCOUNT_DELETE: 21,
-  ttHOOK_SET: 22
+  ttHOOK_SET: 22,
+  ttNFTOKEN_MINT: 25,
+  ttNFTOKEN_BURN: 26,
+  ttNFTOKEN_CREATE_OFFER: 27,
+  ttNFTOKEN_CANCEL_OFFER: 28,
+  ttNFTOKEN_ACCEPT_OFFER: 29
 };
 
 export type TTS = typeof tts;
