@@ -135,6 +135,20 @@ const DeployEditor = () => {
               });
             }}
             theme={theme === "dark" ? "dark" : "light"}
+            overlay={
+              <Flex
+                css={{
+                  m: "$1",
+                  ml: "auto",
+                  fontSize: "$sm",
+                  color: "$textMuted",
+                }}
+              >
+                <Link onClick={() => setShowContent(false)}>
+                  Exit editor mode
+                </Link>
+              </Flex>
+            }
           />
         )}
       </Container>
