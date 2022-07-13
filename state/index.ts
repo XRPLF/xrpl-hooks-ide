@@ -17,6 +17,7 @@ export interface IFile {
   compiledContent?: ArrayBuffer | null;
   compiledWatContent?: string | null;
   lastCompiled?: Date
+  containsErrors?: boolean
 }
 
 export interface FaucetAccountRes {

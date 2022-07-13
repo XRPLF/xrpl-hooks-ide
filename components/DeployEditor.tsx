@@ -38,6 +38,7 @@ const DeployEditor = () => {
 
   const isContentChanged =
     activeFile && activeFile.compiledValueSnapshot !== activeFile.content;
+  // const hasDeployErros = activeFile && activeFile.containsErrors;
 
   const CompiledStatView = activeFile && (
     <Flex
