@@ -36,6 +36,9 @@ const DeployEditor = () => {
       ? "$warning"
       : "$success";
 
+  const isContentChanged =
+    activeFile && activeFile.compiledValueSnapshot !== activeFile.content;
+
   const CompiledStatView = activeFile && (
     <Flex
       column
@@ -71,6 +74,12 @@ const DeployEditor = () => {
       <Button variant="link" onClick={() => setShowContent(true)}>
         View as WAT-file
       </Button>
+      {isContentChanged && (
+        <Text warning>
+          File contents were changed after last compile, compile again to
+          incoperate your latest changes in the build.
+        </Text>
+      )}
     </Flex>
   );
   const NoContentView = !snap.loading && router.isReady && (

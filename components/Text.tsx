@@ -20,6 +20,11 @@ const Text = styled("span", {
         color: "$error",
       },
     },
+    warning: {
+      true: {
+        color: "$warning",
+      },
+    },
     monospace: {
       true: {
         fontFamily: "$monospace",
@@ -28,8 +33,8 @@ const Text = styled("span", {
     block: {
       true: {
         display: "block",
-      }
-    }
+      },
+    },
   },
 });
 

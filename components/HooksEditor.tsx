@@ -20,6 +20,7 @@ import ReconnectingWebSocket from "reconnecting-websocket";
 
 import docs from "../xrpl-hooks-docs/docs";
 import Monaco from "./Monaco";
+import { saveAllFiles } from '../state/actions/saveFile';
 
 const validateWritability = (editor: monaco.editor.IStandaloneCodeEditor) => {
   const currPath = editor.getModel()?.uri.path;
@@ -111,6 +112,11 @@ const HooksEditor = () => {
       setMarkers(monacoRef.current);
     }
   }, [snap.active]);
+  useEffect(() => {
+    return () => {
+      saveAllFiles();
+    };
+  }, []);
 
   const file = snap.files[snap.active];
   return (
@@ -133,6 +139,7 @@ const HooksEditor = () => {
           language={file?.language}
           path={`file:///work/c/${file?.name}`}
           defaultValue={file?.content}
+          // onChange={val => (state.files[snap.active].content = val)} // Auto save?
           beforeMount={monaco => {
             if (!snap.editorCtx) {
               snap.files.forEach(file =>
