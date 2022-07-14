@@ -212,9 +212,13 @@
     "Fee": "12",
     "Flags": 262144,
     "LastLedgerSequence": 8007750,
-    "Amount": {
-      "$value": "100",
-      "$type": "xrp"
+    "LimitAmount": {
+      "$type": "json",
+      "$value": {
+        "currency": "USD",
+        "issuer": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
+        "value": "100"
+      }
     },
     "Sequence": 12
   }
