@@ -40,9 +40,9 @@
       {
         "label": "Token",
         "body": {
-          "currency": "${1:13.1}",
-          "value": "${2:FOO}",
-          "description": "${3:rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpns}"
+          "currency": "${1:USD}",
+          "value": "${2:100}",
+          "issuer": "${3:rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpns}"
         }
       }
     ]

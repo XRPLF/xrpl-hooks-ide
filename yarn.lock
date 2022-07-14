@@ -3648,6 +3648,14 @@ ripple-address-codec@^4.1.0, ripple-address-codec@^4.1.1, ripple-address-codec@^
     base-x "3.0.9"
     create-hash "^1.1.2"
 
+ripple-address-codec@^4.2.4:
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/ripple-address-codec/-/ripple-address-codec-4.2.4.tgz#a56c2168c8bb81269ea4d15ed96d6824c5a866f8"
+  integrity sha512-roAOjKz94+FboTItey1XRh5qynwt4xvfBLvbbcx+FiR94Yw2x3LrKLF2GVCMCSAh5I6PkcpADg6AbYsUbGN3nA==
+  dependencies:
+    base-x "3.0.9"
+    create-hash "^1.1.2"
+
 ripple-binary-codec@^0.2.4:
   version "0.2.7"
   resolved "https://registry.npmjs.org/ripple-binary-codec/-/ripple-binary-codec-0.2.7.tgz"
@@ -3661,7 +3669,7 @@ ripple-binary-codec@^0.2.4:
     lodash "^4.17.15"
     ripple-address-codec "^4.1.0"
 
-ripple-binary-codec@^1.1.3, ripple-binary-codec@^1.3.0:
+ripple-binary-codec@^1.1.3:
   version "1.3.2"
   resolved "https://registry.npmjs.org/ripple-binary-codec/-/ripple-binary-codec-1.3.2.tgz"
   integrity sha512-8VG1vfb3EM1J7ZdPXo9E57Zv2hF4cxT64gP6rGSQzODVgMjiBCWozhN3729qNTGtHItz0e82Oix8v95vWYBQ3A==
@@ -3672,6 +3680,18 @@ ripple-binary-codec@^1.1.3, ripple-binary-codec@^1.3.0:
     create-hash "^1.2.0"
     decimal.js "^10.2.0"
     ripple-address-codec "^4.2.3"
+
+ripple-binary-codec@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/ripple-binary-codec/-/ripple-binary-codec-1.4.2.tgz#cdc35353e4bc7c3a704719247c82b4c4d0b57dd3"
+  integrity sha512-EDKIyZMa/6Ay/oNgCwjD9b9CJv0zmBreeHVQeG4BYwy+9GPnIQjNeT5e/aB6OjAnhcmpgbPeBmzwmNVwzxlt0w==
+  dependencies:
+    assert "^2.0.0"
+    big-integer "^1.6.48"
+    buffer "5.6.0"
+    create-hash "^1.2.0"
+    decimal.js "^10.2.0"
+    ripple-address-codec "^4.2.4"
 
 ripple-bs58@^4.0.0:
   version "4.0.1"
@@ -4328,10 +4348,10 @@ ws@^7.2.0:
   resolved "https://registry.npmjs.org/ws/-/ws-7.5.7.tgz"
   integrity sha512-KMvVuFzpKBuiIXW3E4u3mySRO2/mCHSyZDJQM5NQ9Q9KHWHWh0NHgfbRMLLrceUK5qAL4ytALJbpRMjixFZh8A==
 
-xrpl-accountlib@^1.3.2:
-  version "1.3.2"
-  resolved "https://registry.npmjs.org/xrpl-accountlib/-/xrpl-accountlib-1.3.2.tgz"
-  integrity sha512-mXwoumGp0xUiZ7Ty/1o4FHVRK4uLnqngxdYmikZs50drMjlgCUP6GXun2Vf4Uus1fnVnxhXIw+E7peH5OjiOJA==
+xrpl-accountlib@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/xrpl-accountlib/-/xrpl-accountlib-1.5.2.tgz#8f16abe449fd60ba9ed75597f6ce3f0c45dfff43"
+  integrity sha512-lieY2/5G9DySqdtgQ0AD/aMMG5Sy/MLAmbIsmsCaF06scM5DpR8s4SsEzgHni7dOG68Wjnb2Uz6tf5aV+l4/Kg==
   dependencies:
     assert "^2.0.0"
     bip32 "^2.0.5"
@@ -4340,18 +4360,18 @@ xrpl-accountlib@^1.3.2:
     elliptic "6.5.4"
     hash.js "^1.1.7"
     ripple-address-codec "^4.1.0"
-    ripple-binary-codec "^1.3.0"
+    ripple-binary-codec "^1.4.2"
     ripple-hashes "^0.3.4"
     ripple-keypairs "^1.0.3"
     ripple-lib "^1.6.4"
     ripple-secret-codec "^1.0.2"
     xrpl-secret-numbers "^0.3.3"
-    xrpl-sign-keypairs "^2.0.1"
+    xrpl-sign-keypairs "^2.1.1"
 
-xrpl-client@^1.9.4:
-  version "1.9.4"
-  resolved "https://registry.npmjs.org/xrpl-client/-/xrpl-client-1.9.4.tgz"
-  integrity sha512-0+O5TbJB4GBAuZVvIrZje8VMSTTQKU8pyvuOggSmX9fhqed5c7+GGOSmKD7RWNmyQ1dZT2I70tDpzocZybtYyg==
+xrpl-client@^1.9.5:
+  version "1.9.5"
+  resolved "https://registry.yarnpkg.com/xrpl-client/-/xrpl-client-1.9.5.tgz#adab5ec233a8988178ddb77b764734f5986409f6"
+  integrity sha512-B8gt/NdYbBsZ1a6iiZcA4WyFoUvqDaESekyyzo3Q2zbesN65TbA6oRU8g86HK/ll/9qA9U4Aguh/R2OoEdRe2g==
   dependencies:
     debug "^4.1.1"
     websocket "^1.0.34"
@@ -4365,13 +4385,13 @@ xrpl-secret-numbers@^0.3.3:
     brorand "^1.1.0"
     ripple-keypairs "^1.0.3"
 
-xrpl-sign-keypairs@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.npmjs.org/xrpl-sign-keypairs/-/xrpl-sign-keypairs-2.0.1.tgz"
-  integrity sha512-84QbE3trxetaw0hqDADCWMx0HH1VAWnTJp0TGoKTGRf1jzTqjI7eNNNw5lmcay2MH8bW/waNzJIF8vSAJSkVrQ==
+xrpl-sign-keypairs@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/xrpl-sign-keypairs/-/xrpl-sign-keypairs-2.1.1.tgz#2f7f2855799c5d4ba091007963825eef1db21a4e"
+  integrity sha512-rKQmUCx+x7gjjJ5zv/Z7bOYR+8I36JwUCFlpuD9UzYD4w2msGQDG0rmxVENyZSfThDBVQ1kEArVn6SMDMe9LUQ==
   dependencies:
     big-integer latest
-    ripple-binary-codec "^1.3.0"
+    ripple-binary-codec "^1.4.2"
     ripple-bs58check latest
     ripple-hashes latest
     ripple-keypairs latest
