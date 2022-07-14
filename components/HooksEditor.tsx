@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 
 import Box from "./Box";
 import Container from "./Container";
-import { saveFile } from "../state/actions";
+import { createNewFile, saveFile } from "../state/actions";
 import { apiHeaderFiles } from "../state/constants";
 import state from "../state";
 
@@ -20,7 +20,8 @@ import ReconnectingWebSocket from "reconnecting-websocket";
 
 import docs from "../xrpl-hooks-docs/docs";
 import Monaco from "./Monaco";
-import { saveAllFiles } from '../state/actions/saveFile';
+import { saveAllFiles } from "../state/actions/saveFile";
+import { Tab, Tabs } from "./Tabs";
 
 const validateWritability = (editor: monaco.editor.IStandaloneCodeEditor) => {
   const currPath = editor.getModel()?.uri.path;
@@ -119,6 +120,26 @@ const HooksEditor = () => {
   }, []);
 
   const file = snap.files[snap.active];
+
+  const renderNav = () => (
+    <Tabs
+      label="File"
+      activeIndex={snap.active}
+      onChangeActive={idx => (state.active = idx)}
+      extensionRequired
+      onCreateNewTab={createNewFile}
+      onCloseTab={idx => state.files.splice(idx, 1)}
+      headerExtraValidation={{
+        regex: /^[A-Za-z0-9_-]+[.][A-Za-z0-9]{1,4}$/g,
+        error:
+          'Filename can contain only characters from a-z, A-Z, 0-9, "_" and "-"',
+      }}
+    >
+      {snap.files.map((file, index) => {
+        return <Tab key={file.name} header={file.name} />;
+      })}
+    </Tabs>
+  );
   return (
     <Box
       css={{
@@ -131,7 +152,7 @@ const HooksEditor = () => {
         width: "100%",
       }}
     >
-      <EditorNavigation />
+      <EditorNavigation renderNav={renderNav} />
       {snap.files.length > 0 && router.isReady ? (
         <Monaco
           keepCurrentModel

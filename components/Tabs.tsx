@@ -17,6 +17,7 @@ import {
 } from "./Dialog";
 import { Plus, X } from "phosphor-react";
 import { styled } from "../stitches.config";
+import { capitalize } from "../utils/helpers";
 
 const ErrorText = styled(Text, {
   color: "$error",
@@ -25,8 +26,8 @@ const ErrorText = styled(Text, {
 });
 
 interface TabProps {
-  header?: string;
-  children: ReactNode;
+  header: string;
+  children?: ReactNode;
 }
 
 // TODO customise messages shown
@@ -38,8 +39,12 @@ interface Props {
   children: ReactElement<TabProps>[];
   keepAllAlive?: boolean;
   defaultExtension?: string;
-  appendDefaultExtension?: boolean;
+  extensionRequired?: boolean;
   allowedExtensions?: string[];
+  headerExtraValidation?: {
+    regex: string | RegExp;
+    error: string;
+  };
   onCreateNewTab?: (name: string) => any;
   onCloseTab?: (index: number, header?: string) => any;
   onChangeActive?: (index: number, header?: string) => any;
@@ -57,8 +62,9 @@ export const Tabs = ({
   onCreateNewTab,
   onCloseTab,
   onChangeActive,
+  headerExtraValidation,
+  extensionRequired,
   defaultExtension = "",
-  appendDefaultExtension = false,
   allowedExtensions,
 }: Props) => {
   const [active, setActive] = useState(activeIndex || 0);
@@ -87,16 +93,28 @@ export const Tabs = ({
 
   const validateTabname = useCallback(
     (tabname: string): { error: string | null } => {
-      if (tabs.find(tab => tab.header === tabname)) {
-        return { error: "Name already exists." };
+      if (!tabname) {
+        return { error: `Please enter ${label.toLocaleLowerCase()} name.` };
       }
-      const ext = tabname.split(".").pop() || "";
+      if (tabs.find(tab => tab.header === tabname)) {
+        return { error: `${capitalize(label)} name already exists.` };
+      }
+      const ext = (tabname.includes(".") && tabname.split(".").pop()) || "";
+      if (extensionRequired && !ext) {
+        return { error: "File extension is required!" };
+      }
       if (allowedExtensions && !allowedExtensions.includes(ext)) {
         return { error: "This file extension is not allowed!" };
       }
+      if (
+        headerExtraValidation &&
+        !tabname.match(headerExtraValidation.regex)
+      ) {
+        return { error: headerExtraValidation.error };
+      }
       return { error: null };
     },
-    [allowedExtensions, tabs]
+    [allowedExtensions, extensionRequired, headerExtraValidation, label, tabs]
   );
 
   const handleActiveChange = useCallback(
@@ -108,18 +126,14 @@ export const Tabs = ({
   );
 
   const handleCreateTab = useCallback(() => {
-    // add default extension in case omitted
-    let _tabname = tabname.includes(".")
-      ? tabname
-      : `${tabname}.${defaultExtension}`;
-    if (appendDefaultExtension && !_tabname.endsWith(defaultExtension)) {
-      _tabname = `${_tabname}.${defaultExtension}`;
-    }
-
-    const chk = validateTabname(_tabname);
+    const chk = validateTabname(tabname);
     if (chk.error) {
       setNewtabError(`Error: ${chk.error}`);
       return;
+    }
+    let _tabname = tabname;
+    if (defaultExtension && !_tabname.endsWith(defaultExtension)) {
+      _tabname = `${_tabname}.${defaultExtension}`;
     }
 
     setIsNewtabDialogOpen(false);
@@ -127,12 +141,10 @@ export const Tabs = ({
 
     onCreateNewTab?.(_tabname);
 
-    // switch to new tab?
     handleActiveChange(tabs.length, _tabname);
   }, [
     tabname,
     defaultExtension,
-    appendDefaultExtension,
     validateTabname,
     onCreateNewTab,
     handleActiveChange,
@@ -146,9 +158,13 @@ export const Tabs = ({
       }
 
       onCloseTab?.(idx, tabs[idx].header);
+
+      handleActiveChange(idx, tabs[idx].header);
     },
-    [active, onCloseTab, tabs]
+    [active, handleActiveChange, onCloseTab, tabs]
   );
+
+  if (!tabs.length) return null;
 
   return (
     <>
@@ -216,11 +232,14 @@ export const Tabs = ({
                   size="sm"
                   css={{ alignItems: "center", px: "$2", mr: "$3" }}
                 >
-                  <Plus size="16px" /> {tabs.length === 0 && `Add new ${label.toLocaleLowerCase()}`}
+                  <Plus size="16px" />{" "}
+                  {tabs.length === 0 && `Add new ${label.toLocaleLowerCase()}`}
                 </Button>
               </DialogTrigger>
               <DialogContent>
-                <DialogTitle>Create new {label.toLocaleLowerCase()}</DialogTitle>
+                <DialogTitle>
+                  Create new {label.toLocaleLowerCase()}
+                </DialogTitle>
                 <DialogDescription>
                   <Label>{label} name</Label>
                   <Input
@@ -259,29 +278,32 @@ export const Tabs = ({
           )}
         </Stack>
       )}
-      {keepAllAlive ? (
-        tabs.map((tab, idx) => {
-          // TODO Maybe rule out fragments as children
-          if (!isValidElement(tab.children)) {
-            if (active !== idx) return null;
-            return tab.children;
-          }
-          let key = tab.children.key || tab.header || idx;
-          let { children } = tab;
-          let { style, ...props } = children.props;
-          return (
-            <children.type
-              key={key}
-              {...props}
-              style={{ ...style, display: active !== idx ? "none" : undefined }}
-            />
-          );
-        })
-      ) : (
-        <Fragment key={tabs[active].header || active}>
-          {tabs[active].children}
-        </Fragment>
-      )}
+      {keepAllAlive
+        ? tabs.map((tab, idx) => {
+            // TODO Maybe rule out fragments as children
+            if (!isValidElement(tab.children)) {
+              if (active !== idx) return null;
+              return tab.children;
+            }
+            let key = tab.children.key || tab.header || idx;
+            let { children } = tab;
+            let { style, ...props } = children.props;
+            return (
+              <children.type
+                key={key}
+                {...props}
+                style={{
+                  ...style,
+                  display: active !== idx ? "none" : undefined,
+                }}
+              />
+            );
+          })
+        : tabs[active] && (
+            <Fragment key={tabs[active].header || active}>
+              {tabs[active].children}
+            </Fragment>
+          )}
     </>
   );
 };

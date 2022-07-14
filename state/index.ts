@@ -168,15 +168,10 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 if (typeof window !== "undefined") {
-  subscribe(state, () => {
-    const { accounts, active } = state;
+  subscribe(state.accounts, () => {
+    const { accounts } = state;
     const accountsNoLoading = accounts.map(acc => ({ ...acc, isLoading: false }))
     localStorage.setItem("hooksIdeAccounts", JSON.stringify(accountsNoLoading));
-    if (!state.files[active]?.compiledWatContent) {
-      state.activeWat = 0;
-    } else {
-      state.activeWat = active;
-    }
   });
 }
 export default state

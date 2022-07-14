@@ -13,7 +13,7 @@ import state from "../state";
 import wat from "../utils/wat-highlight";
 
 import EditorNavigation from "./EditorNavigation";
-import { Button, Text, Link, Flex } from ".";
+import { Button, Text, Link, Flex, Tabs, Tab } from ".";
 import Monaco from "./Monaco";
 
 const FILESIZE_BREAKPOINTS: [number, number] = [2 * 1024, 5 * 1024];
@@ -25,9 +25,20 @@ const DeployEditor = () => {
 
   const [showContent, setShowContent] = useState(false);
 
-  const activeFile = snap.files[snap.active]?.compiledContent
-    ? snap.files[snap.active]
-    : snap.files.filter(file => file.compiledContent)[0];
+  const compiledFiles = snap.files.filter(file => file.compiledContent);
+  const activeFile = compiledFiles[snap.activeWat];
+
+  const renderNav = () => (
+    <Tabs
+      activeIndex={snap.activeWat}
+      onChangeActive={idx => (state.activeWat = idx)}
+    >
+      {compiledFiles.map((file, index) => {
+        return <Tab key={file.name} header={`${file.name}.wat`} />;
+      })}
+    </Tabs>
+  );
+
   const compiledSize = activeFile?.compiledContent?.byteLength || 0;
   const color =
     compiledSize > FILESIZE_BREAKPOINTS[1]
@@ -38,7 +49,7 @@ const DeployEditor = () => {
 
   const isContentChanged =
     activeFile && activeFile.compiledValueSnapshot !== activeFile.content;
-  // const hasDeployErros = activeFile && activeFile.containsErrors;
+  // const hasDeployErrors = activeFile && activeFile.containsErrors;
 
   const CompiledStatView = activeFile && (
     <Flex
@@ -99,6 +110,7 @@ const DeployEditor = () => {
       </NextLink>
     </Text>
   );
+
   const isContent =
     snap.files?.filter(file => file.compiledWatContent).length > 0 &&
     router.isReady;
@@ -113,7 +125,7 @@ const DeployEditor = () => {
         width: "100%",
       }}
     >
-      <EditorNavigation showWat />
+      <EditorNavigation renderNav={renderNav} />
       <Container
         css={{
           display: "flex",

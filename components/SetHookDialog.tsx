@@ -22,7 +22,7 @@ import {
 import { TTS, tts } from "../utils/hookOnCalculator";
 import { deployHook } from "../state/actions";
 import { useSnapshot } from "valtio";
-import state, { SelectOption } from "../state";
+import state, { IFile, SelectOption } from "../state";
 import toast from "react-hot-toast";
 import { prepareDeployHookTx, sha256 } from "../state/actions/deployHook";
 import estimateFee from "../utils/estimateFee";
@@ -56,9 +56,9 @@ export type SetHookData = {
 export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
   ({ accountAddress }) => {
     const snap = useSnapshot(state);
-    const activeFile = snap.files[snap.active]?.compiledContent
-      ? snap.files[snap.active]
-      : snap.files.filter(file => file.compiledContent)[0];
+    const compiledFiles = snap.files.filter(file => file.compiledContent);
+    const activeFile = compiledFiles[snap.activeWat] as IFile | undefined;
+
     const [isSetHookDialogOpen, setIsSetHookDialogOpen] = useState(false);
 
     const accountOptions: SelectOption[] = snap.accounts.map(acc => ({
@@ -72,6 +72,15 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
     const account = snap.accounts.find(
       acc => acc.address === selectedAccount?.value
     );
+
+    const getHookNamespace = useCallback(
+      () =>
+        activeFile && snap.deployValues[activeFile.name]
+          ? snap.deployValues[activeFile.name].HookNamespace
+          : activeFile?.name.split(".")[0] || "",
+      [activeFile, snap.deployValues]
+    );
+
     const {
       register,
       handleSubmit,
@@ -81,13 +90,10 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       getValues,
       formState: { errors },
     } = useForm<SetHookData>({
-      defaultValues: snap.deployValues?.[activeFile?.name]
-        ? snap.deployValues[activeFile?.name]
-        : {
-            HookNamespace:
-              snap.files?.[snap.activeWat]?.name?.split(".")?.[0] || "",
-            Invoke: transactionOptions.filter(to => to.label === "ttPAYMENT"),
-          },
+      defaultValues: (activeFile && snap.deployValues[activeFile.name]) || {
+        HookNamespace: activeFile?.name.split(".")[0] || "",
+        Invoke: transactionOptions.filter(to => to.label === "ttPAYMENT"),
+      },
     });
     const { fields, append, remove } = useFieldArray({
       control,
@@ -97,20 +103,15 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
     const [estimateLoading, setEstimateLoading] = useState(false);
     const watchedFee = watch("Fee");
 
-    // Update value if activeWat changes
+    // Update value if activeFile changes
     useEffect(() => {
-      const defaultValue = snap.deployValues?.[activeFile?.name]
-        ? snap.deployValues?.[activeFile?.name].HookNamespace
-        : snap.files?.[snap.activeWat]?.name?.split(".")?.[0] || "";
+      if (!activeFile) return;
+      const defaultValue = getHookNamespace();
+
       setValue("HookNamespace", defaultValue);
       setFormInitialized(true);
-    }, [
-      snap.activeWat,
-      snap.files,
-      setValue,
-      activeFile?.name,
-      snap.deployValues,
-    ]);
+    }, [setValue, activeFile, snap.deployValues, getHookNamespace]);
+
     useEffect(() => {
       if (
         watchedFee &&
@@ -128,21 +129,19 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
     //   name: "HookGrants", // unique name for your Field Array
     // });
     const [hashedNamespace, setHashedNamespace] = useState("");
-    const namespace = watch(
-      "HookNamespace",
-      snap.deployValues?.[activeFile?.name]
-        ? snap.deployValues?.[activeFile?.name].HookNamespace
-        : snap.files?.[snap.activeWat]?.name?.split(".")?.[0] || ""
-    );
+
+    const namespace = watch("HookNamespace", getHookNamespace());
+
     const calculateHashedValue = useCallback(async () => {
       const hashedVal = await sha256(namespace);
       setHashedNamespace(hashedVal.toUpperCase());
     }, [namespace]);
+
     useEffect(() => {
       calculateHashedValue();
     }, [namespace, calculateHashedValue]);
 
-    // Calcucate initial fee estimate when modal opens
+    // Calculate initial fee estimate when modal opens
     useEffect(() => {
       if (formInitialized && account) {
         (async () => {
@@ -161,18 +160,15 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
     }, [formInitialized]);
 
     const tooLargeFile = () => {
-      const activeFile = snap.files[snap.active].compiledContent
-        ? snap.files[snap.active]
-        : snap.files.filter(file => file.compiledContent)[0];
       return Boolean(
         activeFile?.compiledContent?.byteLength &&
           activeFile?.compiledContent?.byteLength >= 64000
       );
     };
 
-    const onSubmit: SubmitHandler<SetHookData> = async (data) => {
+    const onSubmit: SubmitHandler<SetHookData> = async data => {
       const currAccount = state.accounts.find(
-        (acc) => acc.address === account?.address
+        acc => acc.address === account?.address
       );
       if (!account) return;
       if (currAccount) currAccount.isLoading = true;
@@ -194,10 +190,7 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
             uppercase
             variant={"secondary"}
             disabled={
-              !account ||
-              account.isLoading ||
-              !snap.files.filter(file => file.compiledWatContent).length ||
-              tooLargeFile()
+              !account || account.isLoading || !activeFile || tooLargeFile()
             }
           >
             Set Hook
