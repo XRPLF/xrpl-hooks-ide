@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import { useSnapshot, ref } from "valtio";
-import Editor from "@monaco-editor/react";
 import type monaco from "monaco-editor";
 import { ArrowBendLeftUp } from "phosphor-react";
 import { useTheme } from "next-themes";
@@ -8,8 +7,6 @@ import { useRouter } from "next/router";
 
 import Box from "./Box";
 import Container from "./Container";
-import dark from "../theme/editor/amy.json";
-import light from "../theme/editor/xcode_default.json";
 import { saveFile } from "../state/actions";
 import { apiHeaderFiles } from "../state/constants";
 import state from "../state";
@@ -22,10 +19,12 @@ import { listen } from "@codingame/monaco-jsonrpc";
 import ReconnectingWebSocket from "reconnecting-websocket";
 
 import docs from "../xrpl-hooks-docs/docs";
+import Monaco from "./Monaco";
+import { saveAllFiles } from '../state/actions/saveFile';
 
 const validateWritability = (editor: monaco.editor.IStandaloneCodeEditor) => {
   const currPath = editor.getModel()?.uri.path;
-  if (apiHeaderFiles.find((h) => currPath?.endsWith(h))) {
+  if (apiHeaderFiles.find(h => currPath?.endsWith(h))) {
     editor.updateOptions({ readOnly: true });
   } else {
     editor.updateOptions({ readOnly: false });
@@ -42,7 +41,7 @@ const setMarkers = (monacoE: typeof monaco) => {
     .getModelMarkers({})
     // Filter out the markers that are hooks specific
     .filter(
-      (marker) =>
+      marker =>
         typeof marker?.code === "string" &&
         // Take only markers that starts with "hooks-"
         marker?.code?.includes("hooks-")
@@ -56,16 +55,16 @@ const setMarkers = (monacoE: typeof monaco) => {
   // Add decoration (aka extra hoverMessages) to markers in the
   // exact same range (location) where the markers are
   const models = monacoE.editor.getModels();
-  models.forEach((model) => {
+  models.forEach(model => {
     decorations[model.id] = model?.deltaDecorations(
       decorations?.[model.id] || [],
       markers
-        .filter((marker) =>
+        .filter(marker =>
           marker?.resource.path
             .split("/")
             .includes(`${state.files?.[state.active]?.name}`)
         )
-        .map((marker) => ({
+        .map(marker => ({
           range: new monacoE.Range(
             marker.startLineNumber,
             marker.startColumn,
@@ -113,6 +112,13 @@ const HooksEditor = () => {
       setMarkers(monacoRef.current);
     }
   }, [snap.active]);
+  useEffect(() => {
+    return () => {
+      saveAllFiles();
+    };
+  }, []);
+
+  const file = snap.files[snap.active];
   return (
     <Box
       css={{
@@ -127,16 +133,16 @@ const HooksEditor = () => {
     >
       <EditorNavigation />
       {snap.files.length > 0 && router.isReady ? (
-        <Editor
-          className="hooks-editor"
+        <Monaco
           keepCurrentModel
-          defaultLanguage={snap.files?.[snap.active]?.language}
-          language={snap.files?.[snap.active]?.language}
-          path={`file:///work/c/${snap.files?.[snap.active]?.name}`}
-          defaultValue={snap.files?.[snap.active]?.content}
-          beforeMount={(monaco) => {
+          defaultLanguage={file?.language}
+          language={file?.language}
+          path={`file:///work/c/${file?.name}`}
+          defaultValue={file?.content}
+          // onChange={val => (state.files[snap.active].content = val)} // Auto save?
+          beforeMount={monaco => {
             if (!snap.editorCtx) {
-              snap.files.forEach((file) =>
+              snap.files.forEach(file =>
                 monaco.editor.createModel(
                   file.content,
                   file.language,
@@ -161,7 +167,7 @@ const HooksEditor = () => {
               // listen when the web socket is opened
               listen({
                 webSocket: webSocket as WebSocket,
-                onConnection: (connection) => {
+                onConnection: connection => {
                   // create and start the language client
                   const languageClient = createLanguageClient(connection);
                   const disposable = languageClient.start();
@@ -177,7 +183,6 @@ const HooksEditor = () => {
               });
             }
 
-            // // hook editor to global state
             // editor.updateOptions({
             //   minimap: {
             //     enabled: false,
@@ -186,10 +191,6 @@ const HooksEditor = () => {
             // });
             if (!state.editorCtx) {
               state.editorCtx = ref(monaco.editor);
-              // @ts-expect-error
-              monaco.editor.defineTheme("dark", dark);
-              // @ts-expect-error
-              monaco.editor.defineTheme("light", light);
             }
           }}
           onMount={(editor, monaco) => {
@@ -217,13 +218,13 @@ const HooksEditor = () => {
             });
 
             // Hacky way to hide Peek menu
-            editor.onContextMenu((e) => {
+            editor.onContextMenu(e => {
               const host =
                 document.querySelector<HTMLElement>(".shadow-root-host");
 
               const contextMenuItems =
                 host?.shadowRoot?.querySelectorAll("li.action-item");
-              contextMenuItems?.forEach((k) => {
+              contextMenuItems?.forEach(k => {
                 // If menu item contains "Peek" lets hide it
                 if (k.querySelector(".action-label")?.textContent === "Peek") {
                   // @ts-expect-error

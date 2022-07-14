@@ -13,9 +13,11 @@ export interface IFile {
   name: string;
   language: string;
   content: string;
+  compiledValueSnapshot?: string
   compiledContent?: ArrayBuffer | null;
   compiledWatContent?: string | null;
   lastCompiled?: Date
+  containsErrors?: boolean
 }
 
 export interface FaucetAccountRes {

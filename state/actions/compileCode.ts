@@ -14,19 +14,21 @@ import { ref } from "valtio";
  */
 export const compileCode = async (activeId: number) => {
   // Save the file to global state
-  saveFile(false);
+  saveFile(false, activeId);
   if (!process.env.NEXT_PUBLIC_COMPILE_API_ENDPOINT) {
     throw Error("Missing env!");
   }
   // Bail out if we're already compiling
   if (state.compiling) {
-    // if compiling is ongoing return
+    // if compiling is ongoing return // TODO Inform user about it.
     return;
   }
   // Set loading state to true
   state.compiling = true;
   state.logs = []
+  const file = state.files[activeId]
   try {
+    file.containsErrors = false
     const res = await fetch(process.env.NEXT_PUBLIC_COMPILE_API_ENDPOINT, {
       method: "POST",
       headers: {
@@ -40,8 +42,8 @@ export const compileCode = async (activeId: number) => {
           {
             type: "c",
             options: state.compileOptions.optimizationLevel || '-O2',
-            name: state.files[activeId].name,
-            src: state.files[activeId].content,
+            name: file.name,
+            src: file.content,
           },
         ],
       }),
@@ -49,15 +51,15 @@ export const compileCode = async (activeId: number) => {
     const json = await res.json();
     state.compiling = false;
     if (!json.success) {
-      state.logs.push({ type: "error", message: json.message });
+      const errors = [json.message]
       if (json.tasks && json.tasks.length > 0) {
         json.tasks.forEach((task: any) => {
           if (!task.success) {
-            state.logs.push({ type: "error", message: task?.console });
+            errors.push(task?.console)
           }
         });
       }
-      return toast.error(`Couldn't compile!`, { position: "bottom-center" });
+      throw errors
     }
     state.logs.push({
       type: "success",
@@ -67,8 +69,9 @@ export const compileCode = async (activeId: number) => {
     });
     // Decode base64 encoded wasm that is coming back from the endpoint
     const bufferData = await decodeBinary(json.output);
-    state.files[state.active].compiledContent = ref(bufferData);
-    state.files[state.active].lastCompiled = new Date();
+    file.compiledContent = ref(bufferData);
+    file.lastCompiled = new Date();
+    file.compiledValueSnapshot = file.content
     // Import wabt from and create human readable version of wasm file and
     // put it into state
     import("wabt").then((wabt) => {
@@ -84,10 +87,23 @@ export const compileCode = async (activeId: number) => {
     });
   } catch (err) {
     console.log(err);
-    state.logs.push({
-      type: "error",
-      message: "Error occured while compiling!",
-    });
+
+    if (err instanceof Array && typeof err[0] === 'string') {
+      err.forEach(message => {
+        state.logs.push({
+          type: "error",
+          message,
+        });
+      })
+    }
+    else {
+      state.logs.push({
+        type: "error",
+        message: "Something went wrong, check your connection try again later!",
+      });
+    }
     state.compiling = false;
+    toast.error(`Error occurred while compiling!`, { position: "bottom-center" });
+    file.containsErrors = true
   }
 };
