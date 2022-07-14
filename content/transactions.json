@@ -103,7 +103,10 @@
   {
     "TransactionType": "NFTokenCancelOffer",
     "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
-    "NFTokenOffers": ["000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007"]
+    "NFTokenOffers": {
+      "$type": "json",
+      "$value":  ["4AAAEEA76E3C8148473CB3840CE637676E561FB02BD4CA22CA59729EA815B862"]
+    }
   },
   {
     "TransactionType": "NFTokenCreateOffer",
