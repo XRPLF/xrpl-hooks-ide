@@ -13,7 +13,7 @@ export const downloadAsZip = async () => {
         const zipFileName = guessZipFileName(files);
         zipped.saveFile(zipFileName);
     } catch (error) {
-        toast.error('Error occured while creating zip file, try again later')
+        toast.error('Error occurred while creating zip file, try again later')
     } finally {
         state.zipLoading = false
     }

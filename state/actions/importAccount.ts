@@ -19,7 +19,7 @@ export const importAccount = (secret: string, name?: string) => {
     if (err?.message) {
       toast.error(err.message)
     } else {
-      toast.error('Error occured while importing account')
+      toast.error('Error occurred while importing account')
     }
     return;
   }

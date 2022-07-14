@@ -29,7 +29,7 @@ export const tts = {
 export type TTS = typeof tts;
 
 const calculateHookOn = (arr: (keyof TTS)[]) => {
-  let start = '0x00000000003ff5bf';
+  let start = '0x000000003e3ff5bf';
   arr.forEach(n => {
     let v = BigInt(start);
     v ^= (BigInt(1) << BigInt(tts[n as keyof TTS]));

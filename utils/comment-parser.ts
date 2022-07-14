@@ -19,6 +19,6 @@ export const getErrors = (source?: string): Error | undefined => {
     );
     if (!probs.length) return undefined
     const errors = probs.map(prob => `[${prob.code}] on line ${prob.line}: ${prob.message}`)
-    const error = new Error(`The following error(s) occured while parsing JSDOC: \n${errors.join('\n')}`)
+    const error = new Error(`The following error(s) occurred while parsing JSDOC: \n${errors.join('\n')}`)
     return error
 }
