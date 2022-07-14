@@ -30,7 +30,7 @@ interface TabProps {
   children?: ReactNode;
 }
 
-// TODO customise messages shown
+// TODO customize messages shown
 interface Props {
   label?: string;
   activeIndex?: number;
@@ -99,7 +99,10 @@ export const Tabs = ({
       if (tabs.find(tab => tab.header === tabname)) {
         return { error: `${capitalize(label)} name already exists.` };
       }
-      const ext = (tabname.includes(".") && tabname.split(".").pop()) || "";
+      const ext =
+        (tabname.includes(".") && tabname.split(".").pop()) ||
+        defaultExtension ||
+        "";
       if (extensionRequired && !ext) {
         return { error: "File extension is required!" };
       }
@@ -114,7 +117,7 @@ export const Tabs = ({
       }
       return { error: null };
     },
-    [allowedExtensions, extensionRequired, headerExtraValidation, label, tabs]
+    [allowedExtensions, defaultExtension, extensionRequired, headerExtraValidation, label, tabs]
   );
 
   const handleActiveChange = useCallback(
