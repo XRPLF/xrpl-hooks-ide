@@ -118,7 +118,7 @@ export const prepareTransaction = (data: any) => {
         // handle type: `json`
         if (_value && typeof _value === "object" && _value.$type === "json") {
             if (typeof _value.$value === "object") {
-                options[field] = { ..._value.$value } as any;
+                options[field] = _value.$value;
             } else {
                 try {
                     options[field] = JSON.parse(_value.$value);

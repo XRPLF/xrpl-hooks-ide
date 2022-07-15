@@ -24,7 +24,6 @@ export const sendTransaction = async (account: IAccount, txOptions: TransactionO
         Fee,  // TODO auto-fillable default
         ...opts
     };
-
     const { logPrefix = '' } = options || {}
     try {
         const signedAccount = derive.familySeed(account.secret);

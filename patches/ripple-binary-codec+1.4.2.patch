@@ -1,176 +1,54 @@
 diff --git a/node_modules/ripple-binary-codec/dist/enums/definitions.json b/node_modules/ripple-binary-codec/dist/enums/definitions.json
-index cfe1902..1fbe906 100644
+index 6a82327..273b78d 100644
 --- a/node_modules/ripple-binary-codec/dist/enums/definitions.json
 +++ b/node_modules/ripple-binary-codec/dist/enums/definitions.json
-@@ -1,29 +1,33 @@
-+
- {
-   "TYPES": {
--    "Validation": 10003,
-     "Done": -1,
-+    "Unknown": -2,
-+    "NotPresent": 0,
-+    "UInt16": 1,
-+    "UInt32": 2,
-+    "UInt64": 3,
-     "Hash128": 4,
-+    "Hash256": 5,
-+    "Amount": 6,
-     "Blob": 7,
-     "AccountID": 8,
--    "Amount": 6,
--    "Hash256": 5,
--    "UInt8": 16,
--    "Vector256": 19,
-     "STObject": 14,
--    "Unknown": -2,
--    "Transaction": 10001,
-+    "STArray": 15,
-+    "UInt8": 16,
-     "Hash160": 17,
-     "PathSet": 18,
-+    "Vector256": 19,
-+    "UInt96": 20,
-+    "UInt192": 21,
-+    "UInt384": 22,
-+    "UInt512": 23,
-+    "Transaction": 10001,
-     "LedgerEntry": 10002,
--    "UInt16": 1,
--    "NotPresent": 0,
--    "UInt64": 3,
--    "UInt32": 2,
--    "STArray": 15
-+    "Validation": 10003,
-+    "Metadata": 10004
-   },
-   "LEDGER_ENTRY_TYPES": {
--    "Any": -3,
--    "Child": -2,
-     "Invalid": -1,
-     "AccountRoot": 97,
-     "DirectoryNode": 100,
-@@ -36,13 +40,14 @@
-     "FeeSettings": 115,
-     "Escrow": 117,
-     "PayChannel": 120,
--    "DepositPreauth": 112,
-     "Check": 67,
-+    "DepositPreauth": 112,
-+    "NegativeUnl": 78,
-+    "Any": 0,
-+    "Child": 7378,
-     "Nickname": 110,
-     "Contract": 99,
--    "NFTokenPage": 80,
--    "NFTokenOffer": 55,
--    "NegativeUNL": 78
-+    "GeneratorMap": 103
+@@ -46,23 +46,103 @@
    },
    "FIELDS": [
      [
-@@ -65,6 +70,166 @@
-         "type": "Unknown"
+-      "Generic",
++      "LedgerEntry",
+       {
+-        "nth": 0,
++        "nth": 1,
+         "isVLEncoded": false,
+         "isSerialized": false,
+         "isSigningField": false,
+-        "type": "Unknown"
++        "type": "LedgerEntry"
        }
      ],
-+    [
-+      "ObjectEndMarker",
-+      {
-+        "nth": 1,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
-+        "type": "STObject"
-+      }
-+    ],
-+    [
-+      "ArrayEndMarker",
-+      {
-+        "nth": 1,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
-+        "type": "STArray"
-+      }
-+    ],
-+    [
-+      "hash",
-+      {
-+        "nth": 257,
-+        "isVLEncoded": false,
-+        "isSerialized": false,
-+        "isSigningField": false,
-+        "type": "Hash256"
-+      }
-+    ],
-+    [
-+      "index",
-+      {
-+        "nth": 258,
-+        "isVLEncoded": false,
-+        "isSerialized": false,
-+        "isSigningField": false,
-+        "type": "Hash256"
-+      }
-+    ],
-+    [
-+      "taker_gets_funded",
-+      {
-+        "nth": 258,
-+        "isVLEncoded": false,
-+        "isSerialized": false,
-+        "isSigningField": false,
-+        "type": "Amount"
-+      }
-+    ],
-+    [
-+      "taker_pays_funded",
-+      {
-+        "nth": 259,
-+        "isVLEncoded": false,
-+        "isSerialized": false,
-+        "isSigningField": false,
-+        "type": "Amount"
-+      }
-+    ],
-+    [
-+      "LedgerEntry",
-+      {
-+        "nth": 257,
-+        "isVLEncoded": false,
-+        "isSerialized": false,
-+        "isSigningField": true,
-+        "type": "LedgerEntry"
-+      }
-+    ],
-+    [
+     [
+-      "Invalid",
 +      "Transaction",
-+      {
-+        "nth": 257,
-+        "isVLEncoded": false,
-+        "isSerialized": false,
-+        "isSigningField": true,
+       {
+-        "nth": -1,
++        "nth": 1,
+         "isVLEncoded": false,
+         "isSerialized": false,
+         "isSigningField": false,
+-        "type": "Unknown"
 +        "type": "Transaction"
 +      }
 +    ],
 +    [
 +      "Validation",
 +      {
-+        "nth": 257,
++        "nth": 1,
 +        "isVLEncoded": false,
 +        "isSerialized": false,
-+        "isSigningField": true,
++        "isSigningField": false,
 +        "type": "Validation"
 +      }
 +    ],
 +    [
 +      "Metadata",
 +      {
-+        "nth": 257,
++        "nth": 1,
 +        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
-+        "type": "Metadata"
++        "isSerialized": false,
++        "isSigningField": false,
++        "type": "Validation"
 +      }
 +    ],
 +    [
@@ -231,12 +109,10 @@ index cfe1902..1fbe906 100644
 +        "isSerialized": true,
 +        "isSigningField": true,
 +        "type": "UInt8"
-+      }
-+    ],
+       }
+     ],
      [
-       "LedgerEntryType",
-       {
-@@ -105,6 +270,56 @@
+@@ -105,6 +185,56 @@
          "type": "UInt16"
        }
      ],
@@ -293,7 +169,7 @@ index cfe1902..1fbe906 100644
      [
        "Flags",
        {
-@@ -456,53 +671,143 @@
+@@ -456,272 +586,612 @@
        }
      ],
      [
@@ -350,7 +226,7 @@ index cfe1902..1fbe906 100644
      ],
      [
 -      "BaseFee",
-+      "TokenTaxon",
++      "NFTokenTaxon",
        {
 -        "nth": 5,
 +        "nth": 42,
@@ -359,180 +235,255 @@ index cfe1902..1fbe906 100644
          "isSigningField": true,
 -        "type": "UInt64"
 +        "type": "UInt32"
-+      }
-+    ],
-+    [
-+      "MintedTokens",
-+      {
+       }
+     ],
+     [
+-      "ExchangeRate",
++      "MintedNFTokens",
+       {
+-        "nth": 6,
 +        "nth": 43,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "UInt64"
 +        "type": "UInt32"
-+      }
-+    ],
-+    [
-+      "BurnedTokens",
-+      {
+       }
+     ],
+     [
+-      "LowNode",
++      "BurnedNFTokens",
+       {
+-        "nth": 7,
 +        "nth": 44,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "UInt64"
 +        "type": "UInt32"
-+      }
-+    ],
-+    [
+       }
+     ],
+     [
+-      "HighNode",
 +      "HookStateCount",
-+      {
+       {
+-        "nth": 8,
 +        "nth": 45,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "UInt64"
 +        "type": "UInt32"
-+      }
-+    ],
-+    [
+       }
+     ],
+     [
+-      "EmailHash",
 +      "EmitGeneration",
-+      {
+       {
+-        "nth": 1,
 +        "nth": 46,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash128"
 +        "type": "UInt32"
-+      }
-+    ],
-+    [
+       }
+     ],
+     [
+-      "LedgerHash",
 +      "IndexNext",
-+      {
-+        "nth": 1,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
-+        "type": "UInt64"
-+      }
-+    ],
-+    [
-+      "IndexPrevious",
-+      {
-+        "nth": 2,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
-+        "type": "UInt64"
-+      }
-+    ],
-+    [
-+      "BookNode",
-+      {
-+        "nth": 3,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
-+        "type": "UInt64"
-+      }
-+    ],
-+    [
-+      "OwnerNode",
-+      {
-+        "nth": 4,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
-+        "type": "UInt64"
-+      }
-+    ],
-+    [
-+      "BaseFee",
-+      {
-+        "nth": 5,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
+       {
+         "nth": 1,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash256"
 +        "type": "UInt64"
        }
      ],
      [
-@@ -535,6 +840,96 @@
-         "type": "UInt64"
+-      "ParentHash",
++      "IndexPrevious",
+       {
+         "nth": 2,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash256"
++        "type": "UInt64"
        }
      ],
-+    [
+     [
+-      "TransactionHash",
++      "BookNode",
+       {
+         "nth": 3,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash256"
++        "type": "UInt64"
+       }
+     ],
+     [
+-      "AccountHash",
++      "OwnerNode",
+       {
+         "nth": 4,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash256"
++        "type": "UInt64"
+       }
+     ],
+     [
+-      "PreviousTxnID",
++      "BaseFee",
+       {
+         "nth": 5,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash256"
++        "type": "UInt64"
+       }
+     ],
+     [
+-      "LedgerIndex",
++      "ExchangeRate",
+       {
+         "nth": 6,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash256"
++        "type": "UInt64"
+       }
+     ],
+     [
+-      "WalletLocator",
++      "LowNode",
+       {
+         "nth": 7,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash256"
++        "type": "UInt64"
+       }
+     ],
+     [
+-      "RootIndex",
++      "HighNode",
+       {
+         "nth": 8,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash256"
++        "type": "UInt64"
+       }
+     ],
+     [
+-      "AccountTxnID",
 +      "DestinationNode",
-+      {
-+        "nth": 9,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
+       {
+         "nth": 9,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash256"
 +        "type": "UInt64"
-+      }
-+    ],
-+    [
+       }
+     ],
+     [
+-      "NFTokenID",
 +      "Cookie",
-+      {
-+        "nth": 10,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
+       {
+         "nth": 10,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash256"
 +        "type": "UInt64"
-+      }
-+    ],
-+    [
+       }
+     ],
+     [
+-      "BookDirectory",
 +      "ServerVersion",
-+      {
+       {
+-        "nth": 16,
 +        "nth": 11,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash256"
 +        "type": "UInt64"
-+      }
-+    ],
-+    [
-+      "OfferNode",
-+      {
+       }
+     ],
+     [
+-      "InvoiceID",
++      "NFTokenOfferNode",
+       {
+-        "nth": 17,
 +        "nth": 12,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash256"
 +        "type": "UInt64"
-+      }
-+    ],
-+    [
+       }
+     ],
+     [
+-      "Nickname",
 +      "EmitBurden",
-+      {
+       {
+-        "nth": 18,
 +        "nth": 13,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash256"
 +        "type": "UInt64"
-+      }
-+    ],
-+    [
+       }
+     ],
+     [
+-      "Amendment",
 +      "HookOn",
-+      {
+       {
+-        "nth": 19,
 +        "nth": 16,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash256"
 +        "type": "UInt64"
-+      }
-+    ],
-+    [
+       }
+     ],
+     [
+-      "TicketID",
 +      "HookInstructionCount",
-+      {
+       {
+-        "nth": 20,
 +        "nth": 17,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash256"
 +        "type": "UInt64"
-+      }
-+    ],
-+    [
+       }
+     ],
+     [
+-      "Digest",
 +      "HookReturnCode",
-+      {
-+        "nth": 18,
-+        "isVLEncoded": false,
-+        "isSerialized": true,
-+        "isSigningField": true,
+       {
+-        "nth": 21,
++        "nth": 19,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "Hash256"
 +        "type": "UInt64"
 +      }
 +    ],
@@ -546,13 +497,16 @@ index cfe1902..1fbe906 100644
 +        "type": "UInt64"
 +      }
 +    ],
-     [
-       "EmailHash",
-       {
-@@ -545,6 +940,46 @@
-         "type": "Hash128"
-       }
-     ],
++    [
++      "EmailHash",
++      {
++        "nth": 1,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash128"
++      }
++    ],
 +    [
 +      "TakerPaysCurrency",
 +      {
@@ -593,13 +547,106 @@ index cfe1902..1fbe906 100644
 +        "type": "Hash160"
 +      }
 +    ],
-     [
-       "LedgerHash",
-       {
-@@ -645,6 +1080,36 @@
-         "type": "Hash256"
-       }
-     ],
++    [
++      "LedgerHash",
++      {
++        "nth": 1,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash256"
++      }
++    ],
++    [
++      "ParentHash",
++      {
++        "nth": 2,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash256"
++      }
++    ],
++    [
++      "TransactionHash",
++      {
++        "nth": 3,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash256"
++      }
++    ],
++    [
++      "AccountHash",
++      {
++        "nth": 4,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash256"
++      }
++    ],
++    [
++      "PreviousTxnID",
++      {
++        "nth": 5,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash256"
++      }
++    ],
++    [
++      "LedgerIndex",
++      {
++        "nth": 6,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash256"
++      }
++    ],
++    [
++      "WalletLocator",
++      {
++        "nth": 7,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash256"
++      }
++    ],
++    [
++      "RootIndex",
++      {
++        "nth": 8,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash256"
++      }
++    ],
++    [
++      "AccountTxnID",
++      {
++        "nth": 9,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash256"
++      }
++    ],
++    [
++      "NFTokenID",
++      {
++        "nth": 10,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash256"
++      }
++    ],
 +    [
 +      "EmitParentTxnID",
 +      {
@@ -630,59 +677,81 @@ index cfe1902..1fbe906 100644
 +        "type": "Hash256"
 +      }
 +    ],
-     [
-       "BookDirectory",
-       {
-@@ -686,9 +1151,9 @@
-       }
-     ],
-     [
--      "TicketID",
-+      "Digest",
-       {
--        "nth": 20,
-+        "nth": 21,
-         "isVLEncoded": false,
-         "isSerialized": true,
-         "isSigningField": true,
-@@ -696,9 +1161,9 @@
-       }
-     ],
-     [
--      "Digest",
-+      "Channel",
-       {
--        "nth": 21,
-+        "nth": 22,
-         "isVLEncoded": false,
-         "isSerialized": true,
-         "isSigningField": true,
-@@ -706,22 +1171,112 @@
-       }
-     ],
-     [
--      "hash",
-+      "ConsensusHash",
-       {
--        "nth": 257,
-+        "nth": 23,
-         "isVLEncoded": false,
--        "isSerialized": false,
--        "isSigningField": false,
++    [
++      "BookDirectory",
++      {
++        "nth": 16,
++        "isVLEncoded": false,
 +        "isSerialized": true,
 +        "isSigningField": true,
-         "type": "Hash256"
-       }
-     ],
-     [
--      "index",
++        "type": "Hash256"
++      }
++    ],
++    [
++      "InvoiceID",
++      {
++        "nth": 17,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash256"
++      }
++    ],
++    [
++      "Nickname",
++      {
++        "nth": 18,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash256"
++      }
++    ],
++    [
++      "Amendment",
++      {
++        "nth": 19,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash256"
++      }
++    ],
++    [
++      "Digest",
++      {
++        "nth": 21,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash256"
++      }
++    ],
++    [
++      "Channel",
++      {
++        "nth": 22,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash256"
++      }
++    ],
++    [
++      "ConsensusHash",
++      {
++        "nth": 23,
++        "isVLEncoded": false,
++        "isSerialized": true,
++        "isSigningField": true,
++        "type": "Hash256"
++      }
++    ],
++    [
 +      "CheckID",
-       {
--        "nth": 258,
++      {
 +        "nth": 24,
-         "isVLEncoded": false,
--        "isSerialized": false,
--        "isSigningField": false,
++        "isVLEncoded": false,
 +        "isSerialized": true,
 +        "isSigningField": true,
 +        "type": "Hash256"
@@ -719,7 +788,7 @@ index cfe1902..1fbe906 100644
 +      }
 +    ],
 +    [
-+      "BuyOffer",
++      "NFTokenBuyOffer",
 +      {
 +        "nth": 28,
 +        "isVLEncoded": false,
@@ -729,7 +798,7 @@ index cfe1902..1fbe906 100644
 +      }
 +    ],
 +    [
-+      "SellOffer",
++      "NFTokenSellOffer",
 +      {
 +        "nth": 29,
 +        "isVLEncoded": false,
@@ -746,23 +815,31 @@ index cfe1902..1fbe906 100644
 +        "isSerialized": true,
 +        "isSigningField": true,
 +        "type": "Hash256"
-+      }
-+    ],
-+    [
+       }
+     ],
+     [
+-      "hash",
 +      "HookHash",
-+      {
+       {
+-        "nth": 257,
 +        "nth": 31,
-+        "isVLEncoded": false,
+         "isVLEncoded": false,
+-        "isSerialized": false,
+-        "isSigningField": false,
 +        "isSerialized": true,
 +        "isSigningField": true,
-+        "type": "Hash256"
-+      }
-+    ],
-+    [
+         "type": "Hash256"
+       }
+     ],
+     [
+-      "index",
 +      "HookNamespace",
-+      {
+       {
+-        "nth": 258,
 +        "nth": 32,
-+        "isVLEncoded": false,
+         "isVLEncoded": false,
+-        "isSerialized": false,
+-        "isSigningField": false,
 +        "isSerialized": true,
 +        "isSigningField": true,
 +        "type": "Hash256"
@@ -778,11 +855,10 @@ index cfe1902..1fbe906 100644
          "type": "Hash256"
        }
      ],
-@@ -865,26 +1420,6 @@
-         "type": "Amount"
+@@ -866,22 +1336,12 @@
        }
      ],
--    [
+     [
 -      "taker_gets_funded",
 -      {
 -        "nth": 258,
@@ -794,18 +870,19 @@ index cfe1902..1fbe906 100644
 -    ],
 -    [
 -      "taker_pays_funded",
--      {
++      "HookCallbackFee",
+       {
 -        "nth": 259,
--        "isVLEncoded": false,
++        "nth": 20,
+         "isVLEncoded": false,
 -        "isSerialized": false,
 -        "isSigningField": false,
--        "type": "Amount"
--      }
--    ],
-     [
-       "PublicKey",
-       {
-@@ -1086,49 +1621,49 @@
++        "isSerialized": true,
++        "isSigningField": true,
+         "type": "Amount"
+       }
+     ],
+@@ -1086,49 +1546,49 @@
        }
      ],
      [
@@ -869,7 +946,7 @@ index cfe1902..1fbe906 100644
          "isVLEncoded": true,
          "isSerialized": true,
          "isSigningField": true,
-@@ -1136,9 +1671,9 @@
+@@ -1136,9 +1596,9 @@
        }
      ],
      [
@@ -881,7 +958,7 @@ index cfe1902..1fbe906 100644
          "isVLEncoded": true,
          "isSerialized": true,
          "isSigningField": true,
-@@ -1146,9 +1681,9 @@
+@@ -1146,9 +1606,9 @@
        }
      ],
      [
@@ -893,7 +970,7 @@ index cfe1902..1fbe906 100644
          "isVLEncoded": true,
          "isSerialized": true,
          "isSigningField": true,
-@@ -1156,9 +1691,9 @@
+@@ -1156,9 +1616,9 @@
        }
      ],
      [
@@ -905,11 +982,11 @@ index cfe1902..1fbe906 100644
          "isVLEncoded": true,
          "isSerialized": true,
          "isSigningField": true,
-@@ -1166,9 +1701,9 @@
+@@ -1166,9 +1626,9 @@
        }
      ],
      [
--      "Minter",
+-      "NFTokenMinter",
 +      "Authorize",
        {
 -        "nth": 9,
@@ -917,7 +994,7 @@ index cfe1902..1fbe906 100644
          "isVLEncoded": true,
          "isSerialized": true,
          "isSigningField": true,
-@@ -1176,623 +1711,453 @@
+@@ -1176,139 +1636,119 @@
        }
      ],
      [
@@ -942,50 +1019,67 @@ index cfe1902..1fbe906 100644
 -    ],
 -    [
 -      "CreatedNode",
--      {
--        "nth": 3,
--        "isVLEncoded": false,
--        "isSerialized": true,
--        "isSigningField": true,
--        "type": "STObject"
--      }
--    ],
--    [
--      "DeletedNode",
--      {
--        "nth": 4,
--        "isVLEncoded": false,
--        "isSerialized": true,
--        "isSigningField": true,
--        "type": "STObject"
--      }
--    ],
--    [
--      "ModifiedNode",
--      {
--        "nth": 5,
--        "isVLEncoded": false,
--        "isSerialized": true,
--        "isSigningField": true,
--        "type": "STObject"
--      }
--    ],
--    [
--      "PreviousFields",
 +      "Unauthorize",
        {
-         "nth": 6,
+-        "nth": 3,
 -        "isVLEncoded": false,
--        "isSerialized": true,
--        "isSigningField": true,
++        "nth": 6,
++        "isVLEncoded": true,
+         "isSerialized": true,
+         "isSigningField": true,
 -        "type": "STObject"
--      }
--    ],
--    [
++        "type": "AccountID"
+       }
+     ],
+     [
+-      "DeletedNode",
++      "RegularKey",
+       {
+-        "nth": 4,
+-        "isVLEncoded": false,
++        "nth": 8,
++        "isVLEncoded": true,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "STObject"
++        "type": "AccountID"
+       }
+     ],
+     [
+-      "ModifiedNode",
++      "NFTokenMinter",
+       {
+-        "nth": 5,
+-        "isVLEncoded": false,
++        "nth": 9,
++        "isVLEncoded": true,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "STObject"
++        "type": "AccountID"
+       }
+     ],
+     [
+-      "PreviousFields",
++      "EmitCallback",
+       {
+-        "nth": 6,
+-        "isVLEncoded": false,
++        "nth": 10,
++        "isVLEncoded": true,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "STObject"
++        "type": "AccountID"
+       }
+     ],
+     [
 -      "FinalFields",
--      {
++      "HookAccount",
+       {
 -        "nth": 7,
 -        "isVLEncoded": false,
++        "nth": 16,
 +        "isVLEncoded": true,
          "isSerialized": true,
          "isSigningField": true,
@@ -995,95 +1089,112 @@ index cfe1902..1fbe906 100644
      ],
      [
 -      "NewFields",
-+      "RegularKey",
++      "Indexes",
        {
-         "nth": 8,
+-        "nth": 8,
 -        "isVLEncoded": false,
++        "nth": 1,
 +        "isVLEncoded": true,
          "isSerialized": true,
          "isSigningField": true,
 -        "type": "STObject"
-+        "type": "AccountID"
++        "type": "Vector256"
        }
      ],
      [
 -      "TemplateEntry",
-+      "Minter",
++      "Hashes",
        {
-         "nth": 9,
+-        "nth": 9,
 -        "isVLEncoded": false,
++        "nth": 2,
 +        "isVLEncoded": true,
          "isSerialized": true,
          "isSigningField": true,
 -        "type": "STObject"
-+        "type": "AccountID"
++        "type": "Vector256"
        }
      ],
      [
 -      "Memo",
-+      "EmitCallback",
++      "Amendments",
        {
-         "nth": 10,
+-        "nth": 10,
 -        "isVLEncoded": false,
--        "isSerialized": true,
--        "isSigningField": true,
--        "type": "STObject"
--      }
--    ],
--    [
--      "SignerEntry",
--      {
--        "nth": 11,
--        "isVLEncoded": false,
--        "isSerialized": true,
--        "isSigningField": true,
--        "type": "STObject"
--      }
--    ],
--    [
--      "NonFungibleToken",
--      {
--        "nth": 12,
--        "isVLEncoded": false,
++        "nth": 3,
 +        "isVLEncoded": true,
          "isSerialized": true,
          "isSigningField": true,
 -        "type": "STObject"
-+        "type": "AccountID"
++        "type": "Vector256"
+       }
+     ],
+     [
+-      "SignerEntry",
++      "NFTokenOffers",
+       {
+-        "nth": 11,
+-        "isVLEncoded": false,
++        "nth": 4,
++        "isVLEncoded": true,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "STObject"
++        "type": "Vector256"
+       }
+     ],
+     [
+-      "NFToken",
++      "HookNamespaces",
+       {
+-        "nth": 12,
+-        "isVLEncoded": false,
++        "nth": 5,
++        "isVLEncoded": true,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "STObject"
++        "type": "Vector256"
        }
      ],
      [
 -      "Signer",
-+      "HookAccount",
++      "Paths",
        {
-         "nth": 16,
--        "isVLEncoded": false,
--        "isSerialized": true,
--        "isSigningField": true,
+-        "nth": 16,
++        "nth": 1,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
 -        "type": "STObject"
--      }
--    ],
--    [
++        "type": "PathSet"
+       }
+     ],
+     [
 -      "Majority",
--      {
++      "TransactionMetaData",
+       {
 -        "nth": 18,
--        "isVLEncoded": false,
--        "isSerialized": true,
--        "isSigningField": true,
--        "type": "STObject"
--      }
--    ],
--    [
++        "nth": 2,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+@@ -1316,9 +1756,9 @@
+       }
+     ],
+     [
 -      "DisabledValidator",
--      {
++      "CreatedNode",
+       {
 -        "nth": 19,
--        "isVLEncoded": false,
--        "isSerialized": true,
--        "isSigningField": true,
--        "type": "STObject"
--      }
--    ],
--    [
++        "nth": 3,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+@@ -1326,399 +1766,359 @@
+       }
+     ],
+     [
 -      "ArrayEndMarker",
 -      {
 -        "nth": 1,
@@ -1105,129 +1216,129 @@ index cfe1902..1fbe906 100644
 -    ],
 -    [
 -      "SignerEntries",
--      {
--        "nth": 4,
--        "isVLEncoded": false,
--        "isSerialized": true,
--        "isSigningField": true,
--        "type": "STArray"
--      }
--    ],
--    [
--      "Template",
--      {
--        "nth": 5,
--        "isVLEncoded": false,
--        "isSerialized": true,
--        "isSigningField": true,
--        "type": "STArray"
--      }
--    ],
--    [
--      "Necessary",
--      {
--        "nth": 6,
--        "isVLEncoded": false,
--        "isSerialized": true,
--        "isSigningField": true,
--        "type": "STArray"
--      }
--    ],
--    [
--      "Sufficient",
--      {
--        "nth": 7,
--        "isVLEncoded": false,
--        "isSerialized": true,
--        "isSigningField": true,
--        "type": "STArray"
--      }
--    ],
--    [
--      "AffectedNodes",
--      {
--        "nth": 8,
--        "isVLEncoded": false,
-+        "isVLEncoded": true,
++      "DeletedNode",
+       {
+         "nth": 4,
+         "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
 -        "type": "STArray"
-+        "type": "AccountID"
++        "type": "STObject"
        }
      ],
      [
--      "Memos",
-+      "Indexes",
+-      "Template",
++      "ModifiedNode",
        {
+         "nth": 5,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "STArray"
++        "type": "STObject"
+       }
+     ],
+     [
+-      "Necessary",
++      "PreviousFields",
+       {
+         "nth": 6,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "STArray"
++        "type": "STObject"
+       }
+     ],
+     [
+-      "Sufficient",
++      "FinalFields",
+       {
+         "nth": 7,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "STArray"
++        "type": "STObject"
+       }
+     ],
+     [
+-      "AffectedNodes",
++      "NewFields",
+       {
+         "nth": 8,
+         "isVLEncoded": false,
+         "isSerialized": true,
+         "isSigningField": true,
+-        "type": "STArray"
+-      }
+-    ],
+-    [
+-      "Memos",
+-      {
 -        "nth": 9,
 -        "isVLEncoded": false,
-+        "nth": 1,
-+        "isVLEncoded": true,
-         "isSerialized": true,
-         "isSigningField": true,
+-        "isSerialized": true,
+-        "isSigningField": true,
 -        "type": "STArray"
-+        "type": "Vector256"
-       }
-     ],
-     [
--      "NonFungibleTokens",
-+      "Hashes",
-       {
+-      }
+-    ],
+-    [
+-      "NFTokens",
+-      {
 -        "nth": 10,
 -        "isVLEncoded": false,
-+        "nth": 2,
-+        "isVLEncoded": true,
-         "isSerialized": true,
-         "isSigningField": true,
+-        "isSerialized": true,
+-        "isSigningField": true,
 -        "type": "STArray"
-+        "type": "Vector256"
++        "type": "STObject"
        }
      ],
      [
 -      "Majorities",
-+      "Amendments",
++      "TemplateEntry",
        {
 -        "nth": 16,
--        "isVLEncoded": false,
-+        "nth": 3,
-+        "isVLEncoded": true,
++        "nth": 9,
+         "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
 -        "type": "STArray"
-+        "type": "Vector256"
++        "type": "STObject"
        }
      ],
      [
 -      "DisabledValidators",
-+      "TokenOffers",
++      "Memo",
        {
 -        "nth": 17,
--        "isVLEncoded": false,
-+        "nth": 4,
-+        "isVLEncoded": true,
++        "nth": 10,
+         "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
 -        "type": "STArray"
-+        "type": "Vector256"
++        "type": "STObject"
        }
      ],
      [
 -      "CloseResolution",
-+      "Paths",
++      "SignerEntry",
        {
-         "nth": 1,
+-        "nth": 1,
++        "nth": 11,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
 -        "type": "UInt8"
-+        "type": "PathSet"
++        "type": "STObject"
        }
      ],
      [
 -      "Method",
-+      "TransactionMetaData",
++      "NFToken",
        {
-         "nth": 2,
+-        "nth": 2,
++        "nth": 12,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
@@ -1237,9 +1348,10 @@ index cfe1902..1fbe906 100644
      ],
      [
 -      "TransactionResult",
-+      "CreatedNode",
++      "EmitDetails",
        {
-         "nth": 3,
+-        "nth": 3,
++        "nth": 13,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
@@ -1249,10 +1361,10 @@ index cfe1902..1fbe906 100644
      ],
      [
 -      "TakerPaysCurrency",
-+      "DeletedNode",
++      "Hook",
        {
 -        "nth": 1,
-+        "nth": 4,
++        "nth": 14,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
@@ -1262,10 +1374,10 @@ index cfe1902..1fbe906 100644
      ],
      [
 -      "TakerPaysIssuer",
-+      "ModifiedNode",
++      "Signer",
        {
 -        "nth": 2,
-+        "nth": 5,
++        "nth": 16,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
@@ -1275,10 +1387,10 @@ index cfe1902..1fbe906 100644
      ],
      [
 -      "TakerGetsCurrency",
-+      "PreviousFields",
++      "Majority",
        {
 -        "nth": 3,
-+        "nth": 6,
++        "nth": 18,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
@@ -1288,10 +1400,10 @@ index cfe1902..1fbe906 100644
      ],
      [
 -      "TakerGetsIssuer",
-+      "FinalFields",
++      "DisabledValidator",
        {
 -        "nth": 4,
-+        "nth": 7,
++        "nth": 19,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
@@ -1301,10 +1413,10 @@ index cfe1902..1fbe906 100644
      ],
      [
 -      "Paths",
-+      "NewFields",
++      "EmittedTxn",
        {
 -        "nth": 1,
-+        "nth": 8,
++        "nth": 20,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
@@ -1314,11 +1426,11 @@ index cfe1902..1fbe906 100644
      ],
      [
 -      "Indexes",
-+      "TemplateEntry",
++      "HookExecution",
        {
 -        "nth": 1,
 -        "isVLEncoded": true,
-+        "nth": 9,
++        "nth": 21,
 +        "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
@@ -1328,11 +1440,11 @@ index cfe1902..1fbe906 100644
      ],
      [
 -      "Hashes",
-+      "Memo",
++      "HookDefinition",
        {
 -        "nth": 2,
 -        "isVLEncoded": true,
-+        "nth": 10,
++        "nth": 22,
 +        "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
@@ -1342,11 +1454,11 @@ index cfe1902..1fbe906 100644
      ],
      [
 -      "Amendments",
-+      "SignerEntry",
++      "HookParameter",
        {
 -        "nth": 3,
 -        "isVLEncoded": true,
-+        "nth": 11,
++        "nth": 23,
 +        "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
@@ -1355,12 +1467,12 @@ index cfe1902..1fbe906 100644
        }
      ],
      [
--      "TokenOffers",
-+      "NonFungibleToken",
+-      "NFTokenOffers",
++      "HookGrant",
        {
 -        "nth": 4,
 -        "isVLEncoded": true,
-+        "nth": 12,
++        "nth": 24,
 +        "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
@@ -1370,160 +1482,158 @@ index cfe1902..1fbe906 100644
      ],
      [
 -      "Transaction",
-+      "EmitDetails",
++      "Signers",
        {
 -        "nth": 1,
-+        "nth": 13,
++        "nth": 3,
          "isVLEncoded": false,
 -        "isSerialized": false,
--        "isSigningField": false,
--        "type": "Transaction"
 +        "isSerialized": true,
-+        "isSigningField": true,
-+        "type": "STObject"
+         "isSigningField": false,
+-        "type": "Transaction"
++        "type": "STArray"
        }
      ],
      [
 -      "LedgerEntry",
-+      "Hook",
++      "SignerEntries",
        {
 -        "nth": 1,
-+        "nth": 14,
++        "nth": 4,
          "isVLEncoded": false,
 -        "isSerialized": false,
 -        "isSigningField": false,
 -        "type": "LedgerEntry"
 +        "isSerialized": true,
 +        "isSigningField": true,
-+        "type": "STObject"
++        "type": "STArray"
        }
      ],
      [
 -      "Validation",
-+      "Signer",
++      "Template",
        {
 -        "nth": 1,
-+        "nth": 16,
++        "nth": 5,
          "isVLEncoded": false,
 -        "isSerialized": false,
 -        "isSigningField": false,
 -        "type": "Validation"
 +        "isSerialized": true,
 +        "isSigningField": true,
-+        "type": "STObject"
++        "type": "STArray"
        }
      ],
      [
 -      "SignerListID",
-+      "Majority",
++      "Necessary",
        {
 -        "nth": 38,
-+        "nth": 18,
++        "nth": 6,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
 -        "type": "UInt32"
-+        "type": "STObject"
++        "type": "STArray"
        }
      ],
      [
 -      "SettleDelay",
-+      "DisabledValidator",
++      "Sufficient",
        {
 -        "nth": 39,
-+        "nth": 19,
++        "nth": 7,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
 -        "type": "UInt32"
-+        "type": "STObject"
++        "type": "STArray"
        }
      ],
      [
 -      "TicketCount",
-+      "EmittedTxn",
++      "AffectedNodes",
        {
 -        "nth": 40,
-+        "nth": 20,
++        "nth": 8,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
 -        "type": "UInt32"
-+        "type": "STObject"
++        "type": "STArray"
        }
      ],
      [
 -      "TicketSequence",
-+      "HookExecution",
++      "Memos",
        {
 -        "nth": 41,
-+        "nth": 21,
++        "nth": 9,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
 -        "type": "UInt32"
-+        "type": "STObject"
++        "type": "STArray"
        }
      ],
      [
--      "TokenTaxon",
-+      "HookDefinition",
+-      "NFTokenTaxon",
++      "NFTokens",
        {
 -        "nth": 42,
-+        "nth": 22,
++        "nth": 10,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
 -        "type": "UInt32"
-+        "type": "STObject"
++        "type": "STArray"
        }
      ],
      [
--      "MintedTokens",
-+      "HookParameter",
+-      "MintedNFTokens",
++      "Hooks",
        {
 -        "nth": 43,
-+        "nth": 23,
++        "nth": 11,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
 -        "type": "UInt32"
-+        "type": "STObject"
++        "type": "STArray"
        }
      ],
      [
--      "BurnedTokens",
-+      "HookGrant",
+-      "BurnedNFTokens",
++      "Majorities",
        {
 -        "nth": 44,
-+        "nth": 24,
++        "nth": 16,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
 -        "type": "UInt32"
-+        "type": "STObject"
++        "type": "STArray"
        }
      ],
      [
 -      "Channel",
-+      "Signers",
++      "DisabledValidators",
        {
 -        "nth": 22,
-+        "nth": 3,
++        "nth": 17,
          "isVLEncoded": false,
          "isSerialized": true,
--        "isSigningField": true,
+         "isSigningField": true,
 -        "type": "Hash256"
-+        "isSigningField": false,
 +        "type": "STArray"
        }
      ],
      [
 -      "ConsensusHash",
-+      "SignerEntries",
++      "HookExecutions",
        {
 -        "nth": 23,
-+        "nth": 4,
++        "nth": 18,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
@@ -1533,10 +1643,10 @@ index cfe1902..1fbe906 100644
      ],
      [
 -      "CheckID",
-+      "Template",
++      "HookParameters",
        {
 -        "nth": 24,
-+        "nth": 5,
++        "nth": 19,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
@@ -1546,10 +1656,10 @@ index cfe1902..1fbe906 100644
      ],
      [
 -      "ValidatedHash",
-+      "Necessary",
++      "HookGrants",
        {
 -        "nth": 25,
-+        "nth": 6,
++        "nth": 20,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
@@ -1559,127 +1669,138 @@ index cfe1902..1fbe906 100644
      ],
      [
 -      "PreviousPageMin",
-+      "Sufficient",
++      "Generic",
        {
 -        "nth": 26,
-+        "nth": 7,
++        "nth": 0,
          "isVLEncoded": false,
-         "isSerialized": true,
-         "isSigningField": true,
+-        "isSerialized": true,
+-        "isSigningField": true,
 -        "type": "Hash256"
-+        "type": "STArray"
++        "isSerialized": false,
++        "isSigningField": false,
++        "type": "Unknown"
        }
      ],
      [
 -      "NextPageMin",
-+      "AffectedNodes",
++      "Invalid",
        {
 -        "nth": 27,
-+        "nth": 8,
++        "nth": -1,
          "isVLEncoded": false,
-         "isSerialized": true,
-         "isSigningField": true,
+-        "isSerialized": true,
+-        "isSigningField": true,
 -        "type": "Hash256"
-+        "type": "STArray"
++        "isSerialized": false,
++        "isSigningField": false,
++        "type": "Unknown"
        }
      ],
      [
--      "BuyOffer",
-+      "Memos",
+-      "NFTokenBuyOffer",
++      "TicketID",
        {
 -        "nth": 28,
-+        "nth": 9,
++        "nth": 20,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
--        "type": "Hash256"
-+        "type": "STArray"
+@@ -1726,73 +2126,73 @@
        }
      ],
      [
--      "SellOffer",
-+      "NonFungibleTokens",
+-      "NFTokenSellOffer",
++      "hash",
        {
 -        "nth": 29,
-+        "nth": 10,
++        "nth": 257,
          "isVLEncoded": false,
-         "isSerialized": true,
-         "isSigningField": true,
--        "type": "Hash256"
-+        "type": "STArray"
+-        "isSerialized": true,
+-        "isSigningField": true,
++        "isSerialized": false,
++        "isSigningField": false,
+         "type": "Hash256"
        }
      ],
      [
 -      "TickSize",
-+      "Hooks",
++      "index",
        {
 -        "nth": 16,
-+        "nth": 11,
++        "nth": 258,
          "isVLEncoded": false,
-         "isSerialized": true,
-         "isSigningField": true,
+-        "isSerialized": true,
+-        "isSigningField": true,
 -        "type": "UInt8"
-+        "type": "STArray"
++        "isSerialized": false,
++        "isSigningField": false,
++        "type": "Hash256"
        }
      ],
      [
 -      "UNLModifyDisabling",
-+      "Majorities",
++      "taker_gets_funded",
        {
 -        "nth": 17,
-+        "nth": 16,
++        "nth": 258,
          "isVLEncoded": false,
-         "isSerialized": true,
-         "isSigningField": true,
+-        "isSerialized": true,
+-        "isSigningField": true,
 -        "type": "UInt8"
-+        "type": "STArray"
++        "isSerialized": false,
++        "isSigningField": false,
++        "type": "Amount"
        }
      ],
      [
 -      "DestinationNode",
-+      "DisabledValidators",
++      "taker_pays_funded",
        {
 -        "nth": 9,
-+        "nth": 17,
++        "nth": 259,
          "isVLEncoded": false,
-         "isSerialized": true,
-         "isSigningField": true,
+-        "isSerialized": true,
+-        "isSigningField": true,
 -        "type": "UInt64"
-+        "type": "STArray"
++        "isSerialized": false,
++        "isSigningField": false,
++        "type": "Amount"
        }
      ],
      [
 -      "Cookie",
-+      "HookExecutions",
++      "Target",
        {
 -        "nth": 10,
-+        "nth": 18,
-         "isVLEncoded": false,
+-        "isVLEncoded": false,
++        "nth": 7,
++        "isVLEncoded": true,
          "isSerialized": true,
          "isSigningField": true,
 -        "type": "UInt64"
-+        "type": "STArray"
++        "type": "AccountID"
        }
      ],
      [
 -      "ServerVersion",
-+      "HookParameters",
++      "ObjectEndMarker",
        {
 -        "nth": 11,
-+        "nth": 19,
++        "nth": 1,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
 -        "type": "UInt64"
-+        "type": "STArray"
++        "type": "STObject"
        }
      ],
      [
--      "OfferNode",
-+      "HookGrants",
+-      "NFTokenOfferNode",
++      "ArrayEndMarker",
        {
 -        "nth": 12,
-+        "nth": 20,
++        "nth": 1,
          "isVLEncoded": false,
          "isSerialized": true,
          "isSigningField": true,
@@ -1688,51 +1809,7 @@ index cfe1902..1fbe906 100644
        }
      ]
    ],
-@@ -1844,8 +2209,10 @@
-     "temBAD_TICK_SIZE": -269,
-     "temINVALID_ACCOUNT_ID": -268,
-     "temCANNOT_PREAUTH_SELF": -267,
--    "temUNCERTAIN": -266,
--    "temUNKNOWN": -265,
-+    "temINVALID_COUNT": -266,
-+    "temUNCERTAIN": -265,
-+    "temUNKNOWN": -264,
-+    "temSEQ_AND_TICKET": -263,
- 
-     "tefFAILURE": -199,
-     "tefALREADY": -198,
-@@ -1867,7 +2234,6 @@
-     "tefINVARIANT_FAILED": -182,
-     "tefTOO_BIG": -181,
-     "tefNO_TICKET": -180,
--    "tefTOKEN_IS_NOT_TRANSFERABLE": -179,
- 
-     "terRETRY": -99,
-     "terFUNDS_SPENT": -98,
-@@ -1880,6 +2246,7 @@
-     "terLAST": -91,
-     "terNO_RIPPLE": -90,
-     "terQUEUED": -89,
-+    "terPRE_TICKET": -88,
- 
-     "tesSUCCESS": 0,
- 
-@@ -1921,21 +2288,10 @@
-     "tecKILLED": 150,
-     "tecHAS_OBLIGATIONS": 151,
-     "tecTOO_SOON": 152,
--
--    "tecMAX_SEQUENCE_REACHED": 154,
--    "tecNO_SUITABLE_PAGE": 155,
--    "tecBUY_SELL_MISMATCH": 156,
--    "tecOFFER_TYPE_MISMATCH": 157,
--    "tecCANT_ACCEPT_OWN_OFFER": 158,
--    "tecINSUFFICIENT_FUNDS": 159,
--    "tecOBJECT_NOT_FOUND": 160,
--    "tecINSUFFICIENT_PAYMENT": 161,
--    "tecINCORRECT_ASSET": 162,
--    "tecTOO_MANY": 163
-+    "tecHOOK_ERROR": 153
+@@ -1938,7 +2338,6 @@
    },
    "TRANSACTION_TYPES": {
      "Invalid": -1,
@@ -1740,16 +1817,11 @@ index cfe1902..1fbe906 100644
      "Payment": 0,
      "EscrowCreate": 1,
      "EscrowFinish": 2,
-@@ -1958,11 +2314,7 @@
+@@ -1961,6 +2360,7 @@
      "DepositPreauth": 19,
      "TrustSet": 20,
      "AccountDelete": 21,
--    "NFTokenMint": 25,
--    "NFTokenBurn": 26,
--    "NFTokenCreateOffer": 27,
--    "NFTokenCancelOffer": 28,
--    "NFTokenAcceptOffer": 29,
 +    "SetHook": 22,
-     "EnableAmendment": 100,
-     "SetFee": 101,
-     "UNLModify": 102
+     "NFTokenMint": 25,
+     "NFTokenBurn": 26,
+     "NFTokenCreateOffer": 27,
