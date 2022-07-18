@@ -38,7 +38,6 @@ export const TxUI: FC<UIProps> = ({
     txFields,
   } = txState;
 
-
   const transactionsOptions = transactionsData.map(tx => ({
     value: tx.TransactionType,
     label: tx.TransactionType,
@@ -115,8 +114,7 @@ export const TxUI: FC<UIProps> = ({
     k => !specialFields.includes(k)
   ) as [keyof TxFields];
 
-  const switchToJson = () =>
-    setState({ editorSavedValue: null, viewType: "json" });
+  const switchToJson = () => setState({ viewType: "json" });
 
   // default tx
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { Play } from "phosphor-react";
-import { FC, useCallback, useEffect, useMemo } from "react";
+import { FC, useCallback, useEffect } from "react";
 import { useSnapshot } from "valtio";
 import state from "../../state";
 import {
@@ -15,7 +15,7 @@ import Flex from "../Flex";
 import { TxJson } from "./json";
 import { TxUI } from "./ui";
 import { default as _estimateFee } from "../../utils/estimateFee";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 
 export interface TransactionProps {
   header: string;
@@ -34,7 +34,6 @@ const Transaction: FC<TransactionProps> = ({
     txIsDisabled,
     txIsLoading,
     viewType,
-    editorSavedValue,
     editorValue,
   } = txState;
 
@@ -46,7 +45,7 @@ const Transaction: FC<TransactionProps> = ({
   );
 
   const prepareOptions = useCallback(
-    (state: TransactionState = txState) => {
+    (state: Partial<TransactionState> = txState) => {
       const {
         selectedTransaction,
         selectedDestAccount,
@@ -57,7 +56,7 @@ const Transaction: FC<TransactionProps> = ({
       const TransactionType = selectedTransaction?.value || null;
       const Destination =
         selectedDestAccount?.value ||
-        ("Destination" in txFields ? null : undefined);
+        (txFields && "Destination" in txFields ? null : undefined);
       const Account = selectedAccount?.value || null;
 
       return prepareTransaction({
@@ -140,11 +139,14 @@ const Transaction: FC<TransactionProps> = ({
     modifyTransaction(header, { viewType }, { replaceState: true });
   }, [header, viewType]);
 
-  const jsonValue = useMemo(
-    () =>
-      editorSavedValue ||
-      JSON.stringify(prepareOptions?.() || {}, null, editorSettings.tabSize),
-    [editorSavedValue, editorSettings.tabSize, prepareOptions]
+  const getJsonString = useCallback(
+    (state?: Partial<TransactionState>) =>
+      JSON.stringify(
+        prepareOptions?.(state) || {},
+        null,
+        editorSettings.tabSize
+      ),
+    [editorSettings.tabSize, prepareOptions]
   );
 
   const estimateFee = useCallback(
@@ -156,10 +158,10 @@ const Transaction: FC<TransactionProps> = ({
       );
       if (!account) {
         if (!opts?.silent) {
-          toast.error("Please select account from the list.")
+          toast.error("Please select account from the list.");
         }
-        return
-      };
+        return;
+      }
 
       ptx.Account = account.address;
       ptx.Sequence = account.sequence;
@@ -176,7 +178,7 @@ const Transaction: FC<TransactionProps> = ({
     <Box css={{ position: "relative", height: "calc(100% - 28px)" }} {...props}>
       {viewType === "json" ? (
         <TxJson
-          value={jsonValue}
+          getJsonString={getJsonString}
           header={header}
           state={txState}
           setState={setState}
@@ -199,7 +201,7 @@ const Transaction: FC<TransactionProps> = ({
         <Button
           onClick={() => {
             if (viewType === "ui") {
-              setState({ editorSavedValue: null, viewType: "json" });
+              setState({ viewType: "json" });
             } else setState({ viewType: "ui" });
           }}
           outline

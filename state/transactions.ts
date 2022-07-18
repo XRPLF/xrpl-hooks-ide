@@ -18,7 +18,6 @@ export interface TransactionState {
     txIsDisabled: boolean;
     txFields: TxFields;
     viewType: 'json' | 'ui',
-    editorSavedValue: null | string,
     editorValue?: string,
     estimatedFee?: string
 }
@@ -36,15 +35,14 @@ export const defaultTransaction: TransactionState = {
     txIsLoading: false,
     txIsDisabled: false,
     txFields: {},
-    viewType: 'ui',
-    editorSavedValue: null
+    viewType: 'ui'
 };
 
 export const transactionsState = proxy({
     transactions: [
         {
             header: "test1.json",
-            state: defaultTransaction,
+            state: { ...defaultTransaction },
         },
     ],
     activeHeader: "test1.json"
@@ -218,7 +216,6 @@ export const prepareState = (value: string, transactionType?: string) => {
     });
 
     tx.txFields = rest;
-    tx.editorSavedValue = null;
 
     return tx
 }
