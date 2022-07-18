@@ -29,10 +29,17 @@ export const TxJson: FC<JsonProps> = ({
   setState,
 }) => {
   const { editorSettings, accounts } = useSnapshot(state);
-  const { editorValue = getJsonString?.(), estimatedFee } = txState;
+  const { editorValue, estimatedFee } = txState;
   const [currTxType, setCurrTxType] = useState<string | undefined>(
     txState.selectedTransaction?.value
   );
+
+  useEffect(() => {
+    setState({
+      editorValue: getJsonString?.(),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const parsed = parseJSON(editorValue);
