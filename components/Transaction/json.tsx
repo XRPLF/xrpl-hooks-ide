@@ -66,6 +66,7 @@ export const TxJson: FC<JsonProps> = ({
     showAlert("Confirm", {
       body: "Are you sure to discard these changes?",
       confirmText: "Yes",
+      onCancel: () => {},
       onConfirm: () => setState({ editorValue: value }),
     });
   };
