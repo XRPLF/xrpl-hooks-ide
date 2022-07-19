@@ -7,9 +7,10 @@ import Text from "../Text";
 import {
   SelectOption,
   TransactionState,
-  transactionsData,
+  transactionsOptions,
   TxFields,
   getTxFields,
+  defaultTransactionType,
 } from "../../state/transactions";
 import { useSnapshot } from "valtio";
 import state from "../../state";
@@ -38,11 +39,6 @@ export const TxUI: FC<UIProps> = ({
     txFields,
   } = txState;
 
-  const transactionsOptions = transactionsData.map(tx => ({
-    value: tx.TransactionType,
-    label: tx.TransactionType,
-  }));
-
   const accountOptions: SelectOption[] = accounts.map(acc => ({
     label: acc.name,
     value: acc.address,
@@ -57,7 +53,7 @@ export const TxUI: FC<UIProps> = ({
 
   const [feeLoading, setFeeLoading] = useState(false);
 
-  const resetOptions = useCallback(
+  const resetFields = useCallback(
     (tt: string) => {
       const fields = getTxFields(tt);
 
@@ -107,11 +103,11 @@ export const TxUI: FC<UIProps> = ({
     (tt: SelectOption) => {
       setState({ selectedTransaction: tt });
 
-      const newState = resetOptions(tt.value);
+      const newState = resetFields(tt.value);
 
       handleEstimateFee(newState, true);
     },
-    [handleEstimateFee, resetOptions, setState]
+    [handleEstimateFee, resetFields, setState]
   );
 
   const switchToJson = () => setState({ viewType: "json" });
@@ -120,13 +116,10 @@ export const TxUI: FC<UIProps> = ({
   useEffect(() => {
     if (selectedTransaction?.value) return;
 
-    const defaultOption = transactionsOptions.find(
-      tt => tt.value === "Payment"
-    );
-    if (defaultOption) {
-      handleChangeTxType(defaultOption);
+    if (defaultTransactionType) {
+      handleChangeTxType(defaultTransactionType);
     }
-  }, [handleChangeTxType, selectedTransaction?.value, transactionsOptions]);
+  }, [handleChangeTxType, selectedTransaction?.value]);
 
   const fields = useMemo(
     () => getTxFields(selectedTransaction?.value),

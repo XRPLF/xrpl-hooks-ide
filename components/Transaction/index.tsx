@@ -3,10 +3,12 @@ import { FC, useCallback, useEffect } from "react";
 import { useSnapshot } from "valtio";
 import state from "../../state";
 import {
+  defaultTransactionType,
   getTxFields,
   modifyTransaction,
   prepareState,
   prepareTransaction,
+  SelectOption,
   TransactionState,
 } from "../../state/transactions";
 import { sendTransaction } from "../../state/actions";
@@ -135,10 +137,6 @@ const Transaction: FC<TransactionProps> = ({
     prepareOptions,
   ]);
 
-  const resetState = useCallback(() => {
-    modifyTransaction(header, { viewType }, { replaceState: true });
-  }, [header, viewType]);
-
   const getJsonString = useCallback(
     (state?: Partial<TransactionState>) =>
       JSON.stringify(
@@ -147,6 +145,30 @@ const Transaction: FC<TransactionProps> = ({
         editorSettings.tabSize
       ),
     [editorSettings.tabSize, prepareOptions]
+  );
+
+  const resetState = useCallback(
+    (transactionType: SelectOption | undefined = defaultTransactionType) => {
+      const fields = getTxFields(transactionType?.value);
+
+      const nwState: Partial<TransactionState> = {
+        viewType,
+        selectedTransaction: transactionType,
+      };
+
+      if (fields.Destination !== undefined) {
+        nwState.selectedDestAccount = null;
+        fields.Destination = "";
+      } else {
+        fields.Destination = undefined;
+      }
+      nwState.txFields = fields;
+
+      const state = modifyTransaction(header, nwState, { replaceState: true });
+      const editorValue = getJsonString(state);
+      return setState({ editorValue });
+    },
+    [getJsonString, header, setState, viewType]
   );
 
   const estimateFee = useCallback(
@@ -209,7 +231,7 @@ const Transaction: FC<TransactionProps> = ({
           {viewType === "ui" ? "EDIT AS JSON" : "EXIT JSON MODE"}
         </Button>
         <Flex row>
-          <Button onClick={resetState} outline css={{ mr: "$3" }}>
+          <Button onClick={() => resetState()} outline css={{ mr: "$3" }}>
             RESET
           </Button>
           <Button

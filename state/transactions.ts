@@ -134,7 +134,7 @@ export const prepareTransaction = (data: any) => {
             delete options[field];
         }
     });
-    
+
     return options
 }
 
@@ -196,7 +196,7 @@ export const prepareState = (value: string, transactionType?: string) => {
             tx.selectedDestAccount = null
         }
     }
-    else if (Destination) { 
+    else if (Destination) {
         rest.Destination = Destination
     }
 
@@ -243,3 +243,10 @@ export const getTxFields = (tt?: string) => {
 }
 
 export { transactionsData }
+
+export const transactionsOptions = transactionsData.map(tx => ({
+    value: tx.TransactionType,
+    label: tx.TransactionType,
+}));
+
+export const defaultTransactionType = transactionsOptions.find(tt => tt.value === 'Payment')
