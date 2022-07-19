@@ -55,7 +55,8 @@
     "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
     "TransactionType": "EscrowCancel",
     "Owner": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-    "OfferSequence": 7
+    "OfferSequence": 7,
+    "Fee": "10"
   },
   {
     "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -69,7 +70,8 @@
     "FinishAfter": 533171558,
     "Condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
     "DestinationTag": 23480,
-    "SourceTag": 11747
+    "SourceTag": 11747,
+    "Fee": "10"
   },
   {
     "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -77,7 +79,8 @@
     "Owner": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
     "OfferSequence": 7,
     "Condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
-    "Fulfillment": "A0028000"
+    "Fulfillment": "A0028000",
+    "Fee": "10"
   },
   {
     "TransactionType": "NFTokenMint",
@@ -118,7 +121,8 @@
       "$type": "xrp"
     },
     "Flags": 1,
-    "Destination": ""
+    "Destination": "",
+    "Fee": "10"
   },
   {
     "TransactionType": "OfferCancel",
@@ -166,7 +170,8 @@
     "PublicKey": "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
     "CancelAfter": 533171558,
     "DestinationTag": 23480,
-    "SourceTag": 11747
+    "SourceTag": 11747,
+    "Fee": "10"
   },
   {
     "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
@@ -176,7 +181,8 @@
       "$value": "200",
       "$type": "xrp"
     },
-    "Expiration": 543171558
+    "Expiration": 543171558,
+    "Fee": "10"
   },
   {
     "Flags": 0,
