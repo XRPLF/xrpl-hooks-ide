@@ -24,7 +24,7 @@ export interface TransactionState {
 
 
 export type TxFields = Omit<
-    typeof transactionsData[0],
+    Partial<typeof transactionsData[0]>,
     "Account" | "Sequence" | "TransactionType"
 >;
 
