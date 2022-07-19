@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import Container from "../Container";
 import Flex from "../Flex";
 import Input from "../Input";
@@ -60,7 +60,13 @@ export const TxUI: FC<UIProps> = ({
   const resetOptions = useCallback(
     (tt: string) => {
       const fields = getTxFields(tt);
-      if (!fields.Destination) setState({ selectedDestAccount: null });
+
+      if (fields.Destination !== undefined) {
+        setState({ selectedDestAccount: null });
+        fields.Destination = "";
+      } else {
+        fields.Destination = undefined;
+      }
       return setState({ txFields: fields });
     },
     [setState]
@@ -108,12 +114,6 @@ export const TxUI: FC<UIProps> = ({
     [handleEstimateFee, resetOptions, setState]
   );
 
-  const specialFields = ["TransactionType", "Account", "Destination"];
-
-  const otherFields = Object.keys(txFields).filter(
-    k => !specialFields.includes(k)
-  ) as [keyof TxFields];
-
   const switchToJson = () => setState({ viewType: "json" });
 
   // default tx
@@ -127,6 +127,20 @@ export const TxUI: FC<UIProps> = ({
       handleChangeTxType(defaultOption);
     }
   }, [handleChangeTxType, selectedTransaction?.value, transactionsOptions]);
+
+  const fields = useMemo(
+    () => getTxFields(selectedTransaction?.value),
+    [selectedTransaction?.value]
+  );
+
+  const specialFields = ["TransactionType", "Account"];
+  if (fields.Destination !== undefined) {
+    specialFields.push("Destination");
+  }
+
+  const otherFields = Object.keys(txFields).filter(
+    k => !specialFields.includes(k)
+  ) as [keyof TxFields];
 
   return (
     <Container
@@ -183,7 +197,7 @@ export const TxUI: FC<UIProps> = ({
             onChange={(acc: any) => handleSetAccount(acc)} // TODO make react-select have correct types for acc
           />
         </Flex>
-        {txFields.Destination !== undefined && (
+        {fields.Destination !== undefined && (
           <Flex
             row
             fluid

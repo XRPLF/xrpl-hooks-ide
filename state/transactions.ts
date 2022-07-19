@@ -90,7 +90,7 @@ export const modifyTransaction = (
     }
 
     Object.keys(partialTx).forEach(k => {
-        // Typescript mess here, but is definetly safe!
+        // Typescript mess here, but is definitely safe!
         const s = tx.state as any;
         const p = partialTx as any; // ? Make copy
         if (!deepEqual(s[k], p[k])) s[k] = p[k];
@@ -130,11 +130,11 @@ export const prepareTransaction = (data: any) => {
         }
 
         // delete unnecessary fields
-        if (options[field] === undefined) {
+        if (!options[field]) {
             delete options[field];
         }
     });
-
+    
     return options
 }
 
@@ -150,7 +150,7 @@ export const prepareState = (value: string, transactionType?: string) => {
 
     const { Account, TransactionType, Destination, ...rest } = options;
     let tx: Partial<TransactionState> = {};
-    const txFields = getTxFields(transactionType)
+    const schema = getTxFields(transactionType)
 
     if (Account) {
         const acc = state.accounts.find(acc => acc.address === Account);
@@ -178,9 +178,8 @@ export const prepareState = (value: string, transactionType?: string) => {
         tx.selectedTransaction = null;
     }
 
-    if (txFields.Destination !== undefined) {
+    if (schema.Destination !== undefined) {
         const dest = state.accounts.find(acc => acc.address === Destination);
-        rest.Destination = null
         if (dest) {
             tx.selectedDestAccount = {
                 label: dest.name,
@@ -197,11 +196,14 @@ export const prepareState = (value: string, transactionType?: string) => {
             tx.selectedDestAccount = null
         }
     }
+    else if (Destination) { 
+        rest.Destination = Destination
+    }
 
     Object.keys(rest).forEach(field => {
         const value = rest[field];
-        const origValue = txFields[field as keyof TxFields]
-        const isXrp = typeof value !== 'object' && origValue && typeof origValue === 'object' && origValue.$type === 'xrp'
+        const schemaVal = schema[field as keyof TxFields]
+        const isXrp = typeof value !== 'object' && schemaVal && typeof schemaVal === 'object' && schemaVal.$type === 'xrp'
         if (isXrp) {
             rest[field] = {
                 $type: "xrp",

@@ -3,6 +3,7 @@ import { FC, useCallback, useEffect } from "react";
 import { useSnapshot } from "valtio";
 import state from "../../state";
 import {
+  getTxFields,
   modifyTransaction,
   prepareState,
   prepareTransaction,
@@ -54,9 +55,7 @@ const Transaction: FC<TransactionProps> = ({
       } = state;
 
       const TransactionType = selectedTransaction?.value || null;
-      const Destination =
-        selectedDestAccount?.value ||
-        (txFields && "Destination" in txFields ? null : undefined);
+      const Destination = selectedDestAccount?.value || txFields?.Destination;
       const Account = selectedAccount?.value || null;
 
       return prepareTransaction({
@@ -108,8 +107,9 @@ const Transaction: FC<TransactionProps> = ({
       }
       const options = prepareOptions(st);
 
-      if (options.Destination === null) {
-        throw Error("Destination account cannot be null");
+      const fields = getTxFields(options.TransactionType);
+      if (fields.Destination && !options.Destination) {
+        throw Error("Destination account is required!");
       }
 
       await sendTransaction(account, options, { logPrefix });
