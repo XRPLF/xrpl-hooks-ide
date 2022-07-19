@@ -117,7 +117,8 @@
       "$value": "100",
       "$type": "xrp"
     },
-    "Flags": 1
+    "Flags": 1,
+    "Destination": ""
   },
   {
     "TransactionType": "OfferCancel",
