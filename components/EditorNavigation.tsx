@@ -1,6 +1,10 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  ReactNode,
+} from "react";
 import {
-  Plus,
   Share,
   DownloadSimple,
   Gear,
@@ -28,7 +32,6 @@ import { useSnapshot } from "valtio";
 import toast from "react-hot-toast";
 
 import {
-  createNewFile,
   syncToGist,
   updateEditorSettings,
   downloadAsZip,
@@ -48,36 +51,23 @@ import {
 import Flex from "./Flex";
 import Stack from "./Stack";
 import { Input, Label } from "./Input";
-import Text from "./Text";
 import Tooltip from "./Tooltip";
-import { styled } from "../stitches.config";
 import { showAlert } from "../state/actions/showAlert";
 
-const ErrorText = styled(Text, {
-  color: "$error",
-  mt: "$1",
-  display: "block",
-});
 
-const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
+const EditorNavigation = ({ renderNav }: { renderNav?: () => ReactNode }) => {
   const snap = useSnapshot(state);
   const [editorSettingsOpen, setEditorSettingsOpen] = useState(false);
-  const [isNewfileDialogOpen, setIsNewfileDialogOpen] = useState(false);
-  const [newfileError, setNewfileError] = useState<string | null>(null);
-  const [filename, setFilename] = useState("");
   const { data: session, status } = useSession();
   const [popup, setPopUp] = useState(false);
   const [editorSettings, setEditorSettings] = useState(snap.editorSettings);
+  
   useEffect(() => {
     if (session && session.user && popup) {
       setPopUp(false);
     }
   }, [session, popup]);
 
-  // when filename changes, reset error
-  useEffect(() => {
-    setNewfileError(null);
-  }, [filename, setNewfileError]);
 
   const showNewGistAlert = () => {
     showAlert("Are you sure?", {
@@ -95,46 +85,8 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
     });
   };
 
-  const validateFilename = useCallback(
-    (filename: string): { error: string | null } => {
-      // check if filename already exists
-      if (!filename) {
-        return { error: "You need to add filename" };
-      }
-      if (snap.files.find((file) => file.name === filename)) {
-        return { error: "Filename already exists." };
-      }
-
-      if (!filename.includes(".") || filename[filename.length - 1] === ".") {
-        return { error: "Filename should include file extension" };
-      }
-
-      // check for illegal characters
-      const ALPHA_NUMERICAL_REGEX = /^[A-Za-z0-9_-]+[.][A-Za-z0-9]{1,4}$/g;
-      if (!filename.match(ALPHA_NUMERICAL_REGEX)) {
-        return {
-          error: `Filename can contain only characters from a-z, A-Z, 0-9, "_" and "-" and it needs to have file extension (e.g. ".c")`,
-        };
-      }
-      return { error: null };
-    },
-    [snap.files]
-  );
-  const handleConfirm = useCallback(() => {
-    // add default extension in case omitted
-    const chk = validateFilename(filename);
-    if (chk && chk.error) {
-      setNewfileError(`Error: ${chk.error}`);
-      return;
-    }
-
-    setIsNewfileDialogOpen(false);
-    createNewFile(filename);
-    setFilename("");
-  }, [filename, setIsNewfileDialogOpen, setFilename, validateFilename]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const files = snap.files;
   return (
     <Flex css={{ flexShrink: 0, gap: "$0" }}>
       <Flex
@@ -174,131 +126,14 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
             scrollbarWidth: "thin",
           },
         }}
-        onWheelCapture={(e) => {
+        onWheelCapture={e => {
           if (scrollRef.current) {
             scrollRef.current.scrollLeft += e.deltaY;
           }
         }}
       >
         <Container css={{ flex: 1 }} ref={containerRef}>
-          <Stack
-            css={{
-              gap: "$3",
-              flex: 1,
-              flexWrap: "nowrap",
-              marginBottom: "-1px",
-            }}
-          >
-            {files &&
-              files.length > 0 &&
-              files.map((file, index) => {
-                if (!file.compiledContent && showWat) {
-                  return null;
-                }
-                return (
-                  <Button
-                    size="sm"
-                    outline={
-                      showWat ? snap.activeWat !== index : snap.active !== index
-                    }
-                    onClick={() => (state.active = index)}
-                    key={file.name + index}
-                    css={{
-                      "&:hover": {
-                        span: {
-                          visibility: "visible",
-                        },
-                      },
-                    }}
-                  >
-                    {file.name}
-                    {showWat && ".wat"}
-                    {!showWat && (
-                      <Box
-                        as="span"
-                        css={{
-                          display: "flex",
-                          p: "2px",
-                          borderRadius: "$full",
-                          mr: "-4px",
-                          "&:hover": {
-                            // boxSizing: "0px 0px 1px",
-                            backgroundColor: "$mauve2",
-                            color: "$mauve12",
-                          },
-                        }}
-                        onClick={(ev: React.MouseEvent<HTMLElement>) => {
-                          ev.stopPropagation();
-                          // Remove file from state
-                          state.files.splice(index, 1);
-                          // Change active file state
-                          // If deleted file is behind active tab
-                          // we keep the current state otherwise
-                          // select previous file on the list
-                          state.active =
-                            index > snap.active ? snap.active : snap.active - 1;
-                        }}
-                      >
-                        <X size="9px" weight="bold" />
-                      </Box>
-                    )}
-                  </Button>
-                );
-              })}
-            {!showWat && (
-              <Dialog
-                open={isNewfileDialogOpen}
-                onOpenChange={setIsNewfileDialogOpen}
-              >
-                <DialogTrigger asChild>
-                  <Button
-                    ghost
-                    size="sm"
-                    css={{ alignItems: "center", px: "$2", mr: "$3" }}
-                  >
-                    <Plus size="16px" />{" "}
-                    {snap.files.length === 0 && "Add new file"}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogTitle>Create new file</DialogTitle>
-                  <DialogDescription>
-                    <Label>Filename</Label>
-                    <Input
-                      value={filename}
-                      onChange={(e) => setFilename(e.target.value)}
-                      onKeyPress={(e) => {
-                        if (e.key === "Enter") {
-                          handleConfirm();
-                        }
-                      }}
-                    />
-                    <ErrorText>{newfileError}</ErrorText>
-                  </DialogDescription>
-
-                  <Flex
-                    css={{
-                      marginTop: 25,
-                      justifyContent: "flex-end",
-                      gap: "$3",
-                    }}
-                  >
-                    <DialogClose asChild>
-                      <Button outline>Cancel</Button>
-                    </DialogClose>
-                    <Button variant="primary" onClick={handleConfirm}>
-                      Create file
-                    </Button>
-                  </Flex>
-                  <DialogClose asChild>
-                    <Box css={{ position: "absolute", top: "$3", right: "$3" }}>
-                      <X size="20px" />
-                    </Box>
-                  </DialogClose>
-                </DialogContent>
-              </Dialog>
-            )}
-          </Stack>
+          {renderNav?.()}
         </Container>
       </Flex>
       <Flex
@@ -542,8 +377,8 @@ const EditorNavigation = ({ showWat }: { showWat?: boolean }) => {
               type="number"
               min="1"
               value={editorSettings.tabSize}
-              onChange={(e) =>
-                setEditorSettings((curr) => ({
+              onChange={e =>
+                setEditorSettings(curr => ({
                   ...curr,
                   tabSize: Number(e.target.value),
                 }))

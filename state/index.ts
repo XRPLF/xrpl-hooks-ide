@@ -1,6 +1,6 @@
 import type monaco from "monaco-editor";
 import { proxy, ref, subscribe } from "valtio";
-import { devtools } from 'valtio/utils';
+import { devtools, subscribeKey } from 'valtio/utils';
 import { XrplClient } from "xrpl-client";
 import { SplitSize } from "./actions/persistSplits";
 
@@ -168,16 +168,23 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 if (typeof window !== "undefined") {
-  subscribe(state, () => {
-    const { accounts, active } = state;
+  subscribe(state.accounts, () => {
+    const { accounts } = state;
     const accountsNoLoading = accounts.map(acc => ({ ...acc, isLoading: false }))
     localStorage.setItem("hooksIdeAccounts", JSON.stringify(accountsNoLoading));
-    if (!state.files[active]?.compiledWatContent) {
-      state.activeWat = 0;
-    } else {
-      state.activeWat = active;
-    }
   });
+
+  const updateActiveWat = () => {
+    const filename = state.files[state.active]?.name
+
+    const compiledFiles = state.files.filter(
+      file => file.compiledContent)
+    const idx = compiledFiles.findIndex(file => file.name === filename)
+
+    if (idx !== -1) state.activeWat = idx
+  }
+  subscribeKey(state, 'active', updateActiveWat)
+  subscribeKey(state, 'files', updateActiveWat)
 }
 export default state
 

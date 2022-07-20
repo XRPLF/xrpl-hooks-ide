@@ -53,6 +53,7 @@ export const {
       accent: "#9D2DFF",
       background: "$gray1",
       backgroundAlt: "$gray4",
+      backgroundOverlay: "$mauve2",
       text: "$gray12",
       textMuted: "$gray10",
       primary: "$plum",
@@ -365,6 +366,7 @@ export const darkTheme = createTheme("dark", {
     ...greenDark,
     ...redDark,
     deep: "rgb(10, 10, 10)",
+    backgroundOverlay: "$mauve5"
     // backgroundA: transparentize(0.1, grayDark.gray1),
   },
 });
