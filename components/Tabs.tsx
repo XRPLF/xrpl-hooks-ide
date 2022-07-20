@@ -18,6 +18,7 @@ import {
 import { Plus, X } from "phosphor-react";
 import { styled } from "../stitches.config";
 import { capitalize } from "../utils/helpers";
+import ContextMenu from "./ContextMenu";
 
 const ErrorText = styled(Text, {
   color: "$error",
@@ -117,7 +118,14 @@ export const Tabs = ({
       }
       return { error: null };
     },
-    [allowedExtensions, defaultExtension, extensionRequired, headerExtraValidation, label, tabs]
+    [
+      allowedExtensions,
+      defaultExtension,
+      extensionRequired,
+      headerExtraValidation,
+      label,
+      tabs,
+    ]
   );
 
   const handleActiveChange = useCallback(
@@ -167,8 +175,6 @@ export const Tabs = ({
     [active, handleActiveChange, onCloseTab, tabs]
   );
 
-  if (!tabs.length) return null;
-
   return (
     <>
       {!headless && (
@@ -183,46 +189,47 @@ export const Tabs = ({
           }}
         >
           {tabs.map((tab, idx) => (
-            <Button
-              key={tab.header}
-              role="tab"
-              tabIndex={idx}
-              onClick={() => handleActiveChange(idx, tab.header)}
-              onKeyPress={() => handleActiveChange(idx, tab.header)}
-              outline={active !== idx}
-              size="sm"
-              css={{
-                "&:hover": {
-                  span: {
-                    visibility: "visible",
-                  },
-                },
-              }}
-            >
-              {tab.header || idx}
-              {onCloseTab && (
-                <Box
-                  as="span"
-                  css={{
-                    display: "flex",
-                    p: "2px",
-                    borderRadius: "$full",
-                    mr: "-4px",
-                    "&:hover": {
-                      // boxSizing: "0px 0px 1px",
-                      backgroundColor: "$mauve2",
-                      color: "$mauve12",
+            <ContextMenu key={tab.header}>
+              <Button
+                role="tab"
+                tabIndex={idx}
+                onClick={() => handleActiveChange(idx, tab.header)}
+                onKeyPress={() => handleActiveChange(idx, tab.header)}
+                outline={active !== idx}
+                size="sm"
+                css={{
+                  "&:hover": {
+                    span: {
+                      visibility: "visible",
                     },
-                  }}
-                  onClick={(ev: React.MouseEvent<HTMLElement>) => {
-                    ev.stopPropagation();
-                    handleCloseTab(idx);
-                  }}
-                >
-                  <X size="9px" weight="bold" />
-                </Box>
-              )}
-            </Button>
+                  },
+                }}
+              >
+                {tab.header || idx}
+                {onCloseTab && (
+                  <Box
+                    as="span"
+                    css={{
+                      display: "flex",
+                      p: "2px",
+                      borderRadius: "$full",
+                      mr: "-4px",
+                      "&:hover": {
+                        // boxSizing: "0px 0px 1px",
+                        backgroundColor: "$mauve2",
+                        color: "$mauve12",
+                      },
+                    }}
+                    onClick={(ev: React.MouseEvent<HTMLElement>) => {
+                      ev.stopPropagation();
+                      handleCloseTab(idx);
+                    }}
+                  >
+                    <X size="9px" weight="bold" />
+                  </Box>
+                )}
+              </Button>
+            </ContextMenu>
           ))}
           {onCreateNewTab && (
             <Dialog
