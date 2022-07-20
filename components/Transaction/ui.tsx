@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import Container from "../Container";
 import Flex from "../Flex";
 import Input from "../Input";
@@ -7,9 +7,10 @@ import Text from "../Text";
 import {
   SelectOption,
   TransactionState,
-  transactionsData,
+  transactionsOptions,
   TxFields,
   getTxFields,
+  defaultTransactionType,
 } from "../../state/transactions";
 import { useSnapshot } from "valtio";
 import state from "../../state";
@@ -38,12 +39,6 @@ export const TxUI: FC<UIProps> = ({
     txFields,
   } = txState;
 
-
-  const transactionsOptions = transactionsData.map(tx => ({
-    value: tx.TransactionType,
-    label: tx.TransactionType,
-  }));
-
   const accountOptions: SelectOption[] = accounts.map(acc => ({
     label: acc.name,
     value: acc.address,
@@ -58,10 +53,16 @@ export const TxUI: FC<UIProps> = ({
 
   const [feeLoading, setFeeLoading] = useState(false);
 
-  const resetOptions = useCallback(
+  const resetFields = useCallback(
     (tt: string) => {
       const fields = getTxFields(tt);
-      if (!fields.Destination) setState({ selectedDestAccount: null });
+
+      if (fields.Destination !== undefined) {
+        setState({ selectedDestAccount: null });
+        fields.Destination = "";
+      } else {
+        fields.Destination = undefined;
+      }
       return setState({ txFields: fields });
     },
     [setState]
@@ -102,33 +103,37 @@ export const TxUI: FC<UIProps> = ({
     (tt: SelectOption) => {
       setState({ selectedTransaction: tt });
 
-      const newState = resetOptions(tt.value);
+      const newState = resetFields(tt.value);
 
       handleEstimateFee(newState, true);
     },
-    [handleEstimateFee, resetOptions, setState]
+    [handleEstimateFee, resetFields, setState]
   );
 
-  const specialFields = ["TransactionType", "Account", "Destination"];
-
-  const otherFields = Object.keys(txFields).filter(
-    k => !specialFields.includes(k)
-  ) as [keyof TxFields];
-
-  const switchToJson = () =>
-    setState({ editorSavedValue: null, viewType: "json" });
+  const switchToJson = () => setState({ viewType: "json" });
 
   // default tx
   useEffect(() => {
     if (selectedTransaction?.value) return;
 
-    const defaultOption = transactionsOptions.find(
-      tt => tt.value === "Payment"
-    );
-    if (defaultOption) {
-      handleChangeTxType(defaultOption);
+    if (defaultTransactionType) {
+      handleChangeTxType(defaultTransactionType);
     }
-  }, [handleChangeTxType, selectedTransaction?.value, transactionsOptions]);
+  }, [handleChangeTxType, selectedTransaction?.value]);
+
+  const fields = useMemo(
+    () => getTxFields(selectedTransaction?.value),
+    [selectedTransaction?.value]
+  );
+
+  const specialFields = ["TransactionType", "Account"];
+  if (fields.Destination !== undefined) {
+    specialFields.push("Destination");
+  }
+
+  const otherFields = Object.keys(txFields).filter(
+    k => !specialFields.includes(k)
+  ) as [keyof TxFields];
 
   return (
     <Container
@@ -185,7 +190,7 @@ export const TxUI: FC<UIProps> = ({
             onChange={(acc: any) => handleSetAccount(acc)} // TODO make react-select have correct types for acc
           />
         </Flex>
-        {txFields.Destination !== undefined && (
+        {fields.Destination !== undefined && (
           <Flex
             row
             fluid
