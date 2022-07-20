@@ -5,7 +5,7 @@ import state from "../../state";
 import {
   defaultTransactionType,
   getTxFields,
-  modifyTransaction,
+  modifyTxState,
   prepareState,
   prepareTransaction,
   SelectOption,
@@ -42,7 +42,7 @@ const Transaction: FC<TransactionProps> = ({
 
   const setState = useCallback(
     (pTx?: Partial<TransactionState>) => {
-      return modifyTransaction(header, pTx);
+      return modifyTxState(header, pTx);
     },
     [header]
   );
@@ -164,7 +164,7 @@ const Transaction: FC<TransactionProps> = ({
       }
       nwState.txFields = fields;
 
-      const state = modifyTransaction(header, nwState, { replaceState: true });
+      const state = modifyTxState(header, nwState, { replaceState: true });
       const editorValue = getJsonString(state);
       return setState({ editorValue });
     },

@@ -22,6 +22,7 @@ import docs from "../xrpl-hooks-docs/docs";
 import Monaco from "./Monaco";
 import { saveAllFiles } from "../state/actions/saveFile";
 import { Tab, Tabs } from "./Tabs";
+import { renameFile } from "../state/actions/createNewFile";
 
 const validateWritability = (editor: monaco.editor.IStandaloneCodeEditor) => {
   const currPath = editor.getModel()?.uri.path;
@@ -129,6 +130,7 @@ const HooksEditor = () => {
       extensionRequired
       onCreateNewTab={createNewFile}
       onCloseTab={idx => state.files.splice(idx, 1)}
+      onRenameTab={(idx, nwName, oldName = "") => renameFile(oldName, nwName)}
       headerExtraValidation={{
         regex: /^[A-Za-z0-9_-]+[.][A-Za-z0-9]{1,4}$/g,
         error:

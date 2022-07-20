@@ -48,13 +48,21 @@ export const transactionsState = proxy({
     activeHeader: "test1.json"
 });
 
+export const renameTxState = (oldName: string, nwName: string) => {
+    const tx = transactionsState.transactions.find(tx => tx.header === oldName);
+
+    if (!tx) throw Error(`No transaction state exists with given header name ${oldName}`);
+
+    tx.header = nwName
+}
+
 /**
  * Simple transaction state changer
  * @param header Unique key and tab name for the transaction tab
  * @param partialTx partial transaction state, `undefined` deletes the transaction
  * 
  */
-export const modifyTransaction = (
+export const modifyTxState = (
     header: string,
     partialTx?: Partial<TransactionState>,
     opts: { replaceState?: boolean } = {}

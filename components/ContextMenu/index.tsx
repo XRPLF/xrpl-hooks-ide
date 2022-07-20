@@ -15,37 +15,11 @@ import {
   ContextMenuTriggerItem,
 } from "./primitive";
 
-[
-  {
-    label: "Show bookmarks",
-    type: "checkbox",
-    checked: true,
-    indicator: "*",
-    onCheckedChange: () => {},
-  },
-  {
-    type: "radio",
-    label: "People",
-    value: "pedro",
-    onValueChange: () => {},
-    options: [
-      {
-        value: "pedro",
-        label: "Pedro Duarte",
-      },
-      {
-        value: "colm",
-        label: "Colm Tuite",
-      },
-    ],
-  },
-];
-
 export type TextOption = {
   type: "text";
   label: ReactNode;
-  onClick?: () => any;
-  children?: Option[];
+  onSelect?: () => any;
+  children?: ContentMenuOption[];
 };
 export type SeparatorOption = { type: "separator" };
 export type CheckboxOption = {
@@ -64,11 +38,16 @@ export type RadioOption<T extends string = string> = {
 
 type WithCommons = { key: string; disabled?: boolean };
 
-type Option = (TextOption | SeparatorOption | CheckboxOption | RadioOption) &
+export type ContentMenuOption = (
+  | TextOption
+  | SeparatorOption
+  | CheckboxOption
+  | RadioOption
+) &
   WithCommons;
 
-interface IContextMenu {
-  options?: Option[];
+export interface IContextMenu {
+  options?: ContentMenuOption[];
   isNested?: boolean;
 }
 export const ContextMenu: FC<IContextMenu> = ({
@@ -83,11 +62,11 @@ export const ContextMenu: FC<IContextMenu> = ({
       ) : (
         <ContextMenuTrigger>{children}</ContextMenuTrigger>
       )}
-      {options && (
+      {options && options.length && (
         <ContextMenuContent sideOffset={isNested ? 2 : 5}>
           {options.map(({ key, ...option }) => {
             if (option.type === "text") {
-              const { children, label } = option;
+              const { children, label, onSelect } = option;
               if (children)
                 return (
                   <ContextMenu isNested key={key} options={children}>
@@ -97,7 +76,11 @@ export const ContextMenu: FC<IContextMenu> = ({
                     </Flex>
                   </ContextMenu>
                 );
-              return <ContextMenuItem key={key}>{label}</ContextMenuItem>;
+              return (
+                <ContextMenuItem key={key} onSelect={onSelect}>
+                  {label}
+                </ContextMenuItem>
+              );
             }
             if (option.type === "checkbox") {
               const { label, checked, onCheckedChange } = option;
