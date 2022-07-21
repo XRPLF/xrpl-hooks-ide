@@ -206,7 +206,6 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                   <Select
                     instanceId="deploy-account"
                     placeholder="Select account"
-                    hideSelectedOptions
                     options={accountOptions}
                     value={selectedAccount}
                     onChange={(acc: any) => setSelectedAccount(acc)}
