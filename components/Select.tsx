@@ -91,7 +91,7 @@ const Select = forwardRef<any, Props>((props, ref) => {
             ...provided,
             color: colors.searchText,
             backgroundColor:
-              state.isSelected || state.isFocused
+              state.isFocused
                 ? colors.activeLight
                 : colors.dropDownBg,
             ":hover": {
