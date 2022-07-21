@@ -61,29 +61,30 @@ export const compileCode = async (activeId: number) => {
       }
       throw errors
     }
+    // Decode base64 encoded wasm that is coming back from the endpoint
+    const bufferData = await decodeBinary(json.output);
+
+    // Import wabt from and create human readable version of wasm file and
+    // put it into state
+    const ww = (await import('wabt')).default()
+    const myModule = ww.readWasm(new Uint8Array(bufferData), {
+      readDebugNames: true,
+    });
+    myModule.applyNames();
+
+    const wast = myModule.toText({ foldExprs: false, inlineExport: false });
+
+    file.compiledContent = ref(bufferData);
+    file.lastCompiled = new Date();
+    file.compiledValueSnapshot = file.content
+    file.compiledWatContent = wast;
+
+    toast.success("Compiled successfully!", { position: "bottom-center" });
     state.logs.push({
       type: "success",
       message: `File ${state.files?.[activeId]?.name} compiled successfully. Ready to deploy.`,
       link: Router.asPath.replace("develop", "deploy"),
       linkText: "Go to deploy",
-    });
-    // Decode base64 encoded wasm that is coming back from the endpoint
-    const bufferData = await decodeBinary(json.output);
-    file.compiledContent = ref(bufferData);
-    file.lastCompiled = new Date();
-    file.compiledValueSnapshot = file.content
-    // Import wabt from and create human readable version of wasm file and
-    // put it into state
-    import("wabt").then((wabt) => {
-      const ww = wabt.default();
-      const myModule = ww.readWasm(new Uint8Array(bufferData), {
-        readDebugNames: true,
-      });
-      myModule.applyNames();
-
-      const wast = myModule.toText({ foldExprs: false, inlineExport: false });
-      state.files[state.active].compiledWatContent = wast;
-      toast.success("Compiled successfully!", { position: "bottom-center" });
     });
   } catch (err) {
     console.log(err);
