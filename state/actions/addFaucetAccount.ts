@@ -28,40 +28,34 @@ export const names = [
  * is protected with CORS so that's why we did our own endpoint
  */
 export const addFaucetAccount = async (name?: string, showToast: boolean = false) => {
-  // Lets limit the number of faucet accounts to 5 for now
-  if (state.accounts.length > 5) {
-    return toast.error("You can only have maximum 6 accounts");
-  }
-  if (typeof window !== 'undefined') {
+  if (typeof window === undefined) return
 
-
-    const toastId = showToast ? toast.loading("Creating account") : "";
-    const res = await fetch(`${window.location.origin}/api/faucet`, {
-      method: "POST",
-    });
-    const json: FaucetAccountRes | { error: string } = await res.json();
-    if ("error" in json) {
-      if (showToast) {
-        return toast.error(json.error, { id: toastId });
-      } else {
-        return;
-      }
+  const toastId = showToast ? toast.loading("Creating account") : "";
+  const res = await fetch(`${window.location.origin}/api/faucet`, {
+    method: "POST",
+  });
+  const json: FaucetAccountRes | { error: string } = await res.json();
+  if ("error" in json) {
+    if (showToast) {
+      return toast.error(json.error, { id: toastId });
     } else {
-      if (showToast) {
-        toast.success("New account created", { id: toastId });
-      }
-      const currNames = state.accounts.map(acc => acc.name);
-      state.accounts.push({
-        name: name || names.filter(name => !currNames.includes(name))[0],
-        xrp: (json.xrp || 0 * 1000000).toString(),
-        address: json.address,
-        secret: json.secret,
-        sequence: 1,
-        hooks: [],
-        isLoading: false,
-        version: '2'
-      });
+      return;
     }
+  } else {
+    if (showToast) {
+      toast.success("New account created", { id: toastId });
+    }
+    const currNames = state.accounts.map(acc => acc.name);
+    state.accounts.push({
+      name: name || names.filter(name => !currNames.includes(name))[0],
+      xrp: (json.xrp || 0 * 1000000).toString(),
+      address: json.address,
+      secret: json.secret,
+      sequence: 1,
+      hooks: [],
+      isLoading: false,
+      version: '2'
+    });
   }
 };
 
