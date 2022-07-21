@@ -62,7 +62,7 @@ export const ContextMenu: FC<IContextMenu> = ({
       ) : (
         <ContextMenuTrigger>{children}</ContextMenuTrigger>
       )}
-      {options && options.length && (
+      {options && !!options.length && (
         <ContextMenuContent sideOffset={isNested ? 2 : 5}>
           {options.map(({ key, ...option }) => {
             if (option.type === "text") {
