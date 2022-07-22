@@ -29,25 +29,30 @@ export const compileCode = async (activeId: number) => {
   const file = state.files[activeId]
   try {
     file.containsErrors = false
-    const res = await fetch(process.env.NEXT_PUBLIC_COMPILE_API_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        output: "wasm",
-        compress: true,
-        strip: state.compileOptions.strip,
-        files: [
-          {
-            type: "c",
-            options: state.compileOptions.optimizationLevel || '-O2',
-            name: file.name,
-            src: file.content,
-          },
-        ],
-      }),
-    });
+    let res: Response
+    try {
+      res = await fetch(process.env.NEXT_PUBLIC_COMPILE_API_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          output: "wasm",
+          compress: true,
+          strip: state.compileOptions.strip,
+          files: [
+            {
+              type: "c",
+              options: state.compileOptions.optimizationLevel || '-O2',
+              name: file.name,
+              src: file.content,
+            },
+          ],
+        }),
+      });
+    } catch (error) {
+      throw Error("Something went wrong, check your network connection and try again!")
+    }
     const json = await res.json();
     state.compiling = false;
     if (!json.success) {
@@ -61,29 +66,34 @@ export const compileCode = async (activeId: number) => {
       }
       throw errors
     }
-    state.logs.push({
-      type: "success",
-      message: `File ${state.files?.[activeId]?.name} compiled successfully. Ready to deploy.`,
-      link: Router.asPath.replace("develop", "deploy"),
-      linkText: "Go to deploy",
-    });
-    // Decode base64 encoded wasm that is coming back from the endpoint
-    const bufferData = await decodeBinary(json.output);
-    file.compiledContent = ref(bufferData);
-    file.lastCompiled = new Date();
-    file.compiledValueSnapshot = file.content
-    // Import wabt from and create human readable version of wasm file and
-    // put it into state
-    import("wabt").then((wabt) => {
-      const ww = wabt.default();
+    try {
+      // Decode base64 encoded wasm that is coming back from the endpoint
+      const bufferData = await decodeBinary(json.output);
+
+      // Import wabt from and create human readable version of wasm file and
+      // put it into state
+      const ww = (await import('wabt')).default()
       const myModule = ww.readWasm(new Uint8Array(bufferData), {
         readDebugNames: true,
       });
       myModule.applyNames();
 
       const wast = myModule.toText({ foldExprs: false, inlineExport: false });
-      state.files[state.active].compiledWatContent = wast;
-      toast.success("Compiled successfully!", { position: "bottom-center" });
+
+      file.compiledContent = ref(bufferData);
+      file.lastCompiled = new Date();
+      file.compiledValueSnapshot = file.content
+      file.compiledWatContent = wast;
+    } catch (error) {
+      throw Error("Invalid compilation result produced, check your code for errors and try again!")
+    }
+
+    toast.success("Compiled successfully!", { position: "bottom-center" });
+    state.logs.push({
+      type: "success",
+      message: `File ${state.files?.[activeId]?.name} compiled successfully. Ready to deploy.`,
+      link: Router.asPath.replace("develop", "deploy"),
+      linkText: "Go to deploy",
     });
   } catch (err) {
     console.log(err);
@@ -96,12 +106,19 @@ export const compileCode = async (activeId: number) => {
         });
       })
     }
+    else if (err instanceof Error) {
+      state.logs.push({
+        type: "error",
+        message: err.message,
+      });
+    }
     else {
       state.logs.push({
         type: "error",
-        message: "Something went wrong, check your connection try again later!",
+        message: "Something went wrong, come back later!",
       });
     }
+
     state.compiling = false;
     toast.error(`Error occurred while compiling!`, { position: "bottom-center" });
     file.containsErrors = true
