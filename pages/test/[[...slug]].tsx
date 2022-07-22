@@ -3,12 +3,12 @@ import Split from "react-split";
 import { useSnapshot } from "valtio";
 import { Box, Container, Flex, Tab, Tabs } from "../../components";
 import Transaction from "../../components/Transaction";
-import state from "../../state";
+import state, { renameTxState } from "../../state";
 import { getSplit, saveSplit } from "../../state/actions/persistSplits";
-import { transactionsState, modifyTransaction } from "../../state";
+import { transactionsState, modifyTxState } from "../../state";
 import { useEffect, useState } from "react";
 import { FileJs } from "phosphor-react";
-import RunScript from '../../components/RunScript';
+import RunScript from "../../components/RunScript";
 
 const DebugStream = dynamic(() => import("../../components/DebugStream"), {
   ssr: false,
@@ -96,9 +96,12 @@ const Test = () => {
                 keepAllAlive
                 defaultExtension="json"
                 allowedExtensions={["json"]}
-                onCreateNewTab={header => modifyTransaction(header, {})}
+                onCreateNewTab={header => modifyTxState(header, {})}
+                onRenameTab={(idx, nwName, oldName = "") =>
+                  renameTxState(oldName, nwName)
+                }
                 onCloseTab={(idx, header) =>
-                  header && modifyTransaction(header, undefined)
+                  header && modifyTxState(header, undefined)
                 }
               >
                 {transactions.map(({ header, state }) => (

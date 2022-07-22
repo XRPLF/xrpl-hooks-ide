@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from "react";
 import type { ReactNode, ReactElement } from "react";
-import { Box, Button, Flex, Input, Label, Stack, Text } from ".";
+import { Box, Button, Flex, Input, Label, Pre, Stack, Text } from ".";
 import {
   Dialog,
   DialogTrigger,
@@ -18,13 +18,15 @@ import {
 import { Plus, X } from "phosphor-react";
 import { styled } from "../stitches.config";
 import { capitalize } from "../utils/helpers";
-import ContextMenu from "./ContextMenu";
+import ContextMenu, { ContentMenuOption } from "./ContextMenu";
 
 const ErrorText = styled(Text, {
   color: "$error",
   mt: "$1",
   display: "block",
 });
+
+type Nullable<T> = T | null | undefined | false;
 
 interface TabProps {
   header: string;
@@ -47,6 +49,7 @@ interface Props {
     error: string;
   };
   onCreateNewTab?: (name: string) => any;
+  onRenameTab?: (index: number, nwName: string, oldName?: string) => any;
   onCloseTab?: (index: number, header?: string) => any;
   onChangeActive?: (index: number, header?: string) => any;
 }
@@ -63,6 +66,7 @@ export const Tabs = ({
   onCreateNewTab,
   onCloseTab,
   onChangeActive,
+  onRenameTab,
   headerExtraValidation,
   extensionRequired,
   defaultExtension = "",
@@ -72,8 +76,9 @@ export const Tabs = ({
   const tabs: TabProps[] = children.map(elem => elem.props);
 
   const [isNewtabDialogOpen, setIsNewtabDialogOpen] = useState(false);
+  const [renamingTab, setRenamingTab] = useState<number | null>(null);
   const [tabname, setTabname] = useState("");
-  const [newtabError, setNewtabError] = useState<string | null>(null);
+  const [tabnameError, setTabnameError] = useState<string | null>(null);
 
   useEffect(() => {
     if (activeIndex) setActive(activeIndex);
@@ -89,21 +94,24 @@ export const Tabs = ({
 
   // when filename changes, reset error
   useEffect(() => {
-    setNewtabError(null);
-  }, [tabname, setNewtabError]);
+    setTabnameError(null);
+  }, [tabname, setTabnameError]);
 
   const validateTabname = useCallback(
-    (tabname: string): { error: string | null } => {
+    (tabname: string): { error?: string, result?: string } => {
       if (!tabname) {
         return { error: `Please enter ${label.toLocaleLowerCase()} name.` };
+      }
+      let ext =
+        (tabname.includes(".") && tabname.split(".").pop()) || "";
+      
+      if (!ext && defaultExtension) {
+        ext = defaultExtension
+        tabname = `${tabname}.${defaultExtension}`
       }
       if (tabs.find(tab => tab.header === tabname)) {
         return { error: `${capitalize(label)} name already exists.` };
       }
-      const ext =
-        (tabname.includes(".") && tabname.split(".").pop()) ||
-        defaultExtension ||
-        "";
       if (extensionRequired && !ext) {
         return { error: "File extension is required!" };
       }
@@ -116,7 +124,7 @@ export const Tabs = ({
       ) {
         return { error: headerExtraValidation.error };
       }
-      return { error: null };
+      return { result: tabname };
     },
     [
       allowedExtensions,
@@ -136,16 +144,33 @@ export const Tabs = ({
     [onChangeActive]
   );
 
-  const handleCreateTab = useCallback(() => {
-    const chk = validateTabname(tabname);
-    if (chk.error) {
-      setNewtabError(`Error: ${chk.error}`);
+  const handleRenameTab = useCallback(() => {
+    if (renamingTab === null) return;
+
+    const res = validateTabname(tabname);
+    if (res.error) {
+      setTabnameError(`Error: ${res.error}`);
       return;
     }
-    let _tabname = tabname;
-    if (defaultExtension && !_tabname.endsWith(defaultExtension)) {
-      _tabname = `${_tabname}.${defaultExtension}`;
+
+    const { result: _tabname = tabname } = res
+
+    setRenamingTab(null);
+    setTabname("");
+
+    const oldName = tabs[renamingTab]?.header;
+    onRenameTab?.(renamingTab, _tabname, oldName);
+
+    handleActiveChange(renamingTab);
+  }, [handleActiveChange, onRenameTab, renamingTab, tabname, tabs, validateTabname]);
+
+  const handleCreateTab = useCallback(() => {
+    const res = validateTabname(tabname);
+    if (res.error) {
+      setTabnameError(`Error: ${res.error}`);
+      return;
     }
+    const { result: _tabname = tabname } = res
 
     setIsNewtabDialogOpen(false);
     setTabname("");
@@ -153,14 +178,7 @@ export const Tabs = ({
     onCreateNewTab?.(_tabname);
 
     handleActiveChange(tabs.length, _tabname);
-  }, [
-    tabname,
-    defaultExtension,
-    validateTabname,
-    onCreateNewTab,
-    handleActiveChange,
-    tabs.length,
-  ]);
+  }, [validateTabname, tabname, onCreateNewTab, handleActiveChange, tabs.length]);
 
   const handleCloseTab = useCallback(
     (idx: number) => {
@@ -175,6 +193,21 @@ export const Tabs = ({
     [active, handleActiveChange, onCloseTab, tabs]
   );
 
+  const closeOption = (idx: number): Nullable<ContentMenuOption> =>
+    onCloseTab && {
+      type: "text",
+      label: "Close",
+      key: "close",
+      onSelect: () => handleCloseTab(idx),
+    };
+  const renameOption = (idx: number): Nullable<ContentMenuOption> =>
+    onRenameTab && {
+      type: "text",
+      label: "Rename",
+      key: "rename",
+      onSelect: () => setRenamingTab(idx),
+    };
+  
   return (
     <>
       {!headless && (
@@ -189,7 +222,14 @@ export const Tabs = ({
           }}
         >
           {tabs.map((tab, idx) => (
-            <ContextMenu key={tab.header}>
+            <ContextMenu
+              key={tab.header}
+              options={
+                [closeOption(idx), renameOption(idx)].filter(
+                  Boolean
+                ) as ContentMenuOption[]
+              }
+            >
               <Button
                 role="tab"
                 tabIndex={idx}
@@ -261,7 +301,7 @@ export const Tabs = ({
                       }
                     }}
                   />
-                  <ErrorText>{newtabError}</ErrorText>
+                  <ErrorText>{tabnameError}</ErrorText>
                 </DialogDescription>
 
                 <Flex
@@ -276,6 +316,51 @@ export const Tabs = ({
                   </DialogClose>
                   <Button variant="primary" onClick={handleCreateTab}>
                     Create
+                  </Button>
+                </Flex>
+                <DialogClose asChild>
+                  <Box css={{ position: "absolute", top: "$3", right: "$3" }}>
+                    <X size="20px" />
+                  </Box>
+                </DialogClose>
+              </DialogContent>
+            </Dialog>
+          )}
+          {onRenameTab && (
+            <Dialog
+              open={renamingTab !== null}
+              onOpenChange={() => setRenamingTab(null)}
+            >
+              <DialogContent>
+                <DialogTitle>
+                  Rename <Pre>{tabs[renamingTab || 0]?.header}</Pre>
+                </DialogTitle>
+                <DialogDescription>
+                  <Label>Enter new name</Label>
+                  <Input
+                    value={tabname}
+                    onChange={e => setTabname(e.target.value)}
+                    onKeyPress={e => {
+                      if (e.key === "Enter") {
+                        handleRenameTab();
+                      }
+                    }}
+                  />
+                  <ErrorText>{tabnameError}</ErrorText>
+                </DialogDescription>
+
+                <Flex
+                  css={{
+                    marginTop: 25,
+                    justifyContent: "flex-end",
+                    gap: "$3",
+                  }}
+                >
+                  <DialogClose asChild>
+                    <Button outline>Cancel</Button>
+                  </DialogClose>
+                  <Button variant="primary" onClick={handleRenameTab}>
+                    Confirm
                   </Button>
                 </Flex>
                 <DialogClose asChild>

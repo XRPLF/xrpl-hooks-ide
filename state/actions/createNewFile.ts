@@ -15,3 +15,10 @@ export const createNewFile = (name: string) => {
   state.files.push(emptyFile);
   state.active = state.files.length - 1;
 };
+
+export const renameFile = (oldName: string, nwName: string) => {
+  const file = state.files.find(file => file.name === oldName)
+  if (!file) throw Error(`No file exists with name ${oldName}`)
+
+  file.name = nwName
+};
