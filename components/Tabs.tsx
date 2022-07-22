@@ -98,17 +98,20 @@ export const Tabs = ({
   }, [tabname, setTabnameError]);
 
   const validateTabname = useCallback(
-    (tabname: string): { error: string | null } => {
+    (tabname: string): { error?: string, result?: string } => {
       if (!tabname) {
         return { error: `Please enter ${label.toLocaleLowerCase()} name.` };
+      }
+      let ext =
+        (tabname.includes(".") && tabname.split(".").pop()) || "";
+      
+      if (!ext && defaultExtension) {
+        ext = defaultExtension
+        tabname = `${tabname}.${defaultExtension}`
       }
       if (tabs.find(tab => tab.header === tabname)) {
         return { error: `${capitalize(label)} name already exists.` };
       }
-      const ext =
-        (tabname.includes(".") && tabname.split(".").pop()) ||
-        defaultExtension ||
-        "";
       if (extensionRequired && !ext) {
         return { error: "File extension is required!" };
       }
@@ -121,7 +124,7 @@ export const Tabs = ({
       ) {
         return { error: headerExtraValidation.error };
       }
-      return { error: null };
+      return { result: tabname };
     },
     [
       allowedExtensions,
@@ -144,16 +147,13 @@ export const Tabs = ({
   const handleRenameTab = useCallback(() => {
     if (renamingTab === null) return;
 
-    const chk = validateTabname(tabname);
-    if (chk.error) {
-      setTabnameError(`Error: ${chk.error}`);
+    const res = validateTabname(tabname);
+    if (res.error) {
+      setTabnameError(`Error: ${res.error}`);
       return;
     }
 
-    let _tabname = tabname;
-    if (defaultExtension && !_tabname.endsWith(defaultExtension)) {
-      _tabname = `${_tabname}.${defaultExtension}`;
-    }
+    const { result: _tabname = tabname } = res
 
     setRenamingTab(null);
     setTabname("");
@@ -162,26 +162,15 @@ export const Tabs = ({
     onRenameTab?.(renamingTab, _tabname, oldName);
 
     handleActiveChange(renamingTab);
-  }, [
-    defaultExtension,
-    handleActiveChange,
-    onRenameTab,
-    renamingTab,
-    tabname,
-    tabs,
-    validateTabname,
-  ]);
+  }, [handleActiveChange, onRenameTab, renamingTab, tabname, tabs, validateTabname]);
 
   const handleCreateTab = useCallback(() => {
-    const chk = validateTabname(tabname);
-    if (chk.error) {
-      setTabnameError(`Error: ${chk.error}`);
+    const res = validateTabname(tabname);
+    if (res.error) {
+      setTabnameError(`Error: ${res.error}`);
       return;
     }
-    let _tabname = tabname;
-    if (defaultExtension && !_tabname.endsWith(defaultExtension)) {
-      _tabname = `${_tabname}.${defaultExtension}`;
-    }
+    const { result: _tabname = tabname } = res
 
     setIsNewtabDialogOpen(false);
     setTabname("");
@@ -189,14 +178,7 @@ export const Tabs = ({
     onCreateNewTab?.(_tabname);
 
     handleActiveChange(tabs.length, _tabname);
-  }, [
-    tabname,
-    defaultExtension,
-    validateTabname,
-    onCreateNewTab,
-    handleActiveChange,
-    tabs.length,
-  ]);
+  }, [validateTabname, tabname, onCreateNewTab, handleActiveChange, tabs.length]);
 
   const handleCloseTab = useCallback(
     (idx: number) => {
@@ -225,6 +207,7 @@ export const Tabs = ({
       key: "rename",
       onSelect: () => setRenamingTab(idx),
     };
+  
   return (
     <>
       {!headless && (
