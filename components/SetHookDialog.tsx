@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Plus, Trash, X } from "phosphor-react";
-import Button from "./Button";
-import Box from "./Box";
+import { Button, Box } from ".";
 import { Stack, Flex, Select } from ".";
 import {
   Dialog,
@@ -26,6 +25,7 @@ import state, { IFile, SelectOption } from "../state";
 import toast from "react-hot-toast";
 import { prepareDeployHookTx, sha256 } from "../state/actions/deployHook";
 import estimateFee from "../utils/estimateFee";
+import { getTags } from "../utils/comment-parser";
 
 const transactionOptions = Object.keys(tts).map(key => ({
   label: key,
@@ -44,6 +44,7 @@ export type SetHookData = {
       HookParameterName: string;
       HookParameterValue: string;
     };
+    $metaData?: any;
   }[];
   // HookGrants: {
   //   HookGrant: {
@@ -56,10 +57,13 @@ export type SetHookData = {
 export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
   ({ accountAddress }) => {
     const snap = useSnapshot(state);
+
+    const [formInitialized, setFormInitialized] = useState(false);
+    const [estimateLoading, setEstimateLoading] = useState(false);
+    const [isSetHookDialogOpen, setIsSetHookDialogOpen] = useState(false);
+
     const compiledFiles = snap.files.filter(file => file.compiledContent);
     const activeFile = compiledFiles[snap.activeWat] as IFile | undefined;
-
-    const [isSetHookDialogOpen, setIsSetHookDialogOpen] = useState(false);
 
     const accountOptions: SelectOption[] = snap.accounts.map(acc => ({
       label: acc.name,
@@ -73,13 +77,42 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       acc => acc.address === selectedAccount?.value
     );
 
+    const getDefaultParameters = useCallback(() => {
+      const content = activeFile?.compiledValueSnapshot;
+      if (!content) return;
+
+      const fieldTags = ["field", "param", "arg", "argument"];
+      const tags = getTags(content)
+        .filter(tag => fieldTags.includes(tag.tag))
+        .filter(tag => !!tag.name);
+
+      const paramters: SetHookData["HookParameters"] = tags.map(tag => ({
+        HookParameter: {
+          HookParameterName: tag.name,
+          HookParameterValue: tag.default || "",
+        },
+        $metaData: {
+          description: tag.description,
+        },
+      }));
+
+      return paramters;
+    }, [activeFile?.compiledValueSnapshot]);
+
     const getHookNamespace = useCallback(
       () =>
-        activeFile && snap.deployValues[activeFile.name]
-          ? snap.deployValues[activeFile.name].HookNamespace
-          : activeFile?.name.split(".")[0] || "",
+        (activeFile && snap.deployValues[activeFile.name]?.HookNamespace) ||
+        activeFile?.name.split(".")[0] ||
+        "",
       [activeFile, snap.deployValues]
     );
+
+    const getDefaultValues = () =>
+      (activeFile && snap.deployValues[activeFile.name]) || {
+        HookNamespace: getHookNamespace(),
+        Invoke: transactionOptions.filter(to => to.label === "ttPAYMENT"),
+        HookParameters: getDefaultParameters(),
+      };
 
     const {
       register,
@@ -90,17 +123,13 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       getValues,
       formState: { errors },
     } = useForm<SetHookData>({
-      defaultValues: (activeFile && snap.deployValues[activeFile.name]) || {
-        HookNamespace: activeFile?.name.split(".")[0] || "",
-        Invoke: transactionOptions.filter(to => to.label === "ttPAYMENT"),
-      },
+      defaultValues: getDefaultValues(),
     });
     const { fields, append, remove } = useFieldArray({
       control,
       name: "HookParameters", // unique name for your Field Array
     });
-    const [formInitialized, setFormInitialized] = useState(false);
-    const [estimateLoading, setEstimateLoading] = useState(false);
+
     const watchedFee = watch("Fee");
 
     // Update value if activeFile changes
@@ -172,6 +201,12 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       );
       if (!account) return;
       if (currAccount) currAccount.isLoading = true;
+      
+      data.HookParameters.forEach(param => {
+        delete param.$metaData;
+        return param;
+      });
+
       const res = await deployHook(account, data);
       if (currAccount) currAccount.isLoading = false;
 
@@ -251,22 +286,32 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                   <Stack>
                     {fields.map((field, index) => (
                       <Stack key={field.id}>
-                        <Input
-                          // important to include key with field's id
-                          placeholder="Parameter name"
-                          {...register(
-                            `HookParameters.${index}.HookParameter.HookParameterName`
-                          )}
-                        />
-                        <Input
-                          placeholder="Value (hex-quoted)"
-                          {...register(
-                            `HookParameters.${index}.HookParameter.HookParameterValue`
-                          )}
-                        />
-                        <Button onClick={() => remove(index)} variant="destroy">
-                          <Trash weight="regular" size="16px" />
-                        </Button>
+                        <Flex column>
+                          <Flex row>
+                            <Input
+                              // important to include key with field's id
+                              placeholder="Parameter name"
+                              {...register(
+                                `HookParameters.${index}.HookParameter.HookParameterName`
+                              )}
+                            />
+                            <Input
+                              placeholder="Value (hex-quoted)"
+                              {...register(
+                                `HookParameters.${index}.HookParameter.HookParameterValue`
+                              )}
+                            />
+                            <Button
+                              onClick={() => remove(index)}
+                              variant="destroy"
+                            >
+                              <Trash weight="regular" size="16px" />
+                            </Button>
+                          </Flex>
+                          <Label css={{ fontSize: "$sm", mt: "$1" }}>
+                            {field.$metaData?.description}
+                          </Label>
+                        </Flex>
                       </Stack>
                     ))}
                     <Button
