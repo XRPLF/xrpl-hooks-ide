@@ -3,10 +3,10 @@ import toast from "react-hot-toast";
 
 import state, { IAccount } from "../index";
 import calculateHookOn, { TTS } from "../../utils/hookOnCalculator";
-import { SetHookData } from "../../components/SetHookDialog";
 import { Link } from "../../components";
 import { ref } from "valtio";
 import estimateFee from "../../utils/estimateFee";
+import { SetHookData } from '../../utils/setHook';
 
 export const sha256 = async (string: string) => {
   const utf8 = new TextEncoder().encode(string);

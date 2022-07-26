@@ -18,41 +18,19 @@ import {
   useForm,
 } from "react-hook-form";
 
-import { TTS, tts } from "../utils/hookOnCalculator";
 import { deployHook } from "../state/actions";
 import { useSnapshot } from "valtio";
 import state, { IFile, SelectOption } from "../state";
 import toast from "react-hot-toast";
 import { prepareDeployHookTx, sha256 } from "../state/actions/deployHook";
 import estimateFee from "../utils/estimateFee";
-import { getTags } from "../utils/comment-parser";
+import {
+  getParameters,
+  getInvokeOptions,
+  transactionOptions,
+  SetHookData,
+} from "../utils/setHook";
 
-const transactionOptions = Object.keys(tts).map(key => ({
-  label: key,
-  value: key as keyof TTS,
-}));
-
-export type SetHookData = {
-  Invoke: {
-    value: keyof TTS;
-    label: string;
-  }[];
-  Fee: string;
-  HookNamespace: string;
-  HookParameters: {
-    HookParameter: {
-      HookParameterName: string;
-      HookParameterValue: string;
-    };
-    $metaData?: any;
-  }[];
-  // HookGrants: {
-  //   HookGrant: {
-  //     Authorize: string;
-  //     HookHash: string;
-  //   };
-  // }[];
-};
 
 export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
   ({ accountAddress }) => {
@@ -77,28 +55,6 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       acc => acc.address === selectedAccount?.value
     );
 
-    const getDefaultParameters = useCallback(() => {
-      const content = activeFile?.compiledValueSnapshot;
-      if (!content) return;
-
-      const fieldTags = ["field", "param", "arg", "argument"];
-      const tags = getTags(content)
-        .filter(tag => fieldTags.includes(tag.tag))
-        .filter(tag => !!tag.name);
-
-      const paramters: SetHookData["HookParameters"] = tags.map(tag => ({
-        HookParameter: {
-          HookParameterName: tag.name,
-          HookParameterValue: tag.default || "",
-        },
-        $metaData: {
-          description: tag.description,
-        },
-      }));
-
-      return paramters;
-    }, [activeFile?.compiledValueSnapshot]);
-
     const getHookNamespace = useCallback(
       () =>
         (activeFile && snap.deployValues[activeFile.name]?.HookNamespace) ||
@@ -107,12 +63,16 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       [activeFile, snap.deployValues]
     );
 
-    const getDefaultValues = () =>
-      (activeFile && snap.deployValues[activeFile.name]) || {
-        HookNamespace: getHookNamespace(),
-        Invoke: transactionOptions.filter(to => to.label === "ttPAYMENT"),
-        HookParameters: getDefaultParameters(),
-      };
+    const getDefaultValues = () => {
+      const content = activeFile?.compiledValueSnapshot;
+      return (
+        (activeFile && snap.deployValues[activeFile.name]) || {
+          HookNamespace: getHookNamespace(),
+          Invoke: getInvokeOptions(content),
+          HookParameters: getParameters(content),
+        }
+      );
+    };
 
     const {
       register,
@@ -201,7 +161,7 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       );
       if (!account) return;
       if (currAccount) currAccount.isLoading = true;
-      
+
       data.HookParameters.forEach(param => {
         delete param.$metaData;
         return param;
