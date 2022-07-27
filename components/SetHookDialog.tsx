@@ -31,7 +31,6 @@ import {
   SetHookData,
 } from "../utils/setHook";
 
-
 export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
   ({ accountAddress }) => {
     const snap = useSnapshot(state);
@@ -256,6 +255,7 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                               )}
                             />
                             <Input
+                              css={{ mx: "$2" }}
                               placeholder="Value (hex-quoted)"
                               {...register(
                                 `HookParameters.${index}.HookParameter.HookParameterValue`
