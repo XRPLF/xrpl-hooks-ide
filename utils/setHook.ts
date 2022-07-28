@@ -42,6 +42,7 @@ export const getParameters = (content?: string) => {
         },
         $metaData: {
             description: tag.description,
+            required: !tag.optional
         },
     }));
 

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Plus, Trash, X } from "phosphor-react";
-import { Button, Box } from ".";
+import { Button, Box, Text } from ".";
 import { Stack, Flex, Select } from ".";
 import {
   Dialog,
@@ -30,6 +30,7 @@ import {
   transactionOptions,
   SetHookData,
 } from "../utils/setHook";
+import { capitalize } from "../utils/helpers";
 
 export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
   ({ accountAddress }) => {
@@ -250,6 +251,7 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                             <Input
                               // important to include key with field's id
                               placeholder="Parameter name"
+                              readOnly={field.$metaData?.required}
                               {...register(
                                 `HookParameters.${index}.HookParameter.HookParameterName`
                               )}
@@ -258,7 +260,8 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                               css={{ mx: "$2" }}
                               placeholder="Value (hex-quoted)"
                               {...register(
-                                `HookParameters.${index}.HookParameter.HookParameterValue`
+                                `HookParameters.${index}.HookParameter.HookParameterValue`,
+                                { required: field.$metaData?.required }
                               )}
                             />
                             <Button
@@ -268,8 +271,12 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                               <Trash weight="regular" size="16px" />
                             </Button>
                           </Flex>
+                          {errors.HookParameters?.[index]?.HookParameter
+                            ?.HookParameterValue?.type === "required" && (
+                            <Text error>This field is required</Text>
+                          )}
                           <Label css={{ fontSize: "$sm", mt: "$1" }}>
-                            {field.$metaData?.description}
+                            {capitalize(field.$metaData?.description)}
                           </Label>
                         </Flex>
                       </Stack>
