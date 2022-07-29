@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Plus, Trash, X } from "phosphor-react";
-import Button from "./Button";
-import Box from "./Box";
+import { Button, Box, Text } from ".";
 import { Stack, Flex, Select } from ".";
 import {
   Dialog,
@@ -19,47 +18,29 @@ import {
   useForm,
 } from "react-hook-form";
 
-import { TTS, tts } from "../utils/hookOnCalculator";
 import { deployHook } from "../state/actions";
 import { useSnapshot } from "valtio";
 import state, { IFile, SelectOption } from "../state";
 import toast from "react-hot-toast";
 import { prepareDeployHookTx, sha256 } from "../state/actions/deployHook";
 import estimateFee from "../utils/estimateFee";
-
-const transactionOptions = Object.keys(tts).map(key => ({
-  label: key,
-  value: key as keyof TTS,
-}));
-
-export type SetHookData = {
-  Invoke: {
-    value: keyof TTS;
-    label: string;
-  }[];
-  Fee: string;
-  HookNamespace: string;
-  HookParameters: {
-    HookParameter: {
-      HookParameterName: string;
-      HookParameterValue: string;
-    };
-  }[];
-  // HookGrants: {
-  //   HookGrant: {
-  //     Authorize: string;
-  //     HookHash: string;
-  //   };
-  // }[];
-};
+import {
+  getParameters,
+  getInvokeOptions,
+  transactionOptions,
+  SetHookData,
+} from "../utils/setHook";
+import { capitalize } from "../utils/helpers";
 
 export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
   ({ accountAddress }) => {
     const snap = useSnapshot(state);
+
+    const [estimateLoading, setEstimateLoading] = useState(false);
+    const [isSetHookDialogOpen, setIsSetHookDialogOpen] = useState(false);
+
     const compiledFiles = snap.files.filter(file => file.compiledContent);
     const activeFile = compiledFiles[snap.activeWat] as IFile | undefined;
-
-    const [isSetHookDialogOpen, setIsSetHookDialogOpen] = useState(false);
 
     const accountOptions: SelectOption[] = snap.accounts.map(acc => ({
       label: acc.name,
@@ -75,11 +56,22 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
 
     const getHookNamespace = useCallback(
       () =>
-        activeFile && snap.deployValues[activeFile.name]
-          ? snap.deployValues[activeFile.name].HookNamespace
-          : activeFile?.name.split(".")[0] || "",
+        (activeFile && snap.deployValues[activeFile.name]?.HookNamespace) ||
+        activeFile?.name.split(".")[0] ||
+        "",
       [activeFile, snap.deployValues]
     );
+
+    const getDefaultValues = useCallback((): Partial<SetHookData> => {
+      const content = activeFile?.compiledValueSnapshot;
+      return (
+        (activeFile && snap.deployValues[activeFile.name]) || {
+          HookNamespace: getHookNamespace(),
+          Invoke: getInvokeOptions(content),
+          HookParameters: getParameters(content),
+        }
+      );
+    }, [activeFile, getHookNamespace, snap.deployValues]);
 
     const {
       register,
@@ -88,29 +80,25 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       watch,
       setValue,
       getValues,
+      reset,
       formState: { errors },
     } = useForm<SetHookData>({
-      defaultValues: (activeFile && snap.deployValues[activeFile.name]) || {
-        HookNamespace: activeFile?.name.split(".")[0] || "",
-        Invoke: transactionOptions.filter(to => to.label === "ttPAYMENT"),
-      },
+      defaultValues: getDefaultValues(),
     });
     const { fields, append, remove } = useFieldArray({
       control,
       name: "HookParameters", // unique name for your Field Array
     });
-    const [formInitialized, setFormInitialized] = useState(false);
-    const [estimateLoading, setEstimateLoading] = useState(false);
+
     const watchedFee = watch("Fee");
 
-    // Update value if activeFile changes
+    // Reset form if activeFile changes
     useEffect(() => {
       if (!activeFile) return;
-      const defaultValue = getHookNamespace();
+      const defaultValues = getDefaultValues();
 
-      setValue("HookNamespace", defaultValue);
-      setFormInitialized(true);
-    }, [setValue, activeFile, snap.deployValues, getHookNamespace]);
+      reset(defaultValues);
+    }, [activeFile, getDefaultValues, reset]);
 
     useEffect(() => {
       if (
@@ -141,23 +129,19 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       calculateHashedValue();
     }, [namespace, calculateHashedValue]);
 
-    // Calculate initial fee estimate when modal opens
-    useEffect(() => {
-      if (formInitialized && account) {
-        (async () => {
-          const formValues = getValues();
-          const tx = await prepareDeployHookTx(account, formValues);
-          if (!tx) {
-            return;
-          }
-          const res = await estimateFee(tx, account);
-          if (res && res.base_fee) {
-            setValue("Fee", Math.round(Number(res.base_fee || "")).toString());
-          }
-        })();
+    const calculateFee = useCallback(async () => {
+      if (!account) return;
+
+      const formValues = getValues();
+      const tx = await prepareDeployHookTx(account, formValues);
+      if (!tx) {
+        return;
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [formInitialized]);
+      const res = await estimateFee(tx, account);
+      if (res && res.base_fee) {
+        setValue("Fee", Math.round(Number(res.base_fee || "")).toString());
+      }
+    }, [account, getValues, setValue]);
 
     const tooLargeFile = () => {
       return Boolean(
@@ -172,6 +156,12 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       );
       if (!account) return;
       if (currAccount) currAccount.isLoading = true;
+
+      data.HookParameters.forEach(param => {
+        delete param.$metaData;
+        return param;
+      });
+
       const res = await deployHook(account, data);
       if (currAccount) currAccount.isLoading = false;
 
@@ -181,8 +171,14 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       }
       toast.error(`Transaction failed! (${res?.engine_result_message})`);
     };
+
+    const onOpenChange = useCallback((open: boolean) => {
+      setIsSetHookDialogOpen(open);
+
+      if (open) calculateFee();
+    }, [calculateFee]);
     return (
-      <Dialog open={isSetHookDialogOpen} onOpenChange={setIsSetHookDialogOpen}>
+      <Dialog open={isSetHookDialogOpen} onOpenChange={onOpenChange}>
         <DialogTrigger asChild>
           <Button
             ghost
@@ -251,22 +247,39 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                   <Stack>
                     {fields.map((field, index) => (
                       <Stack key={field.id}>
-                        <Input
-                          // important to include key with field's id
-                          placeholder="Parameter name"
-                          {...register(
-                            `HookParameters.${index}.HookParameter.HookParameterName`
+                        <Flex column>
+                          <Flex row>
+                            <Input
+                              // important to include key with field's id
+                              placeholder="Parameter name"
+                              readOnly={field.$metaData?.required}
+                              {...register(
+                                `HookParameters.${index}.HookParameter.HookParameterName`
+                              )}
+                            />
+                            <Input
+                              css={{ mx: "$2" }}
+                              placeholder="Value (hex-quoted)"
+                              {...register(
+                                `HookParameters.${index}.HookParameter.HookParameterValue`,
+                                { required: field.$metaData?.required }
+                              )}
+                            />
+                            <Button
+                              onClick={() => remove(index)}
+                              variant="destroy"
+                            >
+                              <Trash weight="regular" size="16px" />
+                            </Button>
+                          </Flex>
+                          {errors.HookParameters?.[index]?.HookParameter
+                            ?.HookParameterValue?.type === "required" && (
+                            <Text error>This field is required</Text>
                           )}
-                        />
-                        <Input
-                          placeholder="Value (hex-quoted)"
-                          {...register(
-                            `HookParameters.${index}.HookParameter.HookParameterValue`
-                          )}
-                        />
-                        <Button onClick={() => remove(index)} variant="destroy">
-                          <Trash weight="regular" size="16px" />
-                        </Button>
+                          <Label css={{ fontSize: "$sm", mt: "$1" }}>
+                            {capitalize(field.$metaData?.description)}
+                          </Label>
+                        </Flex>
                       </Stack>
                     ))}
                     <Button
