@@ -36,7 +36,6 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
   ({ accountAddress }) => {
     const snap = useSnapshot(state);
 
-    const [formInitialized, setFormInitialized] = useState(false);
     const [estimateLoading, setEstimateLoading] = useState(false);
     const [isSetHookDialogOpen, setIsSetHookDialogOpen] = useState(false);
 
@@ -63,7 +62,7 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       [activeFile, snap.deployValues]
     );
 
-    const getDefaultValues = () => {
+    const getDefaultValues = useCallback((): Partial<SetHookData> => {
       const content = activeFile?.compiledValueSnapshot;
       return (
         (activeFile && snap.deployValues[activeFile.name]) || {
@@ -72,7 +71,7 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
           HookParameters: getParameters(content),
         }
       );
-    };
+    }, [activeFile, getHookNamespace, snap.deployValues]);
 
     const {
       register,
@@ -81,6 +80,7 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       watch,
       setValue,
       getValues,
+      reset,
       formState: { errors },
     } = useForm<SetHookData>({
       defaultValues: getDefaultValues(),
@@ -92,14 +92,13 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
 
     const watchedFee = watch("Fee");
 
-    // Update value if activeFile changes
+    // Reset form if activeFile changes
     useEffect(() => {
       if (!activeFile) return;
-      const defaultValue = getHookNamespace();
+      const defaultValues = getDefaultValues();
 
-      setValue("HookNamespace", defaultValue);
-      setFormInitialized(true);
-    }, [setValue, activeFile, snap.deployValues, getHookNamespace]);
+      reset(defaultValues);
+    }, [activeFile, getDefaultValues, reset]);
 
     useEffect(() => {
       if (
@@ -130,23 +129,19 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       calculateHashedValue();
     }, [namespace, calculateHashedValue]);
 
-    // Calculate initial fee estimate when modal opens
-    useEffect(() => {
-      if (formInitialized && account) {
-        (async () => {
-          const formValues = getValues();
-          const tx = await prepareDeployHookTx(account, formValues);
-          if (!tx) {
-            return;
-          }
-          const res = await estimateFee(tx, account);
-          if (res && res.base_fee) {
-            setValue("Fee", Math.round(Number(res.base_fee || "")).toString());
-          }
-        })();
+    const calculateFee = useCallback(async () => {
+      if (!account) return;
+
+      const formValues = getValues();
+      const tx = await prepareDeployHookTx(account, formValues);
+      if (!tx) {
+        return;
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [formInitialized]);
+      const res = await estimateFee(tx, account);
+      if (res && res.base_fee) {
+        setValue("Fee", Math.round(Number(res.base_fee || "")).toString());
+      }
+    }, [account, getValues, setValue]);
 
     const tooLargeFile = () => {
       return Boolean(
@@ -176,8 +171,14 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       }
       toast.error(`Transaction failed! (${res?.engine_result_message})`);
     };
+
+    const onOpenChange = useCallback((open: boolean) => {
+      setIsSetHookDialogOpen(open);
+
+      if (open) calculateFee();
+    }, [calculateFee]);
     return (
-      <Dialog open={isSetHookDialogOpen} onOpenChange={setIsSetHookDialogOpen}>
+      <Dialog open={isSetHookDialogOpen} onOpenChange={onOpenChange}>
         <DialogTrigger asChild>
           <Button
             ghost
