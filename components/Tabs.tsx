@@ -98,16 +98,15 @@ export const Tabs = ({
   }, [tabname, setTabnameError]);
 
   const validateTabname = useCallback(
-    (tabname: string): { error?: string, result?: string } => {
+    (tabname: string): { error?: string; result?: string } => {
       if (!tabname) {
         return { error: `Please enter ${label.toLocaleLowerCase()} name.` };
       }
-      let ext =
-        (tabname.includes(".") && tabname.split(".").pop()) || "";
-      
+      let ext = (tabname.includes(".") && tabname.split(".").pop()) || "";
+
       if (!ext && defaultExtension) {
-        ext = defaultExtension
-        tabname = `${tabname}.${defaultExtension}`
+        ext = defaultExtension;
+        tabname = `${tabname}.${defaultExtension}`;
       }
       if (tabs.find(tab => tab.header === tabname)) {
         return { error: `${capitalize(label)} name already exists.` };
@@ -153,16 +152,23 @@ export const Tabs = ({
       return;
     }
 
-    const { result: _tabname = tabname } = res
+    const { result: nwName = tabname } = res;
 
     setRenamingTab(null);
     setTabname("");
 
     const oldName = tabs[renamingTab]?.header;
-    onRenameTab?.(renamingTab, _tabname, oldName);
+    onRenameTab?.(renamingTab, nwName, oldName);
 
-    handleActiveChange(renamingTab);
-  }, [handleActiveChange, onRenameTab, renamingTab, tabname, tabs, validateTabname]);
+    handleActiveChange(renamingTab, nwName);
+  }, [
+    handleActiveChange,
+    onRenameTab,
+    renamingTab,
+    tabname,
+    tabs,
+    validateTabname,
+  ]);
 
   const handleCreateTab = useCallback(() => {
     const res = validateTabname(tabname);
@@ -170,7 +176,7 @@ export const Tabs = ({
       setTabnameError(`Error: ${res.error}`);
       return;
     }
-    const { result: _tabname = tabname } = res
+    const { result: _tabname = tabname } = res;
 
     setIsNewtabDialogOpen(false);
     setTabname("");
@@ -178,17 +184,22 @@ export const Tabs = ({
     onCreateNewTab?.(_tabname);
 
     handleActiveChange(tabs.length, _tabname);
-  }, [validateTabname, tabname, onCreateNewTab, handleActiveChange, tabs.length]);
+  }, [
+    validateTabname,
+    tabname,
+    onCreateNewTab,
+    handleActiveChange,
+    tabs.length,
+  ]);
 
   const handleCloseTab = useCallback(
     (idx: number) => {
-      if (idx <= active && active !== 0) {
-        setActive(active - 1);
-      }
-
       onCloseTab?.(idx, tabs[idx].header);
 
-      handleActiveChange(idx, tabs[idx].header);
+      if (idx <= active && active !== 0) {
+        const nwActive = active - 1
+        handleActiveChange(nwActive, tabs[nwActive].header);
+      }
     },
     [active, handleActiveChange, onCloseTab, tabs]
   );
@@ -207,7 +218,7 @@ export const Tabs = ({
       key: "rename",
       onSelect: () => setRenamingTab(idx),
     };
-  
+
   return (
     <>
       {!headless && (
