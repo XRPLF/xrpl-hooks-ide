@@ -154,10 +154,12 @@ const Transaction: FC<TransactionProps> = ({
       const nwState: Partial<TransactionState> = {
         viewType,
         selectedTransaction: transactionType,
+        selectedDestAccount: null
       };
 
+      // Currently in schema "Destination": "SomeVal" means 'Destination is required' while empty string indicates it is optional
+      // TODO Update schema with clear required tag
       if (fields.Destination !== undefined) {
-        nwState.selectedDestAccount = null;
         fields.Destination = "";
       } else {
         fields.Destination = undefined;

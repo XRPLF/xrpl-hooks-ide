@@ -58,12 +58,11 @@ export const TxUI: FC<UIProps> = ({
       const fields = getTxFields(tt);
 
       if (fields.Destination !== undefined) {
-        setState({ selectedDestAccount: null });
         fields.Destination = "";
       } else {
         fields.Destination = undefined;
       }
-      return setState({ txFields: fields });
+      return setState({ txFields: fields, selectedDestAccount: null });
     },
     [setState]
   );
