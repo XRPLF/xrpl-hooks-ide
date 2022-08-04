@@ -31,6 +31,7 @@ type Nullable<T> = T | null | undefined | false;
 interface TabProps {
   header: string;
   children?: ReactNode;
+  renameDisabled?: boolean
 }
 
 // TODO customize messages shown
@@ -211,14 +212,17 @@ export const Tabs = ({
       key: "close",
       onSelect: () => handleCloseTab(idx),
     };
-  const renameOption = (idx: number): Nullable<ContentMenuOption> =>
-    onRenameTab && {
-      type: "text",
-      label: "Rename",
-      key: "rename",
-      onSelect: () => setRenamingTab(idx),
-    };
-
+  const renameOption = (idx: number, tab: TabProps): Nullable<ContentMenuOption> => {
+    return (
+      onRenameTab && !tab.renameDisabled && {
+        type: "text",
+        label: "Rename",
+        key: "rename",
+        onSelect: () => setRenamingTab(idx),
+      }
+    );
+  }
+  
   return (
     <>
       {!headless && (
@@ -236,7 +240,7 @@ export const Tabs = ({
             <ContextMenu
               key={tab.header}
               options={
-                [closeOption(idx), renameOption(idx)].filter(
+                [closeOption(idx), renameOption(idx, tab)].filter(
                   Boolean
                 ) as ContentMenuOption[]
               }

@@ -24,13 +24,19 @@ import { saveAllFiles } from "../state/actions/saveFile";
 import { Tab, Tabs } from "./Tabs";
 import { renameFile } from "../state/actions/createNewFile";
 
-const validateWritability = (editor: monaco.editor.IStandaloneCodeEditor) => {
-  const currPath = editor.getModel()?.uri.path;
-  if (apiHeaderFiles.find(h => currPath?.endsWith(h))) {
-    editor.updateOptions({ readOnly: true });
-  } else {
-    editor.updateOptions({ readOnly: false });
+const checkWritable = (filename?: string): boolean => {
+  if (apiHeaderFiles.find(file => file === filename)) {
+    return false;
   }
+  return true;
+};
+
+const validateWritability = (
+  editor: monaco.editor.IStandaloneCodeEditor
+) => {
+  const filename = editor.getModel()?.uri.path.split("/").pop();
+  const isWritable = checkWritable(filename);
+  editor.updateOptions({ readOnly: !isWritable });
 };
 
 let decorations: { [key: string]: string[] } = {};
@@ -138,7 +144,7 @@ const HooksEditor = () => {
       }}
     >
       {snap.files.map((file, index) => {
-        return <Tab key={file.name} header={file.name} />;
+        return <Tab key={file.name} header={file.name} renameDisabled={!checkWritable(file.name)} />;
       })}
     </Tabs>
   );
