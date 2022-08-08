@@ -162,7 +162,7 @@ export const Log: FC<ILog> = ({
 
   const enrichAccounts = useCallback(
     (str?: string): ReactNode => {
-      if (!str || !accounts.length) return null;
+      if (!str || !accounts.length) return str;
 
       const pattern = `(${accounts.map(acc => acc.address).join("|")})`;
       const res = regexifyString({

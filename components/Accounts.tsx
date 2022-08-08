@@ -32,6 +32,7 @@ import { SetHookDialog } from "./SetHookDialog";
 import { addFunds } from "../state/actions/addFaucetAccount";
 import { deleteHook } from "../state/actions/deployHook";
 import { capitalize } from "../utils/helpers";
+import { deleteAccount } from '../state/actions/deleteAccount';
 
 export const AccountDialog = ({
   activeAccountAddress,
@@ -99,10 +100,7 @@ export const AccountDialog = ({
               css={{ ml: "auto", mr: "$9" }}
               tabIndex={-1}
               onClick={() => {
-                const index = state.accounts.findIndex(
-                  acc => acc.address === activeAccount?.address
-                );
-                state.accounts.splice(index, 1);
+                deleteAccount(activeAccount?.address);
               }}
             >
               Delete Account <Trash size="15px" />
