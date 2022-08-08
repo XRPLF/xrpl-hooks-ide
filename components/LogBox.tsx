@@ -1,22 +1,12 @@
-import {
-  useRef,
-  useLayoutEffect,
-  ReactNode,
-  FC,
-  useState,
-  useCallback,
-} from "react";
+import { useRef, useLayoutEffect, ReactNode, FC, useState } from "react";
 import { IconProps, Notepad, Prohibit } from "phosphor-react";
 import useStayScrolled from "react-stay-scrolled";
 import NextLink from "next/link";
 
 import Container from "./Container";
 import LogText from "./LogText";
-import state, { ILog } from "../state";
+import { ILog } from "../state";
 import { Pre, Link, Heading, Button, Text, Flex, Box } from ".";
-import regexifyString from "regexify-string";
-import { useSnapshot } from "valtio";
-import { AccountDialog } from "./Accounts";
 
 interface ILogBox {
   title: string;
@@ -150,70 +140,24 @@ const LogBox: FC<ILogBox> = ({
 export const Log: FC<ILog> = ({
   type,
   timestring,
-  message: _message,
+  message,
   link,
   linkText,
   defaultCollapsed,
-  jsonData: _jsonData,
+  jsonData,
 }) => {
   const [expanded, setExpanded] = useState(!defaultCollapsed);
-  const { accounts } = useSnapshot(state);
-  const [dialogAccount, setDialogAccount] = useState<string | null>(null);
 
-  const enrichAccounts = useCallback(
-    (str?: string): ReactNode => {
-      if (!str || !accounts.length) return str;
-
-      const pattern = `(${accounts.map(acc => acc.address).join("|")})`;
-      const res = regexifyString({
-        pattern: new RegExp(pattern, "gim"),
-        decorator: (match, idx) => {
-          const name = accounts.find(acc => acc.address === match)?.name;
-          return (
-            <Link
-              key={match + idx}
-              as="a"
-              onClick={() => setDialogAccount(match)}
-              title={match}
-              highlighted
-            >
-              {name || match}
-            </Link>
-          );
-        },
-        input: str,
-      });
-
-      return <>{res}</>;
-    },
-    [accounts]
-  );
-
-  let message: ReactNode;
-
-  if (typeof _message === "string") {
-    _message = _message.trim().replace(/\n /gi, "\n");
-    if (_message) message = enrichAccounts(_message);
-    else message = <Text muted>{'""'}</Text>
-  } else {
-    message = _message;
-  }
-
-  const jsonData = enrichAccounts(_jsonData);
-
+  if (!message) message = <Text muted>{'""'}</Text>;
   return (
     <>
-      <AccountDialog
-        setActiveAccountAddress={setDialogAccount}
-        activeAccountAddress={dialogAccount}
-      />
       <LogText variant={type}>
         {timestring && (
           <Text muted monospace>
             {timestring}{" "}
           </Text>
         )}
-        <Pre>{message} </Pre>
+        <Pre>{message}</Pre>
         {link && (
           <NextLink href={link} shallow passHref>
             <Link as="a">{linkText}</Link>
@@ -226,7 +170,6 @@ export const Log: FC<ILog> = ({
         )}
         {expanded && jsonData && <Pre block>{jsonData}</Pre>}
       </LogText>
-      <br />
     </>
   );
 };

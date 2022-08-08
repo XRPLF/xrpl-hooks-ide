@@ -6,14 +6,15 @@ import calculateHookOn, { TTS } from "../../utils/hookOnCalculator";
 import { Link } from "../../components";
 import { ref } from "valtio";
 import estimateFee from "../../utils/estimateFee";
-import { SetHookData } from '../../utils/setHook';
+import { SetHookData } from "../../utils/setHook";
+import ResultLink from "../../components/ResultLink";
 
 export const sha256 = async (string: string) => {
   const utf8 = new TextEncoder().encode(string);
   const hashBuffer = await crypto.subtle.digest("SHA-256", utf8);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hashHex = hashArray
-    .map((bytes) => bytes.toString(16).padStart(2, "0"))
+    .map(bytes => bytes.toString(16).padStart(2, "0"))
     .join("");
   return hashHex;
 };
@@ -56,7 +57,7 @@ export const prepareDeployHookTx = async (
 ) => {
   const activeFile = state.files[state.active]?.compiledContent
     ? state.files[state.active]
-    : state.files.filter((file) => file.compiledContent)[0];
+    : state.files.filter(file => file.compiledContent)[0];
 
   if (!state.files || state.files.length === 0) {
     return;
@@ -69,12 +70,12 @@ export const prepareDeployHookTx = async (
     return;
   }
   const HookNamespace = (await sha256(data.HookNamespace)).toUpperCase();
-  const hookOnValues: (keyof TTS)[] = data.Invoke.map((tt) => tt.value);
+  const hookOnValues: (keyof TTS)[] = data.Invoke.map(tt => tt.value);
   const { HookParameters } = data;
   const filteredHookParameters = HookParameters.filter(
-    (hp) =>
+    hp =>
       hp.HookParameter.HookParameterName && hp.HookParameter.HookParameterValue
-  )?.map((aa) => ({
+  )?.map(aa => ({
     HookParameter: {
       HookParameterName: toHex(aa.HookParameter.HookParameterName || ""),
       HookParameterValue: aa.HookParameter.HookParameterValue || "",
@@ -128,7 +129,7 @@ export const deployHook = async (
   if (typeof window !== "undefined") {
     const activeFile = state.files[state.active]?.compiledContent
       ? state.files[state.active]
-      : state.files.filter((file) => file.compiledContent)[0];
+      : state.files.filter(file => file.compiledContent)[0];
     state.deployValues[activeFile.name] = data;
     const tx = await prepareDeployHookTx(account, data);
     if (!tx) {
@@ -141,7 +142,7 @@ export const deployHook = async (
 
     const { signedTransaction } = sign(tx, keypair);
     const currentAccount = state.accounts.find(
-      (acc) => acc.address === account.address
+      acc => acc.address === account.address
     );
     if (currentAccount) {
       currentAccount.isLoading = true;
@@ -154,6 +155,26 @@ export const deployHook = async (
         tx_blob: signedTransaction,
       });
 
+      const txHash = submitRes.tx_json?.hash;
+      const resultMsg = ref(
+        <>
+          [<ResultLink result={submitRes.engine_result} />]{" "}
+          {submitRes.engine_result_message}{" "}
+          {txHash && (
+            <>
+              Transaction hash:{" "}
+              <Link
+                as="a"
+                href={`https://${process.env.NEXT_PUBLIC_EXPLORER_URL}/${txHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {txHash}
+              </Link>
+            </>
+          )}
+        </>
+      );
       if (submitRes.engine_result === "tesSUCCESS") {
         state.deployLogs.push({
           type: "success",
@@ -161,28 +182,17 @@ export const deployHook = async (
         });
         state.deployLogs.push({
           type: "success",
-          message: ref(
-            <>
-              [{submitRes.engine_result}] {submitRes.engine_result_message}{" "}
-              Transaction hash:{" "}
-              <Link
-                as="a"
-                href={`https://${process.env.NEXT_PUBLIC_EXPLORER_URL}/${submitRes.tx_json?.hash}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {submitRes.tx_json?.hash}
-              </Link>
-            </>
-          ),
-          // message: `[${submitRes.engine_result}] ${submitRes.engine_result_message} Validated ledger index: ${submitRes.validated_ledger_index}`,
+          message: resultMsg,
+        });
+      } else if (submitRes.engine_result) {
+        state.deployLogs.push({
+          type: "error",
+          message: resultMsg,
         });
       } else {
         state.deployLogs.push({
           type: "error",
-          message: `[${submitRes.engine_result || submitRes.error}] ${
-            submitRes.engine_result_message || submitRes.error_exception
-          }`,
+          message: `[${submitRes.error}] ${submitRes.error_exception}`,
         });
       }
     } catch (err) {
@@ -204,7 +214,7 @@ export const deleteHook = async (account: IAccount & { name?: string }) => {
     return;
   }
   const currentAccount = state.accounts.find(
-    (acc) => acc.address === account.address
+    acc => acc.address === account.address
   );
   if (currentAccount?.isLoading || !currentAccount?.hooks.length) {
     return;
