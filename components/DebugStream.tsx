@@ -5,7 +5,6 @@ import { subscribeKey } from "valtio/utils";
 import { Select } from ".";
 import state, { ILog, transactionsState } from "../state";
 import { extractJSON } from "../utils/json";
-import EnrichAccounts from "./EnrichAccounts";
 import LogBox from "./LogBox";
 
 interface ISelect<T = string> {
@@ -100,17 +99,12 @@ const addListeners = (account: ISelect | null) => {
 
 subscribeKey(streamState, "selectedAccount", addListeners);
 
-const clearLog = () => {
-  streamState.logs = [];
-  streamState.statusChangeTimestamp = Date.now();
-};
-
 const DebugStream = () => {
   const { selectedAccount, logs } = useSnapshot(streamState);
   const { activeHeader: activeTxTab } = useSnapshot(transactionsState);
   const { accounts } = useSnapshot(state);
 
-  const accountOptions = accounts.map(acc => ({
+  const accountOptions = accounts.map((acc) => ({
     label: acc.name,
     value: acc.address,
   }));
@@ -123,7 +117,7 @@ const DebugStream = () => {
         options={accountOptions}
         hideSelectedOptions
         value={selectedAccount}
-        onChange={acc => {
+        onChange={(acc) => {
           streamState.socket?.close(
             4999,
             "Old connection closed because user switched account"
@@ -137,12 +131,17 @@ const DebugStream = () => {
 
   useEffect(() => {
     const account = transactionsState.transactions.find(
-      tx => tx.header === activeTxTab
+      (tx) => tx.header === activeTxTab
     )?.state.selectedAccount;
 
     if (account && account.value !== streamState.selectedAccount?.value)
       streamState.selectedAccount = account;
   }, [activeTxTab]);
+
+  const clearLog = () => {
+    streamState.logs = [];
+    streamState.statusChangeTimestamp = Date.now();
+  };
 
   return (
     <LogBox
@@ -171,16 +170,12 @@ export const pushLog = (
   const timestring = !timestamp ? tm : new Date(timestamp).toLocaleTimeString();
 
   const extracted = extractJSON(msg);
-  const _message = !extracted
+  const message = !extracted
     ? msg
     : msg.slice(0, extracted.start) + msg.slice(extracted.end + 1);
-  const message = ref(<EnrichAccounts str={_message} />);
 
-  const _jsonData = extracted
+  const jsonData = extracted
     ? JSON.stringify(extracted.result, null, 2)
-    : undefined;
-  const jsonData = _jsonData
-    ? ref(<EnrichAccounts str={_jsonData} />)
     : undefined;
 
   if (extracted?.result?.id?._Request?.includes("hooks-builder-req")) {
