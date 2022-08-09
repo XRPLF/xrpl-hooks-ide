@@ -148,7 +148,8 @@ export const Log: FC<ILog> = ({
 }) => {
   const [expanded, setExpanded] = useState(!defaultCollapsed);
 
-  if (!message) message = <Text muted>{'""'}</Text>;
+  if (message === undefined) message = <Text muted>{"undefined"}</Text>;
+  else if (message === "") message = <Text muted>{'""'}</Text>;
   return (
     <>
       <LogText variant={type}>
