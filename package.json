@@ -51,6 +51,7 @@
     "react-hook-form": "^7.28.0",
     "react-hot-keys": "^2.7.1",
     "react-hot-toast": "^2.1.1",
+    "react-markdown": "^8.0.3",
     "react-new-window": "^0.2.1",
     "react-select": "^5.2.1",
     "react-split": "^2.0.14",
