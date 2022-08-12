@@ -1,7 +1,6 @@
 import { Octokit } from "@octokit/core";
 import state, { IFile } from '../index';
 import { templateFileIds } from '../constants';
-import { file } from 'jszip';
 
 const octokit = new Octokit();
 
@@ -76,7 +75,7 @@ export const fetchFiles = async (gistId: string) => {
     state.files = files;
     state.gistId = gistId;
     state.gistOwner = res.data.owner?.login;
-    
+
     const gistName = files.find(file => file.language === 'c' || file.language === 'javascript')?.name || "untitled";
     state.gistName = gistName
   } catch (err) {
