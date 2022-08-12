@@ -79,6 +79,7 @@ export const fetchFiles = async (gistId: string) => {
     const gistName = files.find(file => file.language === 'c' || file.language === 'javascript')?.name || "untitled";
     state.gistName = gistName
   } catch (err) {
+    console.error(err)
     let message: string
     if (err instanceof Error) message = err.message
     else message = `Something went wrong, try again later!`
