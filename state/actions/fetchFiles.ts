@@ -62,8 +62,10 @@ export const fetchFiles = async (gistId: string) => {
         h: -1
       }
 
-      if (extPriority[aExt] || extPriority[bExt])
-        return (extPriority[bExt] || 0) - (extPriority[aExt] || 0)
+      if (extPriority[aExt] || extPriority[bExt]) {
+        const comp = (extPriority[bExt] || 0) - (extPriority[aExt] || 0)
+        if (comp !== 0) return comp
+      }
       // Otherwise fallback to alphabetical sorting
       return aBasename.localeCompare(bBasename)
     })
