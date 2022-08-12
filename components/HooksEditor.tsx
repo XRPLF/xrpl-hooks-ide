@@ -24,7 +24,7 @@ import { saveAllFiles } from "../state/actions/saveFile";
 import { Tab, Tabs } from "./Tabs";
 import { renameFile } from "../state/actions/createNewFile";
 import { Link } from ".";
-import Markdown from './Markdown';
+import Markdown from "./Markdown";
 
 const checkWritable = (filename?: string): boolean => {
   if (apiHeaderFiles.find(file => file === filename)) {
@@ -157,7 +157,12 @@ const HooksEditor = () => {
   );
   const previewToggle = (
     <Link
-      onClick={() => setIsMdPreview(!isMdPreview)}
+      onClick={() => {
+        if (!isMdPreview) {
+          saveFile(false);
+        }
+        setIsMdPreview(!isMdPreview);
+      }}
       css={{
         position: "absolute",
         right: 0,
