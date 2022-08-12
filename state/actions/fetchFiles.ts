@@ -57,8 +57,8 @@ export const fetchFiles = async (gistId: string) => {
 
       // default priority is undefined == 0
       const extPriority: Record<string, number> = {
-        c: 2,
-        md: 1,
+        c: 1,
+        md: 2,
         h: -1
       }
 
