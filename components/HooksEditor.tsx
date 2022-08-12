@@ -191,7 +191,17 @@ const HooksEditor = () => {
       {file?.language === "markdown" && previewToggle}
       {snap.files.length > 0 && router.isReady ? (
         isMdPreview && file?.language === "markdown" ? (
-          <Markdown>{file.content}</Markdown>
+          <Markdown
+            components={{
+              a: ({ href, children }) => (
+                <Link target="_blank" rel="noopener noreferrer" href={href}>
+                  {children}
+                </Link>
+              ),
+            }}
+          >
+            {file.content}
+          </Markdown>
         ) : (
           <Monaco
             keepCurrentModel
