@@ -1,0 +1,434 @@
+[
+  {
+    "code": 1,
+    "identifier": "AMENDMENT_DISABLED",
+    "description": "attempt to HookSet when amendment is not yet enabled."
+  },
+  {
+    "code": 2,
+    "identifier": "API_ILLEGAL",
+    "description": "HookSet object contained HookApiVersion for existing HookDefinition"
+  },
+  {
+    "code": 3,
+    "identifier": "API_INVALID",
+    "description": "HookSet object contained HookApiVersion for unrecognised hook API "
+  },
+  {
+    "code": 4,
+    "identifier": "API_MISSING",
+    "description": "HookSet object lacked HookApiVersion"
+  },
+  {
+    "code": 5,
+    "identifier": "BLOCK_ILLEGAL",
+    "description": " a block end instruction moves execution below depth 0 {{}}`}` <= like this"
+  },
+  {
+    "code": 5,
+    "identifier": "BLOCK_ILLEGAL",
+    "description": " a block end instruction moves execution below depth 0 {{}}`}` <= like this"
+  },
+  {
+    "code": 5,
+    "identifier": "BLOCK_ILLEGAL",
+    "description": " a block end instruction moves execution below depth 0 {{}}`}` <= like this"
+  },
+  {
+    "code": 5,
+    "identifier": "BLOCK_ILLEGAL",
+    "description": " a block end instruction moves execution below depth 0 {{}}`}` <= like this"
+  },
+  {
+    "code": 5,
+    "identifier": "BLOCK_ILLEGAL",
+    "description": " a block end instruction moves execution below depth 0 {{}}`}` <= like this"
+  },
+  {
+    "code": 5,
+    "identifier": "BLOCK_ILLEGAL",
+    "description": " a block end instruction moves execution below depth 0 {{}}`}` <= like this"
+  },
+  {
+    "code": 6,
+    "identifier": "CALL_ILLEGAL",
+    "description": "wasm tries to call a non-whitelisted function"
+  },
+  {
+    "code": 7,
+    "identifier": "CALL_INDIRECT",
+    "description": "wasm used call indirect instruction which is disallowed"
+  },
+  {
+    "code": 8,
+    "identifier": "CREATE_FLAG",
+    "description": "create operation requires hsoOVERRIDE"
+  },
+  {
+    "code": 9,
+    "identifier": "DELETE_FIELD",
+    "description": ""
+  },
+  {
+    "code": 10,
+    "identifier": "DELETE_FLAG",
+    "description": "delete operation requires hsoOVERRIDE"
+  },
+  {
+    "code": 11,
+    "identifier": "DELETE_NOTHING",
+    "description": "delete operation would delete nothing"
+  },
+  {
+    "code": 12,
+    "identifier": "EXPORTS_MISSING",
+    "description": "hook did not export *any* functions (should be cbak, hook)"
+  },
+  {
+    "code": 13,
+    "identifier": "EXPORT_CBAK_FUNC",
+    "description": "hook did not export correct func def int64_t cbak(uint32_t)"
+  },
+  {
+    "code": 14,
+    "identifier": "EXPORT_HOOK_FUNC",
+    "description": "hook did not export correct func def int64_t hook(uint32_t)"
+  },
+  {
+    "code": 15,
+    "identifier": "EXPORT_MISSING",
+    "description": "distinct from export*S*_missing, either hook or cbak is missing"
+  },
+  {
+    "identifier": "FLAGS_INVALID",
+    "code": 16,
+    "description": "HookSet flags were invalid for specified operation                          "
+  },
+  {
+    "identifier": "FUNCS_MISSING",
+    "code": 17,
+    "description": "hook did not include function code for any functions                        "
+  },
+  {
+    "identifier": "FUNC_PARAM_INVALID",
+    "code": 18,
+    "description": "parameter types may only be i32 i64 u32 u64                                 "
+  },
+  {
+    "identifier": "FUNC_RETURN_COUNT",
+    "code": 19,
+    "description": "a function type is defined in the wasm which returns > 1 return value       "
+  },
+  {
+    "identifier": "FUNC_RETURN_INVALID",
+    "code": 20,
+    "description": "a function type does not return i32 i64 u32 or u64                          "
+  },
+  {
+    "identifier": "FUNC_TYPELESS",
+    "code": 21,
+    "description": "hook defined hook/cbak but their type is not defined in wasm                "
+  },
+  {
+    "identifier": "FUNC_TYPE_INVALID",
+    "code": 22,
+    "description": "malformed and illegal wasm in the func type section                         "
+  },
+  {
+    "identifier": "GRANTS_EMPTY",
+    "code": 23,
+    "description": "HookSet object contained an empty grants array (you should remove it)       "
+  },
+  {
+    "identifier": "GRANTS_EXCESS",
+    "code": 24,
+    "description": "HookSet object cotnained a grants array with too many grants                "
+  },
+  {
+    "identifier": "GRANTS_FIELD",
+    "code": 25,
+    "description": "HookSet object contained a grant without Authorize or HookHash              "
+  },
+  {
+    "identifier": "GRANTS_ILLEGAL",
+    "code": 26,
+    "description": "Hookset object contained grants array which contained a non Grant object    "
+  },
+  {
+    "identifier": "GUARD_IMPORT",
+    "code": 27,
+    "description": "guard import is missing                                                     "
+  },
+  {
+    "identifier": "GUARD_MISSING",
+    "code": 28,
+    "description": "guard call missing at top of loop                                           "
+  },
+  {
+    "identifier": "GUARD_PARAMETERS",
+    "code": 29,
+    "description": "guard called but did not use constant expressions for params                "
+  },
+  {
+    "identifier": "HASH_OR_CODE",
+    "code": 30,
+    "description": "HookSet object can contain only one of CreateCode and HookHash              "
+  },
+  {
+    "identifier": "HOOKON_MISSING",
+    "code": 31,
+    "description": "HookSet object did not contain HookOn but should have                       "
+  },
+  {
+    "identifier": "HOOKS_ARRAY_BAD",
+    "code": 32,
+    "description": "attempt to HookSet with a Hooks array containing a non-Hook obj             "
+  },
+  {
+    "identifier": "HOOKS_ARRAY_BLANK",
+    "code": 33,
+    "description": "all hook set objs were blank                                                "
+  },
+  {
+    "identifier": "HOOKS_ARRAY_EMPTY",
+    "code": 34,
+    "description": "attempt to HookSet with an empty Hooks array                                "
+  },
+  {
+    "identifier": "HOOKS_ARRAY_MISSING",
+    "code": 35,
+    "description": "attempt to HookSet without a Hooks array                                    "
+  },
+  {
+    "identifier": "HOOKS_ARRAY_TOO_BIG",
+    "code": 36,
+    "description": "attempt to HookSet with a Hooks array beyond the chain size limit           "
+  },
+  {
+    "identifier": "HOOK_ADD",
+    "code": 37,
+    "description": "Informational: adding ltHook to directory                                   "
+  },
+  {
+    "identifier": "HOOK_DEF_MISSING",
+    "code": 38,
+    "description": "attempt to reference a hook definition (by hash) that is not on ledger      "
+  },
+  {
+    "identifier": "HOOK_DELETE",
+    "code": 39,
+    "description": "unable to delete ltHook from owner                                          "
+  },
+  {
+    "identifier": "HOOK_INVALID_FIELD",
+    "code": 40,
+    "description": "HookSetObj contained an illegal/unexpected field                            "
+  },
+  {
+    "identifier": "HOOK_PARAMS_COUNT",
+    "code": 41,
+    "description": "hookset obj would create too many hook parameters                           "
+  },
+  {
+    "identifier": "HOOK_PARAM_SIZE",
+    "code": 42,
+    "description": "hookset obj sets a parameter or value that exceeds max allowable size       "
+  },
+  {
+    "identifier": "IMPORTS_MISSING",
+    "code": 43,
+    "description": "hook must import guard, and accept/rollback                                 "
+  },
+  {
+    "identifier": "IMPORT_ILLEGAL",
+    "code": 44,
+    "description": "attempted import of a non-whitelisted function                              "
+  },
+  {
+    "identifier": "IMPORT_MODULE_BAD",
+    "code": 45,
+    "description": "hook attempted to specify no or a bad import module                         "
+  },
+  {
+    "identifier": "IMPORT_MODULE_ENV",
+    "code": 46,
+    "description": "hook attempted to specify import module not named env                       "
+  },
+  {
+    "identifier": "IMPORT_NAME_BAD",
+    "code": 47,
+    "description": "import name was too short or too long                                       "
+  },
+  {
+    "identifier": "INSTALL_FLAG",
+    "code": 48,
+    "description": "install operation requires hsoOVERRIDE                                      "
+  },
+  {
+    "identifier": "INSTALL_MISSING",
+    "code": 49,
+    "description": "install operation specifies hookhash which doesn't exist on the ledger      "
+  },
+  {
+    "identifier": "INSTRUCTION_COUNT",
+    "code": 50,
+    "description": "worst case execution instruction count as computed by HookSet               "
+  },
+  {
+    "identifier": "INSTRUCTION_EXCESS",
+    "code": 51,
+    "description": "worst case execution instruction count was too large                        "
+  },
+  {
+    "identifier": "MEMORY_GROW",
+    "code": 52,
+    "description": "memory.grow instruction is present but disallowed                           "
+  },
+  {
+    "identifier": "NAMESPACE_MISSING",
+    "code": 53,
+    "description": "HookSet object lacked HookNamespace                                         "
+  },
+  {
+    "identifier": "NSDELETE",
+    "code": 54,
+    "description": "Informational: a namespace is being deleted                                 "
+  },
+  {
+    "identifier": "NSDELETE_ACCOUNT",
+    "code": 55,
+    "description": "nsdelete tried to delete ns from a non-existing account                     "
+  },
+  {
+    "identifier": "NSDELETE_COUNT",
+    "code": 56,
+    "description": "namespace state count less than 0 / overflow                                "
+  },
+  {
+    "identifier": "NSDELETE_DIR",
+    "code": 57,
+    "description": "could not delete directory node in ledger                                   "
+  },
+  {
+    "identifier": "NSDELETE_DIRECTORY",
+    "code": 58,
+    "description": "nsdelete operation failed to delete ns directory                            "
+  },
+  {
+    "identifier": "NSDELETE_DIR_ENTRY",
+    "code": 59,
+    "description": "nsdelete operation failed due to bad entry in ns directory                  "
+  },
+  {
+    "identifier": "NSDELETE_ENTRY",
+    "code": 60,
+    "description": "nsdelete operation failed due to missing hook state entry                   "
+  },
+  {
+    "identifier": "NSDELETE_FIELD",
+    "code": 61
+  },
+  {
+    "identifier": "NSDELETE_FLAGS",
+    "code": 62
+  },
+  {
+    "identifier": "NSDELETE_NONSTATE",
+    "code": 63,
+    "description": "nsdelete operation failed due to the presence of a non-hookstate obj        "
+  },
+  {
+    "identifier": "NSDELETE_NOTHING",
+    "code": 64,
+    "description": "hsfNSDELETE provided but nothing to delete                                  "
+  },
+  {
+    "identifier": "OPERATION_INVALID",
+    "code": 65,
+    "description": "could not deduce an operation from the provided hookset obj                 "
+  },
+  {
+    "identifier": "OVERRIDE_MISSING",
+    "code": 66,
+    "description": "HookSet object was trying to update or delete a hook but lacked hsfOVERRIDE "
+  },
+  {
+    "identifier": "PARAMETERS_FIELD",
+    "code": 67,
+    "description": "HookParameters contained a HookParameter with an invalid key in it          "
+  },
+  {
+    "identifier": "PARAMETERS_ILLEGAL",
+    "code": 68,
+    "description": "HookParameters contained something other than a HookParameter               "
+  },
+  {
+    "identifier": "PARAMETERS_NAME",
+    "code": 69,
+    "description": "HookParameters contained a HookParameter which lacked ParameterName field   "
+  },
+  {
+    "identifier": "PARAM_HOOK_CBAK",
+    "code": 70,
+    "description": "hook and cbak must take exactly one u32 parameter                           "
+  },
+  {
+    "identifier": "RETURN_HOOK_CBAK",
+    "code": 71,
+    "description": "hook and cbak must retunr i64                                               "
+  },
+  {
+    "identifier": "SHORT_HOOK",
+    "code": 72,
+    "description": "web assembly byte code ended abruptly                                       "
+  },
+  {
+    "identifier": "TYPE_INVALID",
+    "code": 73,
+    "description": "malformed and illegal wasm specifying an illegal local var type             "
+  },
+  {
+    "identifier": "WASM_BAD_MAGIC",
+    "code": 74,
+    "description": "wasm magic number missing or not wasm                                       "
+  },
+  {
+    "identifier": "WASM_INVALID",
+    "code": 75,
+    "description": "set hook operation would set invalid wasm                                   "
+  },
+  {
+    "identifier": "WASM_PARSE_LOOP",
+    "code": 76,
+    "description": "wasm section parsing resulted in an infinite loop                           "
+  },
+  {
+    "identifier": "WASM_SMOKE_TEST",
+    "code": 77,
+    "description": "Informational: first attempt to load wasm into wasm runtime                 "
+  },
+  {
+    "identifier": "WASM_TEST_FAILURE",
+    "code": 78,
+    "description": "the smoke test failed                                                       "
+  },
+  {
+    "identifier": "WASM_TOO_BIG",
+    "code": 79,
+    "description": "set hook would exceed maximum hook size                                     "
+  },
+  {
+    "identifier": "WASM_TOO_SMALL",
+    "code": 80
+  },
+  {
+    "identifier": "WASM_VALIDATION",
+    "code": 81,
+    "description": "a generic error while parsing wasm, usually leb128 overflow"
+  },
+  {
+    "identifier": "HOOK_CBAK_DIFF_TYPES",
+    "code": 82,
+    "description": "hook and cbak function definitions were different"
+  }
+]

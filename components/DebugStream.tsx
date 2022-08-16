@@ -5,7 +5,7 @@ import { subscribeKey } from "valtio/utils";
 import { Select } from ".";
 import state, { ILog, transactionsState } from "../state";
 import { extractJSON } from "../utils/json";
-import EnrichAccounts from "./EnrichAccounts";
+import EnrichLog from "./EnrichLog";
 import LogBox from "./LogBox";
 
 interface ISelect<T = string> {
@@ -174,13 +174,13 @@ export const pushLog = (
   const _message = !extracted
     ? msg
     : msg.slice(0, extracted.start) + msg.slice(extracted.end + 1);
-  const message = ref(<EnrichAccounts str={_message} />);
+  const message = ref(<EnrichLog str={_message} />);
 
   const _jsonData = extracted
     ? JSON.stringify(extracted.result, null, 2)
     : undefined;
   const jsonData = _jsonData
-    ? ref(<EnrichAccounts str={_jsonData} />)
+    ? ref(<EnrichLog str={_jsonData} />)
     : undefined;
 
   if (extracted?.result?.id?._Request?.includes("hooks-builder-req")) {

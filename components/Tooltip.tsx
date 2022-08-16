@@ -79,6 +79,7 @@ const Tooltip: React.FC<
       open={open}
       defaultOpen={defaultOpen}
       onOpenChange={onOpenChange}
+      delayDuration={100}
     >
       <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
       <StyledContent side="bottom" align="center" {...rest}>
