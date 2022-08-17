@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useSnapshot, ref } from "valtio";
-import type monaco from "monaco-editor";
-import { ArrowBendLeftUp } from "phosphor-react";
-import { useTheme } from "next-themes";
-import { useRouter } from "next/router";
+import React, { useEffect, useRef, useState } from 'react'
+import { useSnapshot, ref } from 'valtio'
+import type monaco from 'monaco-editor'
+import { ArrowBendLeftUp } from 'phosphor-react'
+import { useTheme } from 'next-themes'
+import { useRouter } from 'next/router'
 
 import Box from './Box'
 import Container from './Container'
@@ -18,13 +18,13 @@ import { createLanguageClient, createWebSocket } from '../utils/languageClient'
 import { listen } from '@codingame/monaco-jsonrpc'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 
-import docs from "../xrpl-hooks-docs/docs";
-import Monaco from "./Monaco";
-import { saveAllFiles } from "../state/actions/saveFile";
-import { Tab, Tabs } from "./Tabs";
-import { renameFile } from "../state/actions/createNewFile";
-import { Link } from ".";
-import Markdown from "./Markdown";
+import docs from '../xrpl-hooks-docs/docs'
+import Monaco from './Monaco'
+import { saveAllFiles } from '../state/actions/saveFile'
+import { Tab, Tabs } from './Tabs'
+import { renameFile } from '../state/actions/createNewFile'
+import { Link } from '.'
+import Markdown from './Markdown'
 
 const checkWritable = (filename?: string): boolean => {
   if (apiHeaderFiles.find(file => file === filename)) {
@@ -34,10 +34,10 @@ const checkWritable = (filename?: string): boolean => {
 }
 
 const validateWritability = (editor: monaco.editor.IStandaloneCodeEditor) => {
-  const filename = editor.getModel()?.uri.path.split("/").pop();
-  const isWritable = checkWritable(filename);
-  editor.updateOptions({ readOnly: !isWritable });
-};
+  const filename = editor.getModel()?.uri.path.split('/').pop()
+  const isWritable = checkWritable(filename)
+  editor.updateOptions({ readOnly: !isWritable })
+}
 
 let decorations: { [key: string]: string[] } = {}
 
@@ -95,13 +95,13 @@ const setMarkers = (monacoE: typeof monaco) => {
 }
 
 const HooksEditor = () => {
-  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
-  const monacoRef = useRef<typeof monaco>();
-  const subscriptionRef = useRef<ReconnectingWebSocket | null>(null);
-  const snap = useSnapshot(state);
-  const router = useRouter();
-  const { theme } = useTheme();
-  const [isMdPreview, setIsMdPreview] = useState(true);
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>()
+  const monacoRef = useRef<typeof monaco>()
+  const subscriptionRef = useRef<ReconnectingWebSocket | null>(null)
+  const snap = useSnapshot(state)
+  const router = useRouter()
+  const { theme } = useTheme()
+  const [isMdPreview, setIsMdPreview] = useState(true)
 
   useEffect(() => {
     if (editorRef.current) validateWritability(editorRef.current)
@@ -140,36 +140,30 @@ const HooksEditor = () => {
       }}
     >
       {snap.files.map((file, index) => {
-        return (
-          <Tab
-            key={file.name}
-            header={file.name}
-            renameDisabled={!checkWritable(file.name)}
-          />
-        );
+        return <Tab key={file.name} header={file.name} renameDisabled={!checkWritable(file.name)} />
       })}
     </Tabs>
-  );
+  )
   const previewToggle = (
     <Link
       onClick={() => {
         if (!isMdPreview) {
-          saveFile(false);
+          saveFile(false)
         }
-        setIsMdPreview(!isMdPreview);
+        setIsMdPreview(!isMdPreview)
       }}
       css={{
-        position: "absolute",
+        position: 'absolute',
         right: 0,
         bottom: 0,
         zIndex: 10,
-        m: "$1",
-        fontSize: "$sm",
+        m: '$1',
+        fontSize: '$sm'
       }}
     >
-      {isMdPreview ? "Exit Preview" : "View Preview"}
+      {isMdPreview ? 'Exit Preview' : 'View Preview'}
     </Link>
-  );
+  )
   return (
     <Box
       css={{
@@ -183,16 +177,16 @@ const HooksEditor = () => {
       }}
     >
       <EditorNavigation renderNav={renderNav} />
-      {file?.language === "markdown" && previewToggle}
+      {file?.language === 'markdown' && previewToggle}
       {snap.files.length > 0 && router.isReady ? (
-        isMdPreview && file?.language === "markdown" ? (
+        isMdPreview && file?.language === 'markdown' ? (
           <Markdown
             components={{
               a: ({ href, children }) => (
                 <Link target="_blank" rel="noopener noreferrer" href={href}>
                   {children}
                 </Link>
-              ),
+              )
             }}
           >
             {file.content}
@@ -213,39 +207,39 @@ const HooksEditor = () => {
                     file.language,
                     monaco.Uri.parse(`file:///work/c/${file.name}`)
                   )
-                );
+                )
               }
 
               // create the web socket
               if (!subscriptionRef.current) {
                 monaco.languages.register({
-                  id: "c",
-                  extensions: [".c", ".h"],
-                  aliases: ["C", "c", "H", "h"],
-                  mimetypes: ["text/plain"],
-                });
-                MonacoServices.install(monaco);
+                  id: 'c',
+                  extensions: ['.c', '.h'],
+                  aliases: ['C', 'c', 'H', 'h'],
+                  mimetypes: ['text/plain']
+                })
+                MonacoServices.install(monaco)
                 const webSocket = createWebSocket(
-                  process.env.NEXT_PUBLIC_LANGUAGE_SERVER_API_ENDPOINT || ""
-                );
-                subscriptionRef.current = webSocket;
+                  process.env.NEXT_PUBLIC_LANGUAGE_SERVER_API_ENDPOINT || ''
+                )
+                subscriptionRef.current = webSocket
                 // listen when the web socket is opened
                 listen({
                   webSocket: webSocket as WebSocket,
                   onConnection: connection => {
                     // create and start the language client
-                    const languageClient = createLanguageClient(connection);
-                    const disposable = languageClient.start();
+                    const languageClient = createLanguageClient(connection)
+                    const disposable = languageClient.start()
 
                     connection.onClose(() => {
                       try {
-                        disposable.dispose();
+                        disposable.dispose()
                       } catch (err) {
-                        console.log("err", err);
+                        console.log('err', err)
                       }
-                    });
-                  },
-                });
+                    })
+                  }
+                })
               }
 
               // editor.updateOptions({
@@ -255,54 +249,47 @@ const HooksEditor = () => {
               //   ...snap.editorSettings,
               // });
               if (!state.editorCtx) {
-                state.editorCtx = ref(monaco.editor);
+                state.editorCtx = ref(monaco.editor)
               }
             }}
             onMount={(editor, monaco) => {
-              editorRef.current = editor;
-              monacoRef.current = monaco;
+              editorRef.current = editor
+              monacoRef.current = monaco
               editor.updateOptions({
                 glyphMargin: true,
                 lightbulb: {
-                  enabled: true,
-                },
-              });
-              editor.addCommand(
-                monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
-                () => {
-                  saveFile();
+                  enabled: true
                 }
-              );
+              })
+              editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+                saveFile()
+              })
               // When the markers (errors/warnings from clangd language server) change
               // Lets improve the markers by adding extra content to them from related
               // md files
               monaco.editor.onDidChangeMarkers(() => {
                 if (monacoRef.current) {
-                  setMarkers(monacoRef.current);
+                  setMarkers(monacoRef.current)
                 }
-              });
+              })
 
               // Hacky way to hide Peek menu
               editor.onContextMenu(e => {
-                const host =
-                  document.querySelector<HTMLElement>(".shadow-root-host");
+                const host = document.querySelector<HTMLElement>('.shadow-root-host')
 
-                const contextMenuItems =
-                  host?.shadowRoot?.querySelectorAll("li.action-item");
+                const contextMenuItems = host?.shadowRoot?.querySelectorAll('li.action-item')
                 contextMenuItems?.forEach(k => {
                   // If menu item contains "Peek" lets hide it
-                  if (
-                    k.querySelector(".action-label")?.textContent === "Peek"
-                  ) {
+                  if (k.querySelector('.action-label')?.textContent === 'Peek') {
                     // @ts-expect-error
-                    k["style"].display = "none";
+                    k['style'].display = 'none'
                   }
-                });
-              });
+                })
+              })
 
-              validateWritability(editor);
+              validateWritability(editor)
             }}
-            theme={theme === "dark" ? "dark" : "light"}
+            theme={theme === 'dark' ? 'dark' : 'light'}
           />
         )
       ) : (
