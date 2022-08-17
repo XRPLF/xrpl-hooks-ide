@@ -47,8 +47,6 @@ export const fetchFiles = async (gistId: string) => {
       content: res.data.files?.[filename]?.content || "",
     }));
 
-    // Sort files so that the source files are first
-    // In case of other files leave the order as it its
     files.sort((a, b) => {
       const aBasename = a.name.split('.')?.[0];
       const aExt = a.name.split('.').pop() || '';
@@ -62,10 +60,10 @@ export const fetchFiles = async (gistId: string) => {
         h: -1
       }
 
-      if (extPriority[aExt] || extPriority[bExt]) {
-        const comp = (extPriority[bExt] || 0) - (extPriority[aExt] || 0)
-        if (comp !== 0) return comp
-      }
+      // Sort based on extention priorities
+      const comp = (extPriority[bExt] || 0) - (extPriority[aExt] || 0)
+      if (comp !== 0) return comp
+  
       // Otherwise fallback to alphabetical sorting
       return aBasename.localeCompare(bBasename)
     })
