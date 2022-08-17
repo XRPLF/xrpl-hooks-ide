@@ -1,11 +1,5 @@
 const Carbon = () => (
-  <svg
-    width="66"
-    height="32"
-    viewBox="0 0 66 32"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="66" height="32" viewBox="0 0 66 32" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M33 2L23 15H28L21 24H45L38 15H43L33 2Z"
       stroke="#EDEDEF"
@@ -35,6 +29,6 @@ const Carbon = () => (
       fill="#EDEDEF"
     />
   </svg>
-);
+)
 
-export default Carbon;
+export default Carbon

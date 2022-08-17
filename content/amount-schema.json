@@ -5,10 +5,7 @@
   "schema": {
     "anyOf": [
       {
-        "type": [
-          "number",
-          "string"
-        ],
+        "type": ["number", "string"],
         "exclusiveMinimum": 0,
         "maximum": "100000000000000000"
       },
@@ -19,10 +16,7 @@
             "description": "Arbitrary currency code for the token. Cannot be XRP."
           },
           "value": {
-            "type": [
-              "string",
-              "number"
-            ],
+            "type": ["string", "number"],
             "description": "Quoted decimal representation of the amount of the token."
           },
           "issuer": {

@@ -1,30 +1,23 @@
-import {
-  useRef,
-  useLayoutEffect,
-  ReactNode,
-  FC,
-  useState,
-  useCallback,
-} from "react";
-import { IconProps, Notepad, Prohibit } from "phosphor-react";
-import useStayScrolled from "react-stay-scrolled";
-import NextLink from "next/link";
+import { useRef, useLayoutEffect, ReactNode, FC, useState, useCallback } from 'react'
+import { IconProps, Notepad, Prohibit } from 'phosphor-react'
+import useStayScrolled from 'react-stay-scrolled'
+import NextLink from 'next/link'
 
-import Container from "./Container";
-import LogText from "./LogText";
-import state, { ILog } from "../state";
-import { Pre, Link, Heading, Button, Text, Flex, Box } from ".";
-import regexifyString from "regexify-string";
-import { useSnapshot } from "valtio";
-import { AccountDialog } from "./Accounts";
+import Container from './Container'
+import LogText from './LogText'
+import state, { ILog } from '../state'
+import { Pre, Link, Heading, Button, Text, Flex, Box } from '.'
+import regexifyString from 'regexify-string'
+import { useSnapshot } from 'valtio'
+import { AccountDialog } from './Accounts'
 
 interface ILogBox {
-  title: string;
-  clearLog?: () => void;
-  logs: ILog[];
-  renderNav?: () => ReactNode;
-  enhanced?: boolean;
-  Icon?: FC<IconProps>;
+  title: string
+  clearLog?: () => void
+  logs: ILog[]
+  renderNav?: () => ReactNode
+  enhanced?: boolean
+  Icon?: FC<IconProps>
 }
 
 const LogBox: FC<ILogBox> = ({
@@ -34,40 +27,40 @@ const LogBox: FC<ILogBox> = ({
   children,
   renderNav,
   enhanced,
-  Icon = Notepad,
+  Icon = Notepad
 }) => {
-  const logRef = useRef<HTMLPreElement>(null);
-  const { stayScrolled /*, scrollBottom*/ } = useStayScrolled(logRef);
+  const logRef = useRef<HTMLPreElement>(null)
+  const { stayScrolled /*, scrollBottom*/ } = useStayScrolled(logRef)
 
   useLayoutEffect(() => {
-    stayScrolled();
-  }, [stayScrolled, logs]);
+    stayScrolled()
+  }, [stayScrolled, logs])
 
   return (
     <Flex
       as="div"
       css={{
-        display: "flex",
-        borderTop: "1px solid $mauve6",
-        background: "$mauve1",
-        position: "relative",
+        display: 'flex',
+        borderTop: '1px solid $mauve6',
+        background: '$mauve1',
+        position: 'relative',
         flex: 1,
-        height: "100%",
+        height: '100%'
       }}
     >
       <Container
         css={{
           px: 0,
-          height: "100%",
+          height: '100%'
         }}
       >
         <Flex
           fluid
           css={{
-            height: "48px",
-            alignItems: "center",
-            fontSize: "$sm",
-            fontWeight: 300,
+            height: '48px',
+            alignItems: 'center',
+            fontSize: '$sm',
+            fontWeight: 300
           }}
         >
           <Heading
@@ -75,13 +68,13 @@ const LogBox: FC<ILogBox> = ({
             css={{
               fontWeight: 300,
               m: 0,
-              fontSize: "11px",
-              color: "$mauve12",
-              px: "$3",
-              textTransform: "uppercase",
-              alignItems: "center",
-              display: "inline-flex",
-              gap: "$3",
+              fontSize: '11px',
+              color: '$mauve12',
+              px: '$3',
+              textTransform: 'uppercase',
+              alignItems: 'center',
+              display: 'inline-flex',
+              gap: '$3'
             }}
           >
             <Icon size="15px" /> <Text css={{ lineHeight: 1 }}>{title}</Text>
@@ -95,7 +88,7 @@ const LogBox: FC<ILogBox> = ({
           >
             {renderNav?.()}
           </Flex>
-          <Flex css={{ ml: "auto", gap: "$3", marginRight: "$3" }}>
+          <Flex css={{ ml: 'auto', gap: '$3', marginRight: '$3' }}>
             {clearLog && (
               <Button ghost size="xs" onClick={clearLog}>
                 <Prohibit size="14px" />
@@ -110,17 +103,17 @@ const LogBox: FC<ILogBox> = ({
           css={{
             margin: 0,
             // display: "inline-block",
-            display: "flex",
-            flexDirection: "column",
-            width: "100%",
-            height: "calc(100% - 48px)", // 100% minus the logbox header height
-            overflowY: "auto",
-            fontSize: "13px",
-            fontWeight: "$body",
-            fontFamily: "$monospace",
-            px: "$3",
-            pb: "$2",
-            whiteSpace: "normal",
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            height: 'calc(100% - 48px)', // 100% minus the logbox header height
+            overflowY: 'auto',
+            fontSize: '13px',
+            fontWeight: '$body',
+            fontFamily: '$monospace',
+            px: '$3',
+            pb: '$2',
+            whiteSpace: 'normal'
           }}
         >
           {logs?.map((log, index) => (
@@ -128,13 +121,13 @@ const LogBox: FC<ILogBox> = ({
               as="span"
               key={log.type + index}
               css={{
-                "@hover": {
-                  "&:hover": {
-                    backgroundColor: enhanced ? "$backgroundAlt" : undefined,
-                  },
+                '@hover': {
+                  '&:hover': {
+                    backgroundColor: enhanced ? '$backgroundAlt' : undefined
+                  }
                 },
-                p: enhanced ? "$1" : undefined,
-                my: enhanced ? "$1" : undefined,
+                p: enhanced ? '$1' : undefined,
+                my: enhanced ? '$1' : undefined
               }}
             >
               <Log {...log} />
@@ -144,8 +137,8 @@ const LogBox: FC<ILogBox> = ({
         </Box>
       </Container>
     </Flex>
-  );
-};
+  )
+}
 
 export const Log: FC<ILog> = ({
   type,
@@ -154,21 +147,21 @@ export const Log: FC<ILog> = ({
   link,
   linkText,
   defaultCollapsed,
-  jsonData: _jsonData,
+  jsonData: _jsonData
 }) => {
-  const [expanded, setExpanded] = useState(!defaultCollapsed);
-  const { accounts } = useSnapshot(state);
-  const [dialogAccount, setDialogAccount] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(!defaultCollapsed)
+  const { accounts } = useSnapshot(state)
+  const [dialogAccount, setDialogAccount] = useState<string | null>(null)
 
   const enrichAccounts = useCallback(
     (str?: string): ReactNode => {
-      if (!str || !accounts.length) return str;
+      if (!str || !accounts.length) return str
 
-      const pattern = `(${accounts.map(acc => acc.address).join("|")})`;
+      const pattern = `(${accounts.map(acc => acc.address).join('|')})`
       const res = regexifyString({
-        pattern: new RegExp(pattern, "gim"),
+        pattern: new RegExp(pattern, 'gim'),
         decorator: (match, idx) => {
-          const name = accounts.find(acc => acc.address === match)?.name;
+          const name = accounts.find(acc => acc.address === match)?.name
           return (
             <Link
               key={match + idx}
@@ -179,27 +172,27 @@ export const Log: FC<ILog> = ({
             >
               {name || match}
             </Link>
-          );
+          )
         },
-        input: str,
-      });
+        input: str
+      })
 
-      return <>{res}</>;
+      return <>{res}</>
     },
     [accounts]
-  );
+  )
 
-  let message: ReactNode;
+  let message: ReactNode
 
-  if (typeof _message === "string") {
-    _message = _message.trim().replace(/\n /gi, "\n");
-    if (_message) message = enrichAccounts(_message);
+  if (typeof _message === 'string') {
+    _message = _message.trim().replace(/\n /gi, '\n')
+    if (_message) message = enrichAccounts(_message)
     else message = <Text muted>{'""'}</Text>
   } else {
-    message = _message;
+    message = _message
   }
 
-  const jsonData = enrichAccounts(_jsonData);
+  const jsonData = enrichAccounts(_jsonData)
 
   return (
     <>
@@ -210,7 +203,7 @@ export const Log: FC<ILog> = ({
       <LogText variant={type}>
         {timestring && (
           <Text muted monospace>
-            {timestring}{" "}
+            {timestring}{' '}
           </Text>
         )}
         <Pre>{message} </Pre>
@@ -221,14 +214,14 @@ export const Log: FC<ILog> = ({
         )}
         {jsonData && (
           <Link onClick={() => setExpanded(!expanded)} as="a">
-            {expanded ? "Collapse" : "Expand"}
+            {expanded ? 'Collapse' : 'Expand'}
           </Link>
         )}
         {expanded && jsonData && <Pre block>{jsonData}</Pre>}
       </LogText>
       <br />
     </>
-  );
-};
+  )
+}
 
-export default LogBox;
+export default LogBox

@@ -1,15 +1,15 @@
-import { forwardRef } from "react";
-import { mauve, mauveDark, purple, purpleDark } from "@radix-ui/colors";
-import { useTheme } from "next-themes";
-import { styled } from "../stitches.config";
-import dynamic from "next/dynamic";
-import type { Props } from "react-select";
-const SelectInput = dynamic(() => import("react-select"), { ssr: false });
+import { forwardRef } from 'react'
+import { mauve, mauveDark, purple, purpleDark } from '@radix-ui/colors'
+import { useTheme } from 'next-themes'
+import { styled } from '../stitches.config'
+import dynamic from 'next/dynamic'
+import type { Props } from 'react-select'
+const SelectInput = dynamic(() => import('react-select'), { ssr: false })
 
 // eslint-disable-next-line react/display-name
 const Select = forwardRef<any, Props>((props, ref) => {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
   const colors: any = {
     // primary: pink.pink9,
     active: isDark ? purpleDark.purple9 : purple.purple9,
@@ -26,102 +26,97 @@ const Select = forwardRef<any, Props>((props, ref) => {
     mauve9: isDark ? mauveDark.mauve9 : mauve.mauve9,
     mauve12: isDark ? mauveDark.mauve12 : mauve.mauve12,
     border: isDark ? mauveDark.mauve10 : mauve.mauve10,
-    placeholder: isDark ? mauveDark.mauve11 : mauve.mauve11,
-  };
-  colors.outline = colors.background;
-  colors.selected = colors.secondary;
+    placeholder: isDark ? mauveDark.mauve11 : mauve.mauve11
+  }
+  colors.outline = colors.background
+  colors.selected = colors.secondary
   return (
     <SelectInput
       ref={ref}
-      menuPosition={props.menuPosition || "fixed"}
+      menuPosition={props.menuPosition || 'fixed'}
       styles={{
-        container: (provided) => {
+        container: provided => {
           return {
             ...provided,
-            position: "relative",
-          };
+            position: 'relative'
+          }
         },
-        singleValue: (provided) => ({
+        singleValue: provided => ({
           ...provided,
-          color: colors.mauve12,
+          color: colors.mauve12
         }),
-        menu: (provided) => ({
+        menu: provided => ({
           ...provided,
-          backgroundColor: colors.dropDownBg,
+          backgroundColor: colors.dropDownBg
         }),
         control: (provided, state) => {
           return {
             ...provided,
             minHeight: 0,
-            border: "0px",
+            border: '0px',
             backgroundColor: colors.mauve4,
-            boxShadow: `0 0 0 1px ${
-              state.isFocused ? colors.border : colors.secondary
-            }`,
-          };
+            boxShadow: `0 0 0 1px ${state.isFocused ? colors.border : colors.secondary}`
+          }
         },
-        input: (provided) => {
+        input: provided => {
           return {
             ...provided,
-            color: "$text",
-          };
+            color: '$text'
+          }
         },
-        multiValue: (provided) => {
+        multiValue: provided => {
           return {
             ...provided,
-            backgroundColor: colors.mauve8,
-          };
+            backgroundColor: colors.mauve8
+          }
         },
-        multiValueLabel: (provided) => {
+        multiValueLabel: provided => {
           return {
             ...provided,
-            color: colors.mauve12,
-          };
+            color: colors.mauve12
+          }
         },
-        multiValueRemove: (provided) => {
+        multiValueRemove: provided => {
           return {
             ...provided,
-            ":hover": {
-              background: colors.mauve9,
-            },
-          };
+            ':hover': {
+              background: colors.mauve9
+            }
+          }
         },
         option: (provided, state) => {
           return {
             ...provided,
             color: colors.searchText,
-            backgroundColor:
-              state.isFocused
-                ? colors.activeLight
-                : colors.dropDownBg,
-            ":hover": {
+            backgroundColor: state.isFocused ? colors.activeLight : colors.dropDownBg,
+            ':hover': {
               backgroundColor: colors.active,
-              color: "#ffffff",
+              color: '#ffffff'
             },
-            ":selected": {
-              backgroundColor: "red",
-            },
-          };
+            ':selected': {
+              backgroundColor: 'red'
+            }
+          }
         },
-        indicatorSeparator: (provided) => {
+        indicatorSeparator: provided => {
           return {
             ...provided,
-            backgroundColor: colors.secondary,
-          };
+            backgroundColor: colors.secondary
+          }
         },
         dropdownIndicator: (provided, state) => {
           return {
             ...provided,
             color: state.isFocused ? colors.border : colors.secondary,
-            ":hover": {
-              color: colors.border,
-            },
-          };
-        },
+            ':hover': {
+              color: colors.border
+            }
+          }
+        }
       }}
       {...props}
     />
-  );
-});
+  )
+})
 
-export default styled(Select, {});
+export default styled(Select, {})

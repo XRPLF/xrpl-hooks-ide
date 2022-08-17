@@ -1,31 +1,31 @@
-import { styled } from "../stitches.config";
+import { styled } from '../stitches.config'
 
-const Text = styled("span", {
-  fontFamily: "$monospace",
-  lineHeight: "$body",
-  color: "$text",
-  wordWrap: "break-word",
+const Text = styled('span', {
+  fontFamily: '$monospace',
+  lineHeight: '$body',
+  color: '$text',
+  wordWrap: 'break-word',
   variants: {
     variant: {
       log: {
-        color: "$text",
+        color: '$text'
       },
       warning: {
-        color: "$warning",
+        color: '$warning'
       },
       error: {
-        color: "$error",
+        color: '$error'
       },
       success: {
-        color: "$success",
-      },
+        color: '$success'
+      }
     },
     capitalize: {
       true: {
-        textTransform: "capitalize",
-      },
-    },
-  },
-});
+        textTransform: 'capitalize'
+      }
+    }
+  }
+})
 
-export default Text;
+export default Text

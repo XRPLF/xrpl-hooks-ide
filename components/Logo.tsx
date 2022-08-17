@@ -1,21 +1,15 @@
-import { styled } from "../stitches.config";
+import { styled } from '../stitches.config'
 
-const SVG = styled("svg", {
-  "& #path": {
-    fill: "$accent",
-  },
-});
-function Logo({
-  width,
-  height,
-}: {
-  width?: string | number;
-  height?: string | number;
-}) {
+const SVG = styled('svg', {
+  '& #path': {
+    fill: '$accent'
+  }
+})
+function Logo({ width, height }: { width?: string | number; height?: string | number }) {
   return (
     <SVG
-      width={width || "1.1em"}
-      height={height || "1.1em"}
+      width={width || '1.1em'}
+      height={height || '1.1em'}
       viewBox="0 0 294 283"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -28,7 +22,7 @@ function Logo({
         fill="#9D2DFF"
       />
     </SVG>
-  );
+  )
 }
 
-export default Logo;
+export default Logo
