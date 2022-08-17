@@ -102,7 +102,7 @@ const Navigation = () => {
             ) : (
               <>
                 <Heading css={{ lineHeight: 1 }}>
-                  {snap.files?.[0]?.name || "XRPL Hooks"}
+                  {snap.gistName || "XRPL Hooks"}
                 </Heading>
                 <Text
                   css={{ fontSize: "$xs", color: "$mauve10", lineHeight: 1 }}

@@ -6,7 +6,7 @@ import Starter from "../../components/icons/Starter";
 
 export const templateFileIds = {
     'starter': {
-        id: '9106f1fe60482d90475bfe8f1315affe',
+        id: '1f8109c80f504e6326db2735df2f0ad6', // Forked
         name: 'Starter',
         description: 'Just a basic starter with essential imports, just accepts any transaction coming through',
         icon: Starter
@@ -25,7 +25,7 @@ export const templateFileIds = {
         icon: Notary
     },
     'carbon': {
-        id: '5941c19dce3e147948f564e224553c02',
+        id: '953662b22d065449f8ab6f69bc2afe41',  // Forked
         name: 'Carbon',
         description: 'Send a percentage of sum to an address',
         icon: Carbon

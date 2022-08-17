@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSnapshot, ref } from "valtio";
 import type monaco from "monaco-editor";
 import { ArrowBendLeftUp } from "phosphor-react";
@@ -23,6 +23,8 @@ import Monaco from "./Monaco";
 import { saveAllFiles } from "../state/actions/saveFile";
 import { Tab, Tabs } from "./Tabs";
 import { renameFile } from "../state/actions/createNewFile";
+import { Link } from ".";
+import Markdown from "./Markdown";
 
 const checkWritable = (filename?: string): boolean => {
   if (apiHeaderFiles.find(file => file === filename)) {
@@ -31,9 +33,7 @@ const checkWritable = (filename?: string): boolean => {
   return true;
 };
 
-const validateWritability = (
-  editor: monaco.editor.IStandaloneCodeEditor
-) => {
+const validateWritability = (editor: monaco.editor.IStandaloneCodeEditor) => {
   const filename = editor.getModel()?.uri.path.split("/").pop();
   const isWritable = checkWritable(filename);
   editor.updateOptions({ readOnly: !isWritable });
@@ -105,6 +105,7 @@ const HooksEditor = () => {
   const snap = useSnapshot(state);
   const router = useRouter();
   const { theme } = useTheme();
+  const [isMdPreview, setIsMdPreview] = useState(true);
 
   useEffect(() => {
     if (editorRef.current) validateWritability(editorRef.current);
@@ -144,9 +145,35 @@ const HooksEditor = () => {
       }}
     >
       {snap.files.map((file, index) => {
-        return <Tab key={file.name} header={file.name} renameDisabled={!checkWritable(file.name)} />;
+        return (
+          <Tab
+            key={file.name}
+            header={file.name}
+            renameDisabled={!checkWritable(file.name)}
+          />
+        );
       })}
     </Tabs>
+  );
+  const previewToggle = (
+    <Link
+      onClick={() => {
+        if (!isMdPreview) {
+          saveFile(false);
+        }
+        setIsMdPreview(!isMdPreview);
+      }}
+      css={{
+        position: "absolute",
+        right: 0,
+        bottom: 0,
+        zIndex: 10,
+        m: "$1",
+        fontSize: "$sm",
+      }}
+    >
+      {isMdPreview ? "Exit Preview" : "View Preview"}
+    </Link>
   );
   return (
     <Box
@@ -161,111 +188,128 @@ const HooksEditor = () => {
       }}
     >
       <EditorNavigation renderNav={renderNav} />
+      {file?.language === "markdown" && previewToggle}
       {snap.files.length > 0 && router.isReady ? (
-        <Monaco
-          keepCurrentModel
-          defaultLanguage={file?.language}
-          language={file?.language}
-          path={`file:///work/c/${file?.name}`}
-          defaultValue={file?.content}
-          // onChange={val => (state.files[snap.active].content = val)} // Auto save?
-          beforeMount={monaco => {
-            if (!snap.editorCtx) {
-              snap.files.forEach(file =>
-                monaco.editor.createModel(
-                  file.content,
-                  file.language,
-                  monaco.Uri.parse(`file:///work/c/${file.name}`)
-                )
-              );
-            }
+        isMdPreview && file?.language === "markdown" ? (
+          <Markdown
+            components={{
+              a: ({ href, children }) => (
+                <Link target="_blank" rel="noopener noreferrer" href={href}>
+                  {children}
+                </Link>
+              ),
+            }}
+          >
+            {file.content}
+          </Markdown>
+        ) : (
+          <Monaco
+            keepCurrentModel
+            defaultLanguage={file?.language}
+            language={file?.language}
+            path={`file:///work/c/${file?.name}`}
+            defaultValue={file?.content}
+            // onChange={val => (state.files[snap.active].content = val)} // Auto save?
+            beforeMount={monaco => {
+              if (!snap.editorCtx) {
+                snap.files.forEach(file =>
+                  monaco.editor.createModel(
+                    file.content,
+                    file.language,
+                    monaco.Uri.parse(`file:///work/c/${file.name}`)
+                  )
+                );
+              }
 
-            // create the web socket
-            if (!subscriptionRef.current) {
-              monaco.languages.register({
-                id: "c",
-                extensions: [".c", ".h"],
-                aliases: ["C", "c", "H", "h"],
-                mimetypes: ["text/plain"],
-              });
-              MonacoServices.install(monaco);
-              const webSocket = createWebSocket(
-                process.env.NEXT_PUBLIC_LANGUAGE_SERVER_API_ENDPOINT || ""
-              );
-              subscriptionRef.current = webSocket;
-              // listen when the web socket is opened
-              listen({
-                webSocket: webSocket as WebSocket,
-                onConnection: connection => {
-                  // create and start the language client
-                  const languageClient = createLanguageClient(connection);
-                  const disposable = languageClient.start();
+              // create the web socket
+              if (!subscriptionRef.current) {
+                monaco.languages.register({
+                  id: "c",
+                  extensions: [".c", ".h"],
+                  aliases: ["C", "c", "H", "h"],
+                  mimetypes: ["text/plain"],
+                });
+                MonacoServices.install(monaco);
+                const webSocket = createWebSocket(
+                  process.env.NEXT_PUBLIC_LANGUAGE_SERVER_API_ENDPOINT || ""
+                );
+                subscriptionRef.current = webSocket;
+                // listen when the web socket is opened
+                listen({
+                  webSocket: webSocket as WebSocket,
+                  onConnection: connection => {
+                    // create and start the language client
+                    const languageClient = createLanguageClient(connection);
+                    const disposable = languageClient.start();
 
-                  connection.onClose(() => {
-                    try {
-                      disposable.dispose();
-                    } catch (err) {
-                      console.log("err", err);
-                    }
-                  });
+                    connection.onClose(() => {
+                      try {
+                        disposable.dispose();
+                      } catch (err) {
+                        console.log("err", err);
+                      }
+                    });
+                  },
+                });
+              }
+
+              // editor.updateOptions({
+              //   minimap: {
+              //     enabled: false,
+              //   },
+              //   ...snap.editorSettings,
+              // });
+              if (!state.editorCtx) {
+                state.editorCtx = ref(monaco.editor);
+              }
+            }}
+            onMount={(editor, monaco) => {
+              editorRef.current = editor;
+              monacoRef.current = monaco;
+              editor.updateOptions({
+                glyphMargin: true,
+                lightbulb: {
+                  enabled: true,
                 },
               });
-            }
-
-            // editor.updateOptions({
-            //   minimap: {
-            //     enabled: false,
-            //   },
-            //   ...snap.editorSettings,
-            // });
-            if (!state.editorCtx) {
-              state.editorCtx = ref(monaco.editor);
-            }
-          }}
-          onMount={(editor, monaco) => {
-            editorRef.current = editor;
-            monacoRef.current = monaco;
-            editor.updateOptions({
-              glyphMargin: true,
-              lightbulb: {
-                enabled: true,
-              },
-            });
-            editor.addCommand(
-              monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
-              () => {
-                saveFile();
-              }
-            );
-            // When the markers (errors/warnings from clangd language server) change
-            // Lets improve the markers by adding extra content to them from related
-            // md files
-            monaco.editor.onDidChangeMarkers(() => {
-              if (monacoRef.current) {
-                setMarkers(monacoRef.current);
-              }
-            });
-
-            // Hacky way to hide Peek menu
-            editor.onContextMenu(e => {
-              const host =
-                document.querySelector<HTMLElement>(".shadow-root-host");
-
-              const contextMenuItems =
-                host?.shadowRoot?.querySelectorAll("li.action-item");
-              contextMenuItems?.forEach(k => {
-                // If menu item contains "Peek" lets hide it
-                if (k.querySelector(".action-label")?.textContent === "Peek") {
-                  // @ts-expect-error
-                  k["style"].display = "none";
+              editor.addCommand(
+                monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
+                () => {
+                  saveFile();
+                }
+              );
+              // When the markers (errors/warnings from clangd language server) change
+              // Lets improve the markers by adding extra content to them from related
+              // md files
+              monaco.editor.onDidChangeMarkers(() => {
+                if (monacoRef.current) {
+                  setMarkers(monacoRef.current);
                 }
               });
-            });
 
-            validateWritability(editor);
-          }}
-          theme={theme === "dark" ? "dark" : "light"}
-        />
+              // Hacky way to hide Peek menu
+              editor.onContextMenu(e => {
+                const host =
+                  document.querySelector<HTMLElement>(".shadow-root-host");
+
+                const contextMenuItems =
+                  host?.shadowRoot?.querySelectorAll("li.action-item");
+                contextMenuItems?.forEach(k => {
+                  // If menu item contains "Peek" lets hide it
+                  if (
+                    k.querySelector(".action-label")?.textContent === "Peek"
+                  ) {
+                    // @ts-expect-error
+                    k["style"].display = "none";
+                  }
+                });
+              });
+
+              validateWritability(editor);
+            }}
+            theme={theme === "dark" ? "dark" : "light"}
+          />
+        )
       ) : (
         <Container>
           {!snap.loading && router.isReady && (
