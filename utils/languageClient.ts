@@ -1,11 +1,16 @@
-import { MessageConnection } from "@codingame/monaco-jsonrpc";
-import { MonacoLanguageClient, ErrorAction, CloseAction, createConnection } from "@codingame/monaco-languageclient";
-import normalizeUrl from "normalize-url";
-import ReconnectingWebSocket from "reconnecting-websocket";
+import { MessageConnection } from '@codingame/monaco-jsonrpc'
+import {
+  MonacoLanguageClient,
+  ErrorAction,
+  CloseAction,
+  createConnection
+} from '@codingame/monaco-languageclient'
+import normalizeUrl from 'normalize-url'
+import ReconnectingWebSocket from 'reconnecting-websocket'
 
 export function createLanguageClient(connection: MessageConnection): MonacoLanguageClient {
   return new MonacoLanguageClient({
-    name: "Clangd Language Client",
+    name: 'Clangd Language Client',
     clientOptions: {
       // use a language id as a document selector
       documentSelector: ['c', 'h'],
@@ -15,8 +20,7 @@ export function createLanguageClient(connection: MessageConnection): MonacoLangu
         closed: () => {
           return CloseAction.DoNotRestart
         }
-      },
-
+      }
     },
     // create a language client connection from the JSON RPC connection on demand
     connectionProvider: {
@@ -24,12 +28,12 @@ export function createLanguageClient(connection: MessageConnection): MonacoLangu
         return Promise.resolve(createConnection(connection, errorHandler, closeHandler))
       }
     }
-  });
+  })
 }
 
 export function createUrl(path: string): string {
-  const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  return normalizeUrl(`${protocol}://${location.host}${location.pathname}${path}`);
+  const protocol = location.protocol === 'https:' ? 'wss' : 'ws'
+  return normalizeUrl(`${protocol}://${location.host}${location.pathname}${path}`)
 }
 
 export function createWebSocket(url: string) {
@@ -40,6 +44,6 @@ export function createWebSocket(url: string) {
     connectionTimeout: 10000,
     maxRetries: Infinity,
     debug: false
-  };
-  return new ReconnectingWebSocket(url, [], socketOptions);
+  }
+  return new ReconnectingWebSocket(url, [], socketOptions)
 }

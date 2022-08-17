@@ -1,8 +1,8 @@
-import { styled } from "../stitches.config";
+import { styled } from '../stitches.config'
 
-const StyledLink = styled("a", {
-  color: "CurrentColor",
-  textDecoration: "underline",
+const StyledLink = styled('a', {
+  color: 'CurrentColor',
+  textDecoration: 'underline',
   cursor: 'pointer',
   variants: {
     highlighted: {
@@ -11,6 +11,6 @@ const StyledLink = styled("a", {
       }
     }
   }
-});
+})
 
-export default StyledLink;
+export default StyledLink

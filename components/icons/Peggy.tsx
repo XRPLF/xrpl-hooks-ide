@@ -1,11 +1,5 @@
 const Peggy = () => (
-  <svg
-    width="66"
-    height="32"
-    viewBox="0 0 66 32"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="66" height="32" viewBox="0 0 66 32" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M33 19C40.1797 19 46 16.3137 46 13C46 9.68629 40.1797 7 33 7C25.8203 7 20 9.68629 20 13C20 16.3137 25.8203 19 33 19Z"
       stroke="#EDEDEF"
@@ -56,6 +50,6 @@ const Peggy = () => (
       fill="#EDEDEF"
     />
   </svg>
-);
+)
 
-export default Peggy;
+export default Peggy

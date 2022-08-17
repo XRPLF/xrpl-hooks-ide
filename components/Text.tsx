@@ -1,41 +1,41 @@
-import { styled } from "../stitches.config";
+import { styled } from '../stitches.config'
 
-const Text = styled("span", {
-  fontFamily: "$body",
-  lineHeight: "$body",
-  color: "$text",
+const Text = styled('span', {
+  fontFamily: '$body',
+  lineHeight: '$body',
+  color: '$text',
   variants: {
     small: {
       true: {
-        fontSize: "$xs",
-      },
+        fontSize: '$xs'
+      }
     },
     muted: {
       true: {
-        color: "$mauve9",
-      },
+        color: '$mauve9'
+      }
     },
     error: {
       true: {
-        color: "$error",
-      },
+        color: '$error'
+      }
     },
     warning: {
       true: {
-        color: "$warning",
-      },
+        color: '$warning'
+      }
     },
     monospace: {
       true: {
-        fontFamily: "$monospace",
-      },
+        fontFamily: '$monospace'
+      }
     },
     block: {
       true: {
-        display: "block",
-      },
-    },
-  },
-});
+        display: 'block'
+      }
+    }
+  }
+})
 
-export default Text;
+export default Text

@@ -24,23 +24,22 @@ export const tts = {
   ttNFTOKEN_CREATE_OFFER: 27,
   ttNFTOKEN_CANCEL_OFFER: 28,
   ttNFTOKEN_ACCEPT_OFFER: 29
-};
+}
 
-export type TTS = typeof tts;
+export type TTS = typeof tts
 
 const calculateHookOn = (arr: (keyof TTS)[]) => {
-  let start = '0x000000003e3ff5bf';
+  let start = '0x000000003e3ff5bf'
   arr.forEach(n => {
-    let v = BigInt(start);
-    v ^= (BigInt(1) << BigInt(tts[n as keyof TTS]));
-    let s = v.toString(16);
-    let l = s.length;
-    if (l < 16)
-      s = '0'.repeat(16 - l) + s;
-    s = '0x' + s;
-    start = s;
+    let v = BigInt(start)
+    v ^= BigInt(1) << BigInt(tts[n as keyof TTS])
+    let s = v.toString(16)
+    let l = s.length
+    if (l < 16) s = '0'.repeat(16 - l) + s
+    s = '0x' + s
+    start = s
   })
-  return start.substring(2);
+  return start.substring(2)
 }
 
 export default calculateHookOn

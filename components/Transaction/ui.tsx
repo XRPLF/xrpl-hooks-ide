@@ -1,169 +1,158 @@
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
-import Container from "../Container";
-import Flex from "../Flex";
-import Input from "../Input";
-import Select from "../Select";
-import Text from "../Text";
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import Container from '../Container'
+import Flex from '../Flex'
+import Input from '../Input'
+import Select from '../Select'
+import Text from '../Text'
 import {
   SelectOption,
   TransactionState,
   transactionsOptions,
   TxFields,
   getTxFields,
-  defaultTransactionType,
-} from "../../state/transactions";
-import { useSnapshot } from "valtio";
-import state from "../../state";
-import { streamState } from "../DebugStream";
-import { Button } from "..";
-import Textarea from "../Textarea";
+  defaultTransactionType
+} from '../../state/transactions'
+import { useSnapshot } from 'valtio'
+import state from '../../state'
+import { streamState } from '../DebugStream'
+import { Button } from '..'
+import Textarea from '../Textarea'
 
 interface UIProps {
-  setState: (
-    pTx?: Partial<TransactionState> | undefined
-  ) => TransactionState | undefined;
-  state: TransactionState;
-  estimateFee?: (...arg: any) => Promise<string | undefined>;
+  setState: (pTx?: Partial<TransactionState> | undefined) => TransactionState | undefined
+  state: TransactionState
+  estimateFee?: (...arg: any) => Promise<string | undefined>
 }
 
-export const TxUI: FC<UIProps> = ({
-  state: txState,
-  setState,
-  estimateFee,
-}) => {
-  const { accounts } = useSnapshot(state);
-  const {
-    selectedAccount,
-    selectedDestAccount,
-    selectedTransaction,
-    txFields,
-  } = txState;
+export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => {
+  const { accounts } = useSnapshot(state)
+  const { selectedAccount, selectedDestAccount, selectedTransaction, txFields } = txState
 
   const accountOptions: SelectOption[] = accounts.map(acc => ({
     label: acc.name,
-    value: acc.address,
-  }));
+    value: acc.address
+  }))
 
   const destAccountOptions: SelectOption[] = accounts
     .map(acc => ({
       label: acc.name,
-      value: acc.address,
+      value: acc.address
     }))
-    .filter(acc => acc.value !== selectedAccount?.value);
+    .filter(acc => acc.value !== selectedAccount?.value)
 
-  const [feeLoading, setFeeLoading] = useState(false);
+  const [feeLoading, setFeeLoading] = useState(false)
 
   const resetFields = useCallback(
     (tt: string) => {
-      const fields = getTxFields(tt);
+      const fields = getTxFields(tt)
 
       if (fields.Destination !== undefined) {
-        setState({ selectedDestAccount: null });
-        fields.Destination = "";
+        setState({ selectedDestAccount: null })
+        fields.Destination = ''
       } else {
-        fields.Destination = undefined;
+        fields.Destination = undefined
       }
-      return setState({ txFields: fields });
+      return setState({ txFields: fields })
     },
     [setState]
-  );
+  )
 
   const handleSetAccount = (acc: SelectOption) => {
-    setState({ selectedAccount: acc });
-    streamState.selectedAccount = acc;
-  };
+    setState({ selectedAccount: acc })
+    streamState.selectedAccount = acc
+  }
 
   const handleSetField = useCallback(
     (field: keyof TxFields, value: string, opFields?: TxFields) => {
-      const fields = opFields || txFields;
-      const obj = fields[field];
+      const fields = opFields || txFields
+      const obj = fields[field]
       setState({
         txFields: {
           ...fields,
-          [field]: typeof obj === "object" ? { ...obj, $value: value } : value,
-        },
-      });
+          [field]: typeof obj === 'object' ? { ...obj, $value: value } : value
+        }
+      })
     },
     [setState, txFields]
-  );
+  )
 
   const handleEstimateFee = useCallback(
     async (state?: TransactionState, silent?: boolean) => {
-      setFeeLoading(true);
+      setFeeLoading(true)
 
-      const fee = await estimateFee?.(state, { silent });
-      if (fee) handleSetField("Fee", fee, state?.txFields);
+      const fee = await estimateFee?.(state, { silent })
+      if (fee) handleSetField('Fee', fee, state?.txFields)
 
-      setFeeLoading(false);
+      setFeeLoading(false)
     },
     [estimateFee, handleSetField]
-  );
+  )
 
   const handleChangeTxType = useCallback(
     (tt: SelectOption) => {
-      setState({ selectedTransaction: tt });
+      setState({ selectedTransaction: tt })
 
-      const newState = resetFields(tt.value);
+      const newState = resetFields(tt.value)
 
-      handleEstimateFee(newState, true);
+      handleEstimateFee(newState, true)
     },
     [handleEstimateFee, resetFields, setState]
-  );
+  )
 
-  const switchToJson = () => setState({ viewType: "json" });
+  const switchToJson = () => setState({ viewType: 'json' })
 
   // default tx
   useEffect(() => {
-    if (selectedTransaction?.value) return;
+    if (selectedTransaction?.value) return
 
     if (defaultTransactionType) {
-      handleChangeTxType(defaultTransactionType);
+      handleChangeTxType(defaultTransactionType)
     }
-  }, [handleChangeTxType, selectedTransaction?.value]);
+  }, [handleChangeTxType, selectedTransaction?.value])
 
   const fields = useMemo(
     () => getTxFields(selectedTransaction?.value),
     [selectedTransaction?.value]
-  );
+  )
 
-  const specialFields = ["TransactionType", "Account"];
+  const specialFields = ['TransactionType', 'Account']
   if (fields.Destination !== undefined) {
-    specialFields.push("Destination");
+    specialFields.push('Destination')
   }
 
-  const otherFields = Object.keys(txFields).filter(
-    k => !specialFields.includes(k)
-  ) as [keyof TxFields];
+  const otherFields = Object.keys(txFields).filter(k => !specialFields.includes(k)) as [
+    keyof TxFields
+  ]
 
   return (
     <Container
       css={{
-        p: "$3 01",
-        fontSize: "$sm",
-        height: "calc(100% - 45px)",
+        p: '$3 01',
+        fontSize: '$sm',
+        height: 'calc(100% - 45px)'
       }}
     >
-      <Flex column fluid css={{ height: "100%", overflowY: "auto", pr: "$1" }}>
+      <Flex column fluid css={{ height: '100%', overflowY: 'auto', pr: '$1' }}>
         <Flex
           row
           fluid
           css={{
-            justifyContent: "flex-end",
-            alignItems: "center",
-            mb: "$3",
-            mt: "1px",
-            pr: "1px",
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            mb: '$3',
+            mt: '1px',
+            pr: '1px'
           }}
         >
-          <Text muted css={{ mr: "$3" }}>
-            Transaction type:{" "}
+          <Text muted css={{ mr: '$3' }}>
+            Transaction type:{' '}
           </Text>
           <Select
             instanceId="transactionsType"
             placeholder="Select transaction type"
             options={transactionsOptions}
             hideSelectedOptions
-            css={{ width: "70%" }}
+            css={{ width: '70%' }}
             value={selectedTransaction}
             onChange={(tt: any) => handleChangeTxType(tt)}
           />
@@ -172,19 +161,19 @@ export const TxUI: FC<UIProps> = ({
           row
           fluid
           css={{
-            justifyContent: "flex-end",
-            alignItems: "center",
-            mb: "$3",
-            pr: "1px",
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            mb: '$3',
+            pr: '1px'
           }}
         >
-          <Text muted css={{ mr: "$3" }}>
-            Account:{" "}
+          <Text muted css={{ mr: '$3' }}>
+            Account:{' '}
           </Text>
           <Select
             instanceId="from-account"
             placeholder="Select your account"
-            css={{ width: "70%" }}
+            css={{ width: '70%' }}
             options={accountOptions}
             value={selectedAccount}
             onChange={(acc: any) => handleSetAccount(acc)} // TODO make react-select have correct types for acc
@@ -195,19 +184,19 @@ export const TxUI: FC<UIProps> = ({
             row
             fluid
             css={{
-              justifyContent: "flex-end",
-              alignItems: "center",
-              mb: "$3",
-              pr: "1px",
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+              mb: '$3',
+              pr: '1px'
             }}
           >
-            <Text muted css={{ mr: "$3" }}>
-              Destination account:{" "}
+            <Text muted css={{ mr: '$3' }}>
+              Destination account:{' '}
             </Text>
             <Select
               instanceId="to-account"
               placeholder="Select the destination account"
-              css={{ width: "70%" }}
+              css={{ width: '70%' }}
               options={destAccountOptions}
               value={selectedDestAccount}
               isClearable
@@ -216,39 +205,37 @@ export const TxUI: FC<UIProps> = ({
           </Flex>
         )}
         {otherFields.map(field => {
-          let _value = txFields[field];
+          let _value = txFields[field]
 
-          let value: string | undefined;
-          if (typeof _value === "object") {
-            if (_value.$type === "json" && typeof _value.$value === "object") {
-              value = JSON.stringify(_value.$value, null, 2);
+          let value: string | undefined
+          if (typeof _value === 'object') {
+            if (_value.$type === 'json' && typeof _value.$value === 'object') {
+              value = JSON.stringify(_value.$value, null, 2)
             } else {
-              value = _value.$value.toString();
+              value = _value.$value.toString()
             }
           } else {
-            value = _value?.toString();
+            value = _value?.toString()
           }
 
-          const isXrp = typeof _value === "object" && _value.$type === "xrp";
-          const isJson = typeof _value === "object" && _value.$type === "json";
-          const isFee = field === "Fee";
-          let rows = isJson
-            ? (value?.match(/\n/gm)?.length || 0) + 1
-            : undefined;
-          if (rows && rows > 5) rows = 5;
+          const isXrp = typeof _value === 'object' && _value.$type === 'xrp'
+          const isJson = typeof _value === 'object' && _value.$type === 'json'
+          const isFee = field === 'Fee'
+          let rows = isJson ? (value?.match(/\n/gm)?.length || 0) + 1 : undefined
+          if (rows && rows > 5) rows = 5
           return (
-            <Flex column key={field} css={{ mb: "$2", pr: "1px" }}>
+            <Flex column key={field} css={{ mb: '$2', pr: '1px' }}>
               <Flex
                 row
                 fluid
                 css={{
-                  justifyContent: "flex-end",
-                  alignItems: "center",
-                  position: "relative",
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                  position: 'relative'
                 }}
               >
-                <Text muted css={{ mr: "$3" }}>
-                  {field + (isXrp ? " (XRP)" : "")}:{" "}
+                <Text muted css={{ mr: '$3' }}>
+                  {field + (isXrp ? ' (XRP)' : '')}:{' '}
                 </Text>
                 {isJson ? (
                   <Textarea
@@ -257,46 +244,44 @@ export const TxUI: FC<UIProps> = ({
                     spellCheck={false}
                     onChange={switchToJson}
                     css={{
-                      width: "70%",
-                      flex: "inherit",
-                      resize: "vertical",
+                      width: '70%',
+                      flex: 'inherit',
+                      resize: 'vertical'
                     }}
                   />
                 ) : (
                   <Input
-                    type={isFee ? "number" : "text"}
+                    type={isFee ? 'number' : 'text'}
                     value={value}
                     onChange={e => {
                       if (isFee) {
-                        const val = e.target.value
-                          .replaceAll(".", "")
-                          .replaceAll(",", "");
-                        handleSetField(field, val);
+                        const val = e.target.value.replaceAll('.', '').replaceAll(',', '')
+                        handleSetField(field, val)
                       } else {
-                        handleSetField(field, e.target.value);
+                        handleSetField(field, e.target.value)
                       }
                     }}
                     onKeyPress={
                       isFee
                         ? e => {
-                            if (e.key === "." || e.key === ",") {
-                              e.preventDefault();
+                            if (e.key === '.' || e.key === ',') {
+                              e.preventDefault()
                             }
                           }
                         : undefined
                     }
                     css={{
-                      width: "70%",
-                      flex: "inherit",
-                      "-moz-appearance": "textfield",
-                      "&::-webkit-outer-spin-button": {
-                        "-webkit-appearance": "none",
-                        margin: 0,
+                      width: '70%',
+                      flex: 'inherit',
+                      '-moz-appearance': 'textfield',
+                      '&::-webkit-outer-spin-button': {
+                        '-webkit-appearance': 'none',
+                        margin: 0
                       },
-                      "&::-webkit-inner-spin-button ": {
-                        "-webkit-appearance": "none",
-                        margin: 0,
-                      },
+                      '&::-webkit-inner-spin-button ': {
+                        '-webkit-appearance': 'none',
+                        margin: 0
+                      }
                     }}
                   />
                 )}
@@ -309,12 +294,12 @@ export const TxUI: FC<UIProps> = ({
                     isDisabled={txState.txIsDisabled}
                     isLoading={feeLoading}
                     css={{
-                      position: "absolute",
-                      right: "$2",
-                      fontSize: "$xs",
-                      cursor: "pointer",
-                      alignContent: "center",
-                      display: "flex",
+                      position: 'absolute',
+                      right: '$2',
+                      fontSize: '$xs',
+                      cursor: 'pointer',
+                      alignContent: 'center',
+                      display: 'flex'
                     }}
                     onClick={() => handleEstimateFee()}
                   >
@@ -323,9 +308,9 @@ export const TxUI: FC<UIProps> = ({
                 )}
               </Flex>
             </Flex>
-          );
+          )
         })}
       </Flex>
     </Container>
-  );
-};
+  )
+}

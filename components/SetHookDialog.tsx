@@ -1,77 +1,65 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Plus, Trash, X } from "phosphor-react";
-import { Button, Box, Text } from ".";
-import { Stack, Flex, Select } from ".";
+import React, { useCallback, useEffect, useState } from 'react'
+import { Plus, Trash, X } from 'phosphor-react'
+import { Button, Box, Text } from '.'
+import { Stack, Flex, Select } from '.'
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogDescription,
   DialogClose,
-  DialogTrigger,
-} from "./Dialog";
-import { Input, Label } from "./Input";
-import {
-  Controller,
-  SubmitHandler,
-  useFieldArray,
-  useForm,
-} from "react-hook-form";
+  DialogTrigger
+} from './Dialog'
+import { Input, Label } from './Input'
+import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
 
-import { deployHook } from "../state/actions";
-import { useSnapshot } from "valtio";
-import state, { IFile, SelectOption } from "../state";
-import toast from "react-hot-toast";
-import { prepareDeployHookTx, sha256 } from "../state/actions/deployHook";
-import estimateFee from "../utils/estimateFee";
-import {
-  getParameters,
-  getInvokeOptions,
-  transactionOptions,
-  SetHookData,
-} from "../utils/setHook";
-import { capitalize } from "../utils/helpers";
+import { deployHook } from '../state/actions'
+import { useSnapshot } from 'valtio'
+import state, { IFile, SelectOption } from '../state'
+import toast from 'react-hot-toast'
+import { prepareDeployHookTx, sha256 } from '../state/actions/deployHook'
+import estimateFee from '../utils/estimateFee'
+import { getParameters, getInvokeOptions, transactionOptions, SetHookData } from '../utils/setHook'
+import { capitalize } from '../utils/helpers'
 
 export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
   ({ accountAddress }) => {
-    const snap = useSnapshot(state);
+    const snap = useSnapshot(state)
 
-    const [estimateLoading, setEstimateLoading] = useState(false);
-    const [isSetHookDialogOpen, setIsSetHookDialogOpen] = useState(false);
+    const [estimateLoading, setEstimateLoading] = useState(false)
+    const [isSetHookDialogOpen, setIsSetHookDialogOpen] = useState(false)
 
-    const compiledFiles = snap.files.filter(file => file.compiledContent);
-    const activeFile = compiledFiles[snap.activeWat] as IFile | undefined;
+    const compiledFiles = snap.files.filter(file => file.compiledContent)
+    const activeFile = compiledFiles[snap.activeWat] as IFile | undefined
 
     const accountOptions: SelectOption[] = snap.accounts.map(acc => ({
       label: acc.name,
-      value: acc.address,
-    }));
+      value: acc.address
+    }))
 
     const [selectedAccount, setSelectedAccount] = useState(
       accountOptions.find(acc => acc.value === accountAddress)
-    );
-    const account = snap.accounts.find(
-      acc => acc.address === selectedAccount?.value
-    );
+    )
+    const account = snap.accounts.find(acc => acc.address === selectedAccount?.value)
 
     const getHookNamespace = useCallback(
       () =>
         (activeFile && snap.deployValues[activeFile.name]?.HookNamespace) ||
-        activeFile?.name.split(".")[0] ||
-        "",
+        activeFile?.name.split('.')[0] ||
+        '',
       [activeFile, snap.deployValues]
-    );
+    )
 
     const getDefaultValues = useCallback((): Partial<SetHookData> => {
-      const content = activeFile?.compiledValueSnapshot;
+      const content = activeFile?.compiledValueSnapshot
       return (
         (activeFile && snap.deployValues[activeFile.name]) || {
           HookNamespace: getHookNamespace(),
           Invoke: getInvokeOptions(content),
-          HookParameters: getParameters(content),
+          HookParameters: getParameters(content)
         }
-      );
-    }, [activeFile, getHookNamespace, snap.deployValues]);
+      )
+    }, [activeFile, getHookNamespace, snap.deployValues])
 
     const {
       register,
@@ -81,33 +69,30 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
       setValue,
       getValues,
       reset,
-      formState: { errors },
+      formState: { errors }
     } = useForm<SetHookData>({
-      defaultValues: getDefaultValues(),
-    });
+      defaultValues: getDefaultValues()
+    })
     const { fields, append, remove } = useFieldArray({
       control,
-      name: "HookParameters", // unique name for your Field Array
-    });
+      name: 'HookParameters' // unique name for your Field Array
+    })
 
-    const watchedFee = watch("Fee");
+    const watchedFee = watch('Fee')
 
     // Reset form if activeFile changes
     useEffect(() => {
-      if (!activeFile) return;
-      const defaultValues = getDefaultValues();
+      if (!activeFile) return
+      const defaultValues = getDefaultValues()
 
-      reset(defaultValues);
-    }, [activeFile, getDefaultValues, reset]);
+      reset(defaultValues)
+    }, [activeFile, getDefaultValues, reset])
 
     useEffect(() => {
-      if (
-        watchedFee &&
-        (watchedFee.includes(".") || watchedFee.includes(","))
-      ) {
-        setValue("Fee", watchedFee.replaceAll(".", "").replaceAll(",", ""));
+      if (watchedFee && (watchedFee.includes('.') || watchedFee.includes(','))) {
+        setValue('Fee', watchedFee.replaceAll('.', '').replaceAll(',', ''))
       }
-    }, [watchedFee, setValue]);
+    }, [watchedFee, setValue])
     // const {
     //   fields: grantFields,
     //   append: grantAppend,
@@ -116,67 +101,67 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
     //   control,
     //   name: "HookGrants", // unique name for your Field Array
     // });
-    const [hashedNamespace, setHashedNamespace] = useState("");
+    const [hashedNamespace, setHashedNamespace] = useState('')
 
-    const namespace = watch("HookNamespace", getHookNamespace());
+    const namespace = watch('HookNamespace', getHookNamespace())
 
     const calculateHashedValue = useCallback(async () => {
-      const hashedVal = await sha256(namespace);
-      setHashedNamespace(hashedVal.toUpperCase());
-    }, [namespace]);
+      const hashedVal = await sha256(namespace)
+      setHashedNamespace(hashedVal.toUpperCase())
+    }, [namespace])
 
     useEffect(() => {
-      calculateHashedValue();
-    }, [namespace, calculateHashedValue]);
+      calculateHashedValue()
+    }, [namespace, calculateHashedValue])
 
     const calculateFee = useCallback(async () => {
-      if (!account) return;
+      if (!account) return
 
-      const formValues = getValues();
-      const tx = await prepareDeployHookTx(account, formValues);
+      const formValues = getValues()
+      const tx = await prepareDeployHookTx(account, formValues)
       if (!tx) {
-        return;
+        return
       }
-      const res = await estimateFee(tx, account);
+      const res = await estimateFee(tx, account)
       if (res && res.base_fee) {
-        setValue("Fee", Math.round(Number(res.base_fee || "")).toString());
+        setValue('Fee', Math.round(Number(res.base_fee || '')).toString())
       }
-    }, [account, getValues, setValue]);
+    }, [account, getValues, setValue])
 
     const tooLargeFile = () => {
       return Boolean(
-        activeFile?.compiledContent?.byteLength &&
-          activeFile?.compiledContent?.byteLength >= 64000
-      );
-    };
+        activeFile?.compiledContent?.byteLength && activeFile?.compiledContent?.byteLength >= 64000
+      )
+    }
 
     const onSubmit: SubmitHandler<SetHookData> = async data => {
-      const currAccount = state.accounts.find(
-        acc => acc.address === account?.address
-      );
-      if (!account) return;
-      if (currAccount) currAccount.isLoading = true;
+      const currAccount = state.accounts.find(acc => acc.address === account?.address)
+      if (!account) return
+      if (currAccount) currAccount.isLoading = true
 
       data.HookParameters.forEach(param => {
-        delete param.$metaData;
-        return param;
-      });
+        delete param.$metaData
+        return param
+      })
 
-      const res = await deployHook(account, data);
-      if (currAccount) currAccount.isLoading = false;
+      const res = await deployHook(account, data)
+      if (currAccount) currAccount.isLoading = false
 
-      if (res && res.engine_result === "tesSUCCESS") {
-        toast.success("Transaction succeeded!");
-        return setIsSetHookDialogOpen(false);
+      if (res && res.engine_result === 'tesSUCCESS') {
+        toast.success('Transaction succeeded!')
+        return setIsSetHookDialogOpen(false)
       }
-      toast.error(`Transaction failed! (${res?.engine_result_message})`);
-    };
+      toast.error(`Transaction failed! (${res?.engine_result_message})`)
+    }
 
-    const onOpenChange = useCallback((open: boolean) => {
-      setIsSetHookDialogOpen(open);
+    const onOpenChange = useCallback(
+      (open: boolean) => {
+        setIsSetHookDialogOpen(open)
 
-      if (open) calculateFee();
-    }, [calculateFee]);
+        if (open) calculateFee()
+      },
+      [calculateFee]
+    )
     return (
       <Dialog open={isSetHookDialogOpen} onOpenChange={onOpenChange}>
         <DialogTrigger asChild>
@@ -184,10 +169,8 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
             ghost
             size="xs"
             uppercase
-            variant={"secondary"}
-            disabled={
-              !account || account.isLoading || !activeFile || tooLargeFile()
-            }
+            variant={'secondary'}
+            disabled={!account || account.isLoading || !activeFile || tooLargeFile()}
           >
             Set Hook
           </Button>
@@ -196,8 +179,8 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
           <form onSubmit={handleSubmit(onSubmit)}>
             <DialogTitle>Deploy configuration</DialogTitle>
             <DialogDescription as="div">
-              <Stack css={{ width: "100%", flex: 1 }}>
-                <Box css={{ width: "100%" }}>
+              <Stack css={{ width: '100%', flex: 1 }}>
+                <Box css={{ width: '100%' }}>
                   <Label>Account</Label>
                   <Select
                     instanceId="deploy-account"
@@ -207,7 +190,7 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                     onChange={(acc: any) => setSelectedAccount(acc)}
                   />
                 </Box>
-                <Box css={{ width: "100%" }}>
+                <Box css={{ width: '100%' }}>
                   <Label>Invoke on transactions</Label>
                   <Controller
                     name="Invoke"
@@ -223,27 +206,20 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                     )}
                   />
                 </Box>
-                <Box css={{ width: "100%" }}>
+                <Box css={{ width: '100%' }}>
                   <Label>Hook Namespace Seed</Label>
-                  <Input
-                    {...register("HookNamespace", { required: true })}
-                    autoComplete={"off"}
-                  />
-                  {errors.HookNamespace?.type === "required" && (
-                    <Box css={{ display: "inline", color: "$red11" }}>
-                      Namespace is required
-                    </Box>
+                  <Input {...register('HookNamespace', { required: true })} autoComplete={'off'} />
+                  {errors.HookNamespace?.type === 'required' && (
+                    <Box css={{ display: 'inline', color: '$red11' }}>Namespace is required</Box>
                   )}
-                  <Box css={{ mt: "$3" }}>
+                  <Box css={{ mt: '$3' }}>
                     <Label>Hook Namespace (sha256)</Label>
                     <Input readOnly value={hashedNamespace} />
                   </Box>
                 </Box>
 
-                <Box css={{ width: "100%" }}>
-                  <Label style={{ marginBottom: "10px", display: "block" }}>
-                    Hook parameters
-                  </Label>
+                <Box css={{ width: '100%' }}>
+                  <Label style={{ marginBottom: '10px', display: 'block' }}>Hook parameters</Label>
                   <Stack>
                     {fields.map((field, index) => (
                       <Stack key={field.id}>
@@ -258,25 +234,20 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                               )}
                             />
                             <Input
-                              css={{ mx: "$2" }}
+                              css={{ mx: '$2' }}
                               placeholder="Value (hex-quoted)"
                               {...register(
                                 `HookParameters.${index}.HookParameter.HookParameterValue`,
                                 { required: field.$metaData?.required }
                               )}
                             />
-                            <Button
-                              onClick={() => remove(index)}
-                              variant="destroy"
-                            >
+                            <Button onClick={() => remove(index)} variant="destroy">
                               <Trash weight="regular" size="16px" />
                             </Button>
                           </Flex>
-                          {errors.HookParameters?.[index]?.HookParameter
-                            ?.HookParameterValue?.type === "required" && (
-                            <Text error>This field is required</Text>
-                          )}
-                          <Label css={{ fontSize: "$sm", mt: "$1" }}>
+                          {errors.HookParameters?.[index]?.HookParameter?.HookParameterValue
+                            ?.type === 'required' && <Text error>This field is required</Text>}
+                          <Label css={{ fontSize: '$sm', mt: '$1' }}>
                             {capitalize(field.$metaData?.description)}
                           </Label>
                         </Flex>
@@ -289,9 +260,9 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                       onClick={() =>
                         append({
                           HookParameter: {
-                            HookParameterName: "",
-                            HookParameterValue: "",
-                          },
+                            HookParameterName: '',
+                            HookParameterValue: ''
+                          }
                         })
                       }
                     >
@@ -300,30 +271,30 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                     </Button>
                   </Stack>
                 </Box>
-                <Box css={{ width: "100%", position: "relative" }}>
+                <Box css={{ width: '100%', position: 'relative' }}>
                   <Label>Fee</Label>
-                  <Box css={{ display: "flex", alignItems: "center" }}>
+                  <Box css={{ display: 'flex', alignItems: 'center' }}>
                     <Input
                       type="number"
-                      {...register("Fee", { required: true })}
-                      autoComplete={"off"}
+                      {...register('Fee', { required: true })}
+                      autoComplete={'off'}
                       onKeyPress={e => {
-                        if (e.key === "." || e.key === ",") {
-                          e.preventDefault();
+                        if (e.key === '.' || e.key === ',') {
+                          e.preventDefault()
                         }
                       }}
                       step="1"
                       defaultValue={10000}
                       css={{
-                        "-moz-appearance": "textfield",
-                        "&::-webkit-outer-spin-button": {
-                          "-webkit-appearance": "none",
-                          margin: 0,
+                        '-moz-appearance': 'textfield',
+                        '&::-webkit-outer-spin-button': {
+                          '-webkit-appearance': 'none',
+                          margin: 0
                         },
-                        "&::-webkit-inner-spin-button ": {
-                          "-webkit-appearance": "none",
-                          margin: 0,
-                        },
+                        '&::-webkit-inner-spin-button ': {
+                          '-webkit-appearance': 'none',
+                          margin: 0
+                        }
                       }}
                     />
                     <Button
@@ -332,47 +303,37 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                       outline
                       isLoading={estimateLoading}
                       css={{
-                        position: "absolute",
-                        right: "$2",
-                        fontSize: "$xs",
-                        cursor: "pointer",
-                        alignContent: "center",
-                        display: "flex",
+                        position: 'absolute',
+                        right: '$2',
+                        fontSize: '$xs',
+                        cursor: 'pointer',
+                        alignContent: 'center',
+                        display: 'flex'
                       }}
                       onClick={async e => {
-                        e.preventDefault();
-                        if (!account) return;
-                        setEstimateLoading(true);
-                        const formValues = getValues();
+                        e.preventDefault()
+                        if (!account) return
+                        setEstimateLoading(true)
+                        const formValues = getValues()
                         try {
-                          const tx = await prepareDeployHookTx(
-                            account,
-                            formValues
-                          );
+                          const tx = await prepareDeployHookTx(account, formValues)
                           if (tx) {
-                            const res = await estimateFee(tx, account);
+                            const res = await estimateFee(tx, account)
 
                             if (res && res.base_fee) {
-                              setValue(
-                                "Fee",
-                                Math.round(
-                                  Number(res.base_fee || "")
-                                ).toString()
-                              );
+                              setValue('Fee', Math.round(Number(res.base_fee || '')).toString())
                             }
                           }
                         } catch (err) {}
 
-                        setEstimateLoading(false);
+                        setEstimateLoading(false)
                       }}
                     >
                       Suggest
                     </Button>
                   </Box>
-                  {errors.Fee?.type === "required" && (
-                    <Box css={{ display: "inline", color: "$red11" }}>
-                      Fee is required
-                    </Box>
+                  {errors.Fee?.type === 'required' && (
+                    <Box css={{ display: 'inline', color: '$red11' }}>Fee is required</Box>
                   )}
                 </Box>
                 {/* <Box css={{ width: "100%" }}>
@@ -429,35 +390,31 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
             <Flex
               css={{
                 marginTop: 25,
-                justifyContent: "flex-end",
-                gap: "$3",
+                justifyContent: 'flex-end',
+                gap: '$3'
               }}
             >
               <DialogClose asChild>
                 <Button outline>Cancel</Button>
               </DialogClose>
               {/* <DialogClose asChild> */}
-              <Button
-                variant="primary"
-                type="submit"
-                isLoading={account?.isLoading}
-              >
+              <Button variant="primary" type="submit" isLoading={account?.isLoading}>
                 Set Hook
               </Button>
               {/* </DialogClose> */}
             </Flex>
             <DialogClose asChild>
-              <Box css={{ position: "absolute", top: "$3", right: "$3" }}>
+              <Box css={{ position: 'absolute', top: '$3', right: '$3' }}>
                 <X size="20px" />
               </Box>
             </DialogClose>
           </form>
         </DialogContent>
       </Dialog>
-    );
+    )
   }
-);
+)
 
-SetHookDialog.displayName = "SetHookDialog";
+SetHookDialog.displayName = 'SetHookDialog'
 
-export default SetHookDialog;
+export default SetHookDialog
