@@ -17,7 +17,7 @@ import {
 } from "./Dialog";
 import { Plus, X } from "phosphor-react";
 import { styled } from "../stitches.config";
-import { capitalize } from "../utils/helpers";
+import { capitalize, getFileExtention } from "../utils/helpers";
 import ContextMenu, { ContentMenuOption } from "./ContextMenu";
 
 const ErrorText = styled(Text, {
@@ -103,7 +103,7 @@ export const Tabs = ({
       if (!tabname) {
         return { error: `Please enter ${label.toLocaleLowerCase()} name.` };
       }
-      let ext = (tabname.includes(".") && tabname.split(".").pop()) || "";
+      let ext = getFileExtention(tabname);
 
       if (!ext && defaultExtension) {
         ext = defaultExtension;
@@ -115,7 +115,7 @@ export const Tabs = ({
       if (extensionRequired && !ext) {
         return { error: "File extension is required!" };
       }
-      if (allowedExtensions && !allowedExtensions.includes(ext)) {
+      if (allowedExtensions && ext && !allowedExtensions.includes(ext)) {
         return { error: "This file extension is not allowed!" };
       }
       if (

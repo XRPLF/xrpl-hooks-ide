@@ -10,10 +10,11 @@ import Box from "../../components/Box";
 import Button from "../../components/Button";
 import Popover from "../../components/Popover";
 import RunScript from "../../components/RunScript";
-import state from "../../state";
+import state, { IFile } from "../../state";
 import { compileCode } from "../../state/actions";
 import { getSplit, saveSplit } from "../../state/actions/persistSplits";
 import { styled } from "../../stitches.config";
+import { getFileExtention } from "../../utils/helpers";
 
 const HooksEditor = dynamic(() => import("../../components/HooksEditor"), {
   ssr: false,
@@ -148,6 +149,8 @@ const CompilerSettings = () => {
 const Home: NextPage = () => {
   const snap = useSnapshot(state);
 
+  const activeFile = snap.files[snap.active] as IFile | undefined;
+  const activeFileExt = getFileExtention(activeFile?.name);
   return (
     <Split
       direction="vertical"
@@ -156,12 +159,11 @@ const Home: NextPage = () => {
       gutterAlign="center"
       gutterSize={4}
       style={{ height: "calc(100vh - 60px)" }}
-      onDragEnd={(e) => saveSplit("developVertical", e)}
+      onDragEnd={e => saveSplit("developVertical", e)}
     >
       <main style={{ display: "flex", flex: 1, position: "relative" }}>
         <HooksEditor />
-        {snap.files[snap.active]?.name?.split(".")?.[1]?.toLowerCase() ===
-          "c" && (
+        {activeFileExt === "c" && (
           <Hotkeys
             keyName="command+b,ctrl+b"
             onKeyDown={() =>
@@ -197,8 +199,7 @@ const Home: NextPage = () => {
             </Flex>
           </Hotkeys>
         )}
-        {snap.files[snap.active]?.name?.split(".")?.[1]?.toLowerCase() ===
-          "js" && (
+        {activeFileExt === "js" && (
           <Hotkeys
             keyName="command+b,ctrl+b"
             onKeyDown={() =>
@@ -216,7 +217,7 @@ const Home: NextPage = () => {
                 gap: "$2",
               }}
             >
-              <RunScript file={snap.files[snap.active]} />
+              <RunScript file={activeFile as IFile} />
             </Flex>
           </Hotkeys>
         )}
@@ -236,8 +237,7 @@ const Home: NextPage = () => {
             logs={snap.logs}
           />
         </Flex>
-        {snap.files[snap.active]?.name?.split(".")?.[1]?.toLowerCase() ===
-          "js" && (
+        {activeFileExt === "js" && (
           <Flex
             css={{
               flex: 1,
