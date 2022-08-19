@@ -1,21 +1,21 @@
-import { getFileExtention } from '../../utils/helpers';
-import state, { IFile } from '../index';
+import { getFileExtention } from '../../utils/helpers'
+import state, { IFile } from '../index'
 
 const languageMapping: Record<string, string | undefined> = {
-  'ts': 'typescript',
-  'js': 'javascript',
-  'md': 'markdown',
-  'c': 'c',
-  'h': 'c',
+  ts: 'typescript',
+  js: 'javascript',
+  md: 'markdown',
+  c: 'c',
+  h: 'c'
 }
 
 export const createNewFile = (name: string) => {
   const ext = getFileExtention(name) || ''
 
-  const emptyFile: IFile = { name, language: languageMapping[ext] || '', content: '' };
-  state.files.push(emptyFile);
-  state.active = state.files.length - 1;
-};
+  const emptyFile: IFile = { name, language: languageMapping[ext] || '', content: '' }
+  state.files.push(emptyFile)
+  state.active = state.files.length - 1
+}
 
 export const renameFile = (oldName: string, nwName: string) => {
   const file = state.files.find(file => file.name === oldName)
@@ -25,4 +25,4 @@ export const renameFile = (oldName: string, nwName: string) => {
   const language = languageMapping[ext] || ''
   file.name = nwName
   file.language = language
-};
+}

@@ -1,15 +1,15 @@
-import { styled } from "../stitches.config";
+import { styled } from '../stitches.config'
 
-const Pre = styled("span", {
+const Pre = styled('span', {
   m: 0,
-  wordBreak: "break-all",
+  wordBreak: 'break-all',
   fontFamily: '$monospace',
   whiteSpace: 'pre-wrap',
   variants: {
     fluid: {
       true: {
-        width: "100%",
-      },
+        width: '100%'
+      }
     },
     line: {
       true: {
@@ -21,7 +21,7 @@ const Pre = styled("span", {
         display: 'block'
       }
     }
-  },
-});
+  }
+})
 
-export default Pre;
+export default Pre

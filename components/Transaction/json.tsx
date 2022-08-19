@@ -1,192 +1,176 @@
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
-import { useSnapshot } from "valtio";
-import state, {
-  prepareState,
-  transactionsData,
-  TransactionState,
-} from "../../state";
-import Text from "../Text";
-import { Flex, Link } from "..";
-import { showAlert } from "../../state/actions/showAlert";
-import { parseJSON } from "../../utils/json";
-import { extractSchemaProps } from "../../utils/schema";
-import amountSchema from "../../content/amount-schema.json";
-import Monaco from "../Monaco";
-import type monaco from "monaco-editor";
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { useSnapshot } from 'valtio'
+import state, { prepareState, transactionsData, TransactionState } from '../../state'
+import Text from '../Text'
+import { Flex, Link } from '..'
+import { showAlert } from '../../state/actions/showAlert'
+import { parseJSON } from '../../utils/json'
+import { extractSchemaProps } from '../../utils/schema'
+import amountSchema from '../../content/amount-schema.json'
+import Monaco from '../Monaco'
+import type monaco from 'monaco-editor'
 
 interface JsonProps {
-  getJsonString?: (state?: Partial<TransactionState>) => string;
-  header?: string;
-  setState: (pTx?: Partial<TransactionState> | undefined) => void;
-  state: TransactionState;
-  estimateFee?: () => Promise<string | undefined>;
+  getJsonString?: (state?: Partial<TransactionState>) => string
+  header?: string
+  setState: (pTx?: Partial<TransactionState> | undefined) => void
+  state: TransactionState
+  estimateFee?: () => Promise<string | undefined>
 }
 
-export const TxJson: FC<JsonProps> = ({
-  getJsonString,
-  state: txState,
-  header,
-  setState,
-}) => {
-  const { editorSettings, accounts } = useSnapshot(state);
-  const { editorValue, estimatedFee } = txState;
+export const TxJson: FC<JsonProps> = ({ getJsonString, state: txState, header, setState }) => {
+  const { editorSettings, accounts } = useSnapshot(state)
+  const { editorValue, estimatedFee } = txState
   const [currTxType, setCurrTxType] = useState<string | undefined>(
     txState.selectedTransaction?.value
-  );
+  )
 
   useEffect(() => {
     setState({
-      editorValue: getJsonString?.(),
-    });
+      editorValue: getJsonString?.()
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   useEffect(() => {
-    const parsed = parseJSON(editorValue);
-    if (!parsed) return;
+    const parsed = parseJSON(editorValue)
+    if (!parsed) return
 
-    const tt = parsed.TransactionType;
-    const tx = transactionsData.find(t => t.TransactionType === tt);
-    if (tx) setCurrTxType(tx.TransactionType);
+    const tt = parsed.TransactionType
+    const tx = transactionsData.find(t => t.TransactionType === tt)
+    if (tx) setCurrTxType(tx.TransactionType)
     else {
-      setCurrTxType(undefined);
+      setCurrTxType(undefined)
     }
-  }, [editorValue]);
+  }, [editorValue])
 
   const saveState = (value: string, transactionType?: string) => {
-    const tx = prepareState(value, transactionType);
+    const tx = prepareState(value, transactionType)
     if (tx) {
-      setState(tx);
+      setState(tx)
       setState({
-        editorValue: getJsonString?.(tx),
-      });
+        editorValue: getJsonString?.(tx)
+      })
     }
-  };
+  }
 
   const discardChanges = () => {
-    showAlert("Confirm", {
-      body: "Are you sure to discard these changes?",
-      confirmText: "Yes",
+    showAlert('Confirm', {
+      body: 'Are you sure to discard these changes?',
+      confirmText: 'Yes',
       onCancel: () => {},
-      onConfirm: () => setState({ editorValue: getJsonString?.() }),
-    });
-  };
+      onConfirm: () => setState({ editorValue: getJsonString?.() })
+    })
+  }
 
   const onExit = (value: string) => {
-    const options = parseJSON(value);
+    const options = parseJSON(value)
     if (options) {
-      saveState(value, currTxType);
-      return;
+      saveState(value, currTxType)
+      return
     }
-    showAlert("Error!", {
+    showAlert('Error!', {
       body: `Malformed Transaction in ${header}, would you like to discard these changes?`,
-      confirmText: "Discard",
+      confirmText: 'Discard',
       onConfirm: () => setState({ editorValue: getJsonString?.() }),
-      onCancel: () => setState({ viewType: "json" }),
-    });
-  };
+      onCancel: () => setState({ viewType: 'json' })
+    })
+  }
 
   const getSchemas = useCallback(async (): Promise<any[]> => {
-    const txObj = transactionsData.find(
-      td => td.TransactionType === currTxType
-    );
+    const txObj = transactionsData.find(td => td.TransactionType === currTxType)
 
-    let genericSchemaProps: any;
+    let genericSchemaProps: any
     if (txObj) {
-      genericSchemaProps = extractSchemaProps(txObj);
+      genericSchemaProps = extractSchemaProps(txObj)
     } else {
       genericSchemaProps = transactionsData.reduce(
         (cumm, td) => ({
           ...cumm,
-          ...extractSchemaProps(td),
+          ...extractSchemaProps(td)
         }),
         {}
-      );
+      )
     }
     return [
       {
-        uri: "file:///main-schema.json", // id of the first schema
-        fileMatch: ["**.json"], // associate with our model
+        uri: 'file:///main-schema.json', // id of the first schema
+        fileMatch: ['**.json'], // associate with our model
         schema: {
           title: header,
-          type: "object",
-          required: ["TransactionType", "Account"],
+          type: 'object',
+          required: ['TransactionType', 'Account'],
           properties: {
             ...genericSchemaProps,
             TransactionType: {
-              title: "Transaction Type",
-              enum: transactionsData.map(td => td.TransactionType),
+              title: 'Transaction Type',
+              enum: transactionsData.map(td => td.TransactionType)
             },
             Account: {
-              $ref: "file:///account-schema.json",
+              $ref: 'file:///account-schema.json'
             },
             Destination: {
               anyOf: [
                 {
-                  $ref: "file:///account-schema.json",
+                  $ref: 'file:///account-schema.json'
                 },
                 {
-                  type: "string",
-                  title: "Destination Account",
-                },
-              ],
+                  type: 'string',
+                  title: 'Destination Account'
+                }
+              ]
             },
             Amount: {
-              $ref: "file:///amount-schema.json",
+              $ref: 'file:///amount-schema.json'
             },
             Fee: {
-              $ref: "file:///fee-schema.json",
-            },
-          },
-        },
+              $ref: 'file:///fee-schema.json'
+            }
+          }
+        }
       },
       {
-        uri: "file:///account-schema.json",
+        uri: 'file:///account-schema.json',
         schema: {
-          type: "string",
-          title: "Account type",
-          enum: accounts.map(acc => acc.address),
-        },
+          type: 'string',
+          title: 'Account type',
+          enum: accounts.map(acc => acc.address)
+        }
       },
       {
-        uri: "file:///fee-schema.json",
+        uri: 'file:///fee-schema.json',
         schema: {
-          type: "string",
-          title: "Fee type",
+          type: 'string',
+          title: 'Fee type',
           const: estimatedFee,
-          description: estimatedFee
-            ? "Above mentioned value is recommended base fee"
-            : undefined,
-        },
+          description: estimatedFee ? 'Above mentioned value is recommended base fee' : undefined
+        }
       },
       {
-        ...amountSchema,
-      },
-    ];
-  }, [accounts, currTxType, estimatedFee, header]);
+        ...amountSchema
+      }
+    ]
+  }, [accounts, currTxType, estimatedFee, header])
 
-  const [monacoInst, setMonacoInst] = useState<typeof monaco>();
+  const [monacoInst, setMonacoInst] = useState<typeof monaco>()
   useEffect(() => {
-    if (!monacoInst) return;
+    if (!monacoInst) return
     getSchemas().then(schemas => {
       monacoInst.languages.json.jsonDefaults.setDiagnosticsOptions({
         validate: true,
-        schemas,
-      });
-    });
-  }, [getSchemas, monacoInst]);
+        schemas
+      })
+    })
+  }, [getSchemas, monacoInst])
 
-  const hasUnsaved = useMemo(
-    () => editorValue !== getJsonString?.(),
-    [editorValue, getJsonString]
-  );
+  const hasUnsaved = useMemo(() => editorValue !== getJsonString?.(), [editorValue, getJsonString])
 
   return (
     <Monaco
       rootProps={{
-        css: { height: "calc(100% - 45px)" },
+        css: { height: 'calc(100% - 45px)' }
       }}
-      language={"json"}
+      language={'json'}
       id={header}
       height="100%"
       value={editorValue}
@@ -197,36 +181,29 @@ export const TxJson: FC<JsonProps> = ({
           glyphMargin: true,
           tabSize: editorSettings.tabSize,
           dragAndDrop: true,
-          fontSize: 14,
-        });
+          fontSize: 14
+        })
 
-        setMonacoInst(monaco);
+        setMonacoInst(monaco)
         // register onExit cb
-        const model = editor.getModel();
-        model?.onWillDispose(() => onExit(model.getValue()));
+        const model = editor.getModel()
+        model?.onWillDispose(() => onExit(model.getValue()))
       }}
       overlay={
         hasUnsaved ? (
-          <Flex
-            row
-            align="center"
-            css={{ fontSize: "$xs", color: "$textMuted", ml: "auto" }}
-          >
+          <Flex row align="center" css={{ fontSize: '$xs', color: '$textMuted', ml: 'auto' }}>
             <Text muted small>
               This file has unsaved changes.
             </Text>
-            <Link
-              css={{ ml: "$1" }}
-              onClick={() => saveState(editorValue || "", currTxType)}
-            >
+            <Link css={{ ml: '$1' }} onClick={() => saveState(editorValue || '', currTxType)}>
               save
             </Link>
-            <Link css={{ ml: "$1" }} onClick={discardChanges}>
+            <Link css={{ ml: '$1' }} onClick={discardChanges}>
               discard
             </Link>
           </Flex>
         ) : undefined
       }
     />
-  );
-};
+  )
+}
