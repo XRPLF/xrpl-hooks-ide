@@ -5,6 +5,7 @@ import { subscribeKey } from 'valtio/utils'
 import { Select } from '.'
 import state, { ILog, transactionsState } from '../state'
 import { extractJSON } from '../utils/json'
+import EnrichLog from './EnrichLog'
 import LogBox from './LogBox'
 
 interface ISelect<T = string> {
@@ -99,6 +100,11 @@ const addListeners = (account: ISelect | null) => {
 
 subscribeKey(streamState, 'selectedAccount', addListeners)
 
+const clearLog = () => {
+  streamState.logs = []
+  streamState.statusChangeTimestamp = Date.now()
+}
+
 const DebugStream = () => {
   const { selectedAccount, logs } = useSnapshot(streamState)
   const { activeHeader: activeTxTab } = useSnapshot(transactionsState)
@@ -134,11 +140,6 @@ const DebugStream = () => {
       streamState.selectedAccount = account
   }, [activeTxTab])
 
-  const clearLog = () => {
-    streamState.logs = []
-    streamState.statusChangeTimestamp = Date.now()
-  }
-
   return (
     <LogBox enhanced renderNav={renderNav} title="Debug stream" logs={logs} clearLog={clearLog} />
   )
@@ -157,9 +158,11 @@ export const pushLog = (str: any, opts: Partial<Pick<ILog, 'type'>> = {}): ILog 
   const timestring = !timestamp ? tm : new Date(timestamp).toLocaleTimeString()
 
   const extracted = extractJSON(msg)
-  const message = !extracted ? msg : msg.slice(0, extracted.start) + msg.slice(extracted.end + 1)
+  const _message = !extracted ? msg : msg.slice(0, extracted.start) + msg.slice(extracted.end + 1)
+  const message = ref(<EnrichLog str={_message} />)
 
-  const jsonData = extracted ? JSON.stringify(extracted.result, null, 2) : undefined
+  const _jsonData = extracted ? JSON.stringify(extracted.result, null, 2) : undefined
+  const jsonData = _jsonData ? ref(<EnrichLog str={_jsonData} />) : undefined
 
   if (extracted?.result?.id?._Request?.includes('hooks-builder-req')) {
     return

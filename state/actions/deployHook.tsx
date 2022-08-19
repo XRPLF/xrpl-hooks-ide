@@ -7,6 +7,7 @@ import { Link } from '../../components'
 import { ref } from 'valtio'
 import estimateFee from '../../utils/estimateFee'
 import { SetHookData } from '../../utils/setHook'
+import ResultLink from '../../components/ResultLink'
 
 export const sha256 = async (string: string) => {
   const utf8 = new TextEncoder().encode(string)
@@ -144,6 +145,25 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
         tx_blob: signedTransaction
       })
 
+      const txHash = submitRes.tx_json?.hash
+      const resultMsg = ref(
+        <>
+          [<ResultLink result={submitRes.engine_result} />] {submitRes.engine_result_message}{' '}
+          {txHash && (
+            <>
+              Transaction hash:{' '}
+              <Link
+                as="a"
+                href={`https://${process.env.NEXT_PUBLIC_EXPLORER_URL}/${txHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {txHash}
+              </Link>
+            </>
+          )}
+        </>
+      )
       if (submitRes.engine_result === 'tesSUCCESS') {
         state.deployLogs.push({
           type: 'success',
@@ -151,27 +171,17 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
         })
         state.deployLogs.push({
           type: 'success',
-          message: ref(
-            <>
-              [{submitRes.engine_result}] {submitRes.engine_result_message} Transaction hash:{' '}
-              <Link
-                as="a"
-                href={`https://${process.env.NEXT_PUBLIC_EXPLORER_URL}/${submitRes.tx_json?.hash}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {submitRes.tx_json?.hash}
-              </Link>
-            </>
-          )
-          // message: `[${submitRes.engine_result}] ${submitRes.engine_result_message} Validated ledger index: ${submitRes.validated_ledger_index}`,
+          message: resultMsg
+        })
+      } else if (submitRes.engine_result) {
+        state.deployLogs.push({
+          type: 'error',
+          message: resultMsg
         })
       } else {
         state.deployLogs.push({
           type: 'error',
-          message: `[${submitRes.engine_result || submitRes.error}] ${
-            submitRes.engine_result_message || submitRes.error_exception
-          }`
+          message: `[${submitRes.error}] ${submitRes.error_exception}`
         })
       }
     } catch (err) {

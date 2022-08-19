@@ -72,7 +72,12 @@ const Tooltip: React.FC<React.ComponentProps<typeof StyledContent> & ITooltip> =
   ...rest
 }) => {
   return (
-    <TooltipPrimitive.Root open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
+    <TooltipPrimitive.Root
+      open={open}
+      defaultOpen={defaultOpen}
+      onOpenChange={onOpenChange}
+      delayDuration={100}
+    >
       <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
       <StyledContent side="bottom" align="center" {...rest}>
         <div dangerouslySetInnerHTML={{ __html: content }} />
