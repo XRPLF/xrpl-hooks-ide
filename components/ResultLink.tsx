@@ -15,7 +15,7 @@ const ResultLink: FC<Props> = ({ result }) => {
     href = `https://xrpl.org/${result.slice(0, 3)}-codes.html`
   }
   return (
-    <Link as="a" title={result} href={href} target="_blank" rel="noopener noreferrer">
+    <Link as="a" href={href} target="_blank" rel="noopener noreferrer">
       {result}
     </Link>
   )
