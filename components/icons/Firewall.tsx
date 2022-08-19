@@ -1,11 +1,5 @@
 const Firewall = () => (
-  <svg
-    width="66"
-    height="32"
-    viewBox="0 0 66 32"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="66" height="32" viewBox="0 0 66 32" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M33 13V7"
       stroke="#EDEDEF"
@@ -70,6 +64,6 @@ const Firewall = () => (
       fill="#EDEDEF"
     />
   </svg>
-);
+)
 
-export default Firewall;
+export default Firewall

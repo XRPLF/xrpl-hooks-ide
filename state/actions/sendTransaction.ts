@@ -2,8 +2,6 @@ import { derive, sign } from 'xrpl-accountlib'
 
 import state from '..'
 import type { IAccount } from '..'
-import ResultLink from '../../components/ResultLink'
-import { ref } from 'valtio'
 
 interface TransactionOptions {
   TransactionType: string
@@ -38,26 +36,17 @@ export const sendTransaction = async (
       command: 'submit',
       tx_blob: signedTransaction
     })
-
-    const resultMsg = ref(
-      <>
-        {logPrefix}[<ResultLink result={response.engine_result} />] {response.engine_result_message}
-      </>
-    )
     if (response.engine_result === 'tesSUCCESS') {
       state.transactionLogs.push({
         type: 'success',
-        message: resultMsg
-      })
-    } else if (response.engine_result) {
-      state.transactionLogs.push({
-        type: 'error',
-        message: resultMsg
+        message: `${logPrefix}[${response.engine_result}] ${response.engine_result_message}`
       })
     } else {
       state.transactionLogs.push({
         type: 'error',
-        message: `${logPrefix}[${response.error}] ${response.error_exception}`
+        message: `${logPrefix}[${response.error || response.engine_result}] ${
+          response.error_exception || response.engine_result_message
+        }`
       })
     }
     const currAcc = state.accounts.find(acc => acc.address === account.address)

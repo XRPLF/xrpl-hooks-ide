@@ -1,5 +1,5 @@
-import { snapshot } from "valtio"
-import state from ".."
+import { snapshot } from 'valtio'
+import state from '..'
 
 export type SplitSize = number[]
 
@@ -12,4 +12,3 @@ export const getSplit = (splitId: string): SplitSize | null => {
   const split = splits[splitId]
   return split ? split : null
 }
-

@@ -1,53 +1,53 @@
-import { styled } from "../stitches.config";
-import Box from "./Box";
+import { styled } from '../stitches.config'
+import Box from './Box'
 
 const Flex = styled(Box, {
-  display: "flex",
+  display: 'flex',
   variants: {
     row: {
       true: {
-        flexDirection: "row",
-      },
+        flexDirection: 'row'
+      }
     },
     column: {
       true: {
-        flexDirection: "column",
-      },
+        flexDirection: 'column'
+      }
     },
     fluid: {
       true: {
-        width: "100%",
-      },
+        width: '100%'
+      }
     },
     align: {
       start: {
-        alignItems: "start",
+        alignItems: 'start'
       },
       center: {
-        alignItems: "center",
+        alignItems: 'center'
       },
       end: {
-        alignItems: "end",
-      },
+        alignItems: 'end'
+      }
     },
     justify: {
       start: {
-        justifyContent: "start",
+        justifyContent: 'start'
       },
       center: {
-        justifyContent: "center",
+        justifyContent: 'center'
       },
       end: {
-        justifyContent: "end",
+        justifyContent: 'end'
       },
-      "space-between": {
-        justifyContent: "space-between",
+      'space-between': {
+        justifyContent: 'space-between'
       },
-      "space-around": {
-        justifyContent: "space-around",
-      },
-    },
-  },
-});
+      'space-around': {
+        justifyContent: 'space-around'
+      }
+    }
+  }
+})
 
-export default Flex;
+export default Flex
