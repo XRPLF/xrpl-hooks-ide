@@ -25,31 +25,6 @@
     "description": " a block end instruction moves execution below depth 0 {{}}`}` <= like this"
   },
   {
-    "code": 5,
-    "identifier": "BLOCK_ILLEGAL",
-    "description": " a block end instruction moves execution below depth 0 {{}}`}` <= like this"
-  },
-  {
-    "code": 5,
-    "identifier": "BLOCK_ILLEGAL",
-    "description": " a block end instruction moves execution below depth 0 {{}}`}` <= like this"
-  },
-  {
-    "code": 5,
-    "identifier": "BLOCK_ILLEGAL",
-    "description": " a block end instruction moves execution below depth 0 {{}}`}` <= like this"
-  },
-  {
-    "code": 5,
-    "identifier": "BLOCK_ILLEGAL",
-    "description": " a block end instruction moves execution below depth 0 {{}}`}` <= like this"
-  },
-  {
-    "code": 5,
-    "identifier": "BLOCK_ILLEGAL",
-    "description": " a block end instruction moves execution below depth 0 {{}}`}` <= like this"
-  },
-  {
     "code": 6,
     "identifier": "CALL_ILLEGAL",
     "description": "wasm tries to call a non-whitelisted function"
