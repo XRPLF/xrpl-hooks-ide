@@ -210,7 +210,12 @@ const HooksEditor = () => {
                   )
                 )
               }
-
+              monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+                experimentalDecorators: true
+              })
+              monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+                diagnosticCodesToIgnore: [1206]
+              })
               monaco.languages.typescript.typescriptDefaults.addExtraLib(
                 asc.definitionFiles.assembly,
                 'assemblyscript/std/assembly/index.d.ts'
@@ -224,6 +229,7 @@ const HooksEditor = () => {
                   aliases: ['C', 'c', 'H', 'h'],
                   mimetypes: ['text/plain']
                 })
+
                 MonacoServices.install(monaco)
                 const webSocket = createWebSocket(
                   process.env.NEXT_PUBLIC_LANGUAGE_SERVER_API_ENDPOINT || ''
