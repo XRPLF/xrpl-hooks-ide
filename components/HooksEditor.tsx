@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 
 import Box from './Box'
 import Container from './Container'
+import asc from 'assemblyscript/dist/asc'
 import { createNewFile, saveFile } from '../state/actions'
 import { apiHeaderFiles } from '../state/constants'
 import state from '../state'
@@ -209,6 +210,16 @@ const HooksEditor = () => {
                   )
                 )
               }
+              monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+                experimentalDecorators: true
+              })
+              monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+                diagnosticCodesToIgnore: [1206]
+              })
+              monaco.languages.typescript.typescriptDefaults.addExtraLib(
+                asc.definitionFiles.assembly,
+                'assemblyscript/std/assembly/index.d.ts'
+              )
 
               // create the web socket
               if (!subscriptionRef.current) {
@@ -218,6 +229,7 @@ const HooksEditor = () => {
                   aliases: ['C', 'c', 'H', 'h'],
                   mimetypes: ['text/plain']
                 })
+
                 MonacoServices.install(monaco)
                 const webSocket = createWebSocket(
                   process.env.NEXT_PUBLIC_LANGUAGE_SERVER_API_ENDPOINT || ''

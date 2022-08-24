@@ -14,7 +14,7 @@ export interface IFile {
   language: string
   content: string
   compiledValueSnapshot?: string
-  compiledContent?: ArrayBuffer | null
+  compiledContent?: ArrayBuffer | Uint8Array | null
   compiledWatContent?: string | null
   lastCompiled?: Date
   containsErrors?: boolean

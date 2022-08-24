@@ -159,7 +159,8 @@ const Home: NextPage = () => {
     >
       <main style={{ display: 'flex', flex: 1, position: 'relative' }}>
         <HooksEditor />
-        {snap.files[snap.active]?.name?.split('.')?.[1]?.toLowerCase() === 'c' && (
+        {(snap.files[snap.active]?.name?.split('.')?.[1]?.toLowerCase() === 'c' ||
+          snap.files[snap.active]?.name?.split('.')?.[1]?.toLowerCase() === 'ts') && (
           <Hotkeys
             keyName="command+b,ctrl+b"
             onKeyDown={() => !snap.compiling && snap.files.length && compileCode(snap.active)}
@@ -185,11 +186,13 @@ const Home: NextPage = () => {
                 <Play weight="bold" size="16px" />
                 Compile to Wasm
               </Button>
-              <Popover content={<CompilerSettings />}>
-                <Button variant="primary" css={{ px: '10px' }}>
-                  <Gear size="16px" />
-                </Button>
-              </Popover>
+              {snap.files[snap.active].language === 'c' && (
+                <Popover content={<CompilerSettings />}>
+                  <Button variant="primary" css={{ px: '10px' }}>
+                    <Gear size="16px" />
+                  </Button>
+                </Popover>
+              )}
             </Flex>
           </Hotkeys>
         )}

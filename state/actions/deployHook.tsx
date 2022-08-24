@@ -25,7 +25,7 @@ function toHex(str: string) {
   return result.toUpperCase()
 }
 
-function arrayBufferToHex(arrayBuffer?: ArrayBuffer | null) {
+function arrayBufferToHex(arrayBuffer?: ArrayBuffer | Uint8Array | null) {
   if (!arrayBuffer) {
     return ''
   }
@@ -37,7 +37,7 @@ function arrayBufferToHex(arrayBuffer?: ArrayBuffer | null) {
     throw new TypeError('Expected input to be an ArrayBuffer')
   }
 
-  var view = new Uint8Array(arrayBuffer)
+  var view = arrayBuffer instanceof Uint8Array ? arrayBuffer : new Uint8Array(arrayBuffer)
   var result = ''
   var value
 
