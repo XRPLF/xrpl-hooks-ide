@@ -78,7 +78,6 @@ const EditorNavigation = ({ renderNav }: { renderNav?: () => ReactNode }) => {
   return (
     <Flex css={{ flexShrink: 0, gap: '$0' }}>
       <Flex
-        id="kissa"
         ref={scrollRef}
         css={{
           overflowX: 'scroll',
@@ -181,7 +180,21 @@ const EditorNavigation = ({ renderNav }: { renderNav?: () => ReactNode }) => {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button outline size="sm" css={{ mr: '$3' }} onClick={() => setPopUp(true)}>
+            <Button
+              outline
+              size="sm"
+              css={{
+                mr: '-1px',
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0,
+                '@sm': {
+                  borderTopRightRadius: '$sm',
+                  borderBottomRightRadius: '$sm',
+                  mr: '$3'
+                }
+              }}
+              onClick={() => setPopUp(true)}
+            >
               <GithubLogo size="16px" /> Login
             </Button>
           )}
@@ -202,6 +215,9 @@ const EditorNavigation = ({ renderNav }: { renderNav?: () => ReactNode }) => {
                 alignSelf: 'flex-start',
                 boxShadow: 'none'
               },
+              'button:not(:last-child)': {
+                display: 'none'
+              },
               'button:not(:first-child):not(:last-child)': {
                 borderRight: 0,
                 borderLeft: 0
@@ -216,6 +232,11 @@ const EditorNavigation = ({ renderNav }: { renderNav?: () => ReactNode }) => {
                 boxShadow: 'inset 0px 0px 0px 1px $colors$mauve10',
                 '&:hover': {
                   boxShadow: 'inset 0px 0px 0px 1px $colors$mauve12'
+                }
+              },
+              '@sm': {
+                'button:not(:last-child)': {
+                  display: 'flex'
                 }
               }
             }}
