@@ -33,7 +33,7 @@ import { styled } from '../stitches.config'
 const ImageWrapper = styled(Flex, {
   position: 'relative',
   mt: '$2',
-  mb: '$10',
+  mb: '$6',
   svg: {
     // fill: "red",
     '.angle': {
@@ -66,16 +66,23 @@ const Navigation = () => {
       <Container
         css={{
           display: 'flex',
-          alignItems: 'center'
+          alignItems: 'center',
+          px: '$3',
+          '@sm': {
+            px: '$4'
+          }
         }}
       >
         <Flex
           css={{
             flex: 1,
             alignItems: 'center',
-            borderRight: '1px solid $colors$mauve6',
             py: '$3',
-            pr: '$4'
+            pr: '$0',
+            '@sm': {
+              borderRight: '1px solid $colors$mauve6',
+              pr: '$4'
+            }
           }}
         >
           <Link href={gistId ? `/develop/${gistId}` : '/develop'} passHref>
@@ -84,7 +91,11 @@ const Navigation = () => {
               css={{
                 display: 'flex',
                 alignItems: 'center',
-                color: '$textColor'
+                color: '$textColor',
+                mr: '$2',
+                '@sm': {
+                  mr: '$4'
+                }
               }}
             >
               <Logo width="32px" height="32px" />
@@ -92,9 +103,12 @@ const Navigation = () => {
           </Link>
           <Flex
             css={{
-              ml: '$5',
               flexDirection: 'column',
-              gap: '1px'
+              gap: '1px',
+              display: 'none',
+              '@md': {
+                display: 'flex'
+              }
             }}
           >
             {snap.loading ? (
@@ -135,8 +149,8 @@ const Navigation = () => {
                   css={{
                     display: 'flex',
                     maxWidth: '1080px',
-                    width: '80vw',
-                    maxHeight: '80%',
+                    width: '90vw',
+                    maxHeight: '90%',
                     backgroundColor: '$mauve1 !important',
                     overflowY: 'auto',
                     background: 'black',
@@ -265,15 +279,18 @@ const Navigation = () => {
                         gridTemplateColumns: '1fr',
                         gridTemplateRows: 'max-content',
                         flex: 1,
-                        p: '$7',
-                        pb: '$16',
+                        p: '$4',
+                        pb: '$8',
                         gap: '$3',
                         alignItems: 'normal',
                         flexWrap: 'wrap',
                         backgroundColor: '$mauve1',
                         '@md': {
                           gridTemplateColumns: '1fr 1fr',
-                          gridTemplateRows: 'max-content'
+                          gridTemplateRows: 'max-content',
+                          p: '$7',
+                          pb: '$10',
+                          paddingRight: '$12'
                         },
                         '@lg': {
                           gridTemplateColumns: '1fr 1fr 1fr',
@@ -316,23 +333,30 @@ const Navigation = () => {
         <Flex
           css={{
             flexWrap: 'nowrap',
-            marginLeft: '$4',
+            marginLeft: '$2',
             overflowX: 'scroll',
             '&::-webkit-scrollbar': {
               height: 0,
               background: 'transparent'
             },
             scrollbarColor: 'transparent',
-            scrollbarWidth: 'none'
+            scrollbarWidth: 'none',
+            '@sm': {
+              marginLeft: '$4'
+            }
           }}
         >
           <Stack
             css={{
-              ml: '$4',
-              gap: '$3',
+              ml: '$0',
+              gap: '$2',
               flexWrap: 'nowrap',
               alignItems: 'center',
-              marginLeft: 'auto'
+              marginLeft: 'auto',
+              '@sm': {
+                marginLeft: '$4',
+                gap: '$3'
+              }
             }}
           >
             <ButtonGroup>

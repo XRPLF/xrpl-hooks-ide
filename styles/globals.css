@@ -54,3 +54,15 @@ html.light .gutter-horizontal:hover {
 .monaco-editor .monaco-hover {
   z-index: 9999;
 }
+
+@media screen and (max-width: 48rem) {
+  .split-mobile-forceAutoHeight {
+    height: auto !important;
+  }
+  .split-mobile-forceVertical {
+    flex-direction: column !important;
+  }
+  .split-mobile-forceVertical > div {
+    width: 100% !important;
+  }
+}

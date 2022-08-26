@@ -68,6 +68,7 @@ const Test = () => {
             justifyContent: 'center',
             p: '$3 $2'
           }}
+          className="split-mobile-forceAutoHeight"
         >
           <Split
             direction="horizontal"
@@ -82,6 +83,7 @@ const Test = () => {
               height: '100%'
             }}
             onDragEnd={e => saveSplit('testHorizontal', e)}
+            className="split-mobile-forceVertical"
           >
             <Box css={{ width: '55%', px: '$2' }}>
               <Tabs
@@ -105,7 +107,18 @@ const Test = () => {
                 ))}
               </Tabs>
             </Box>
-            <Box css={{ width: '45%', mx: '$2', height: '100%' }}>
+            <Box
+              css={{
+                width: '45%',
+                mx: '$0',
+                mt: '$1',
+                height: '100%',
+                '@md': {
+                  mx: '$2',
+                  mt: '$0'
+                }
+              }}
+            >
               <Accounts card hideDeployBtn showHookStats />
             </Box>
           </Split>
@@ -131,6 +144,7 @@ const Test = () => {
         <Flex>
           <Split
             direction="horizontal"
+            className="split-mobile-forceVertical"
             sizes={[50, 50]}
             minSize={[320, 160]}
             gutterSize={4}

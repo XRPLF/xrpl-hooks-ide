@@ -7,7 +7,7 @@ const PanelBox = styled('div', {
   flexDirection: 'column',
   border: '1px solid $colors$mauve6',
   backgroundColor: '$mauve2',
-  padding: '$3',
+  padding: '$5',
   borderRadius: '$sm',
   fontWeight: 'lighter',
   height: 'auto',
