@@ -6,11 +6,14 @@ const ButtonGroup = styled('div', {
   marginLeft: '1px',
   [`& ${StyledButton}`]: {
     marginLeft: '-1px',
-    px: '$4',
+    px: '0.65rem',
     zIndex: 2,
     position: 'relative',
     '&:hover, &:focus': {
       zIndex: 200
+    },
+    '@sm': {
+      px: '$4'
     }
   },
   [`& ${StyledButton}:not(:only-of-type):not(:first-child):not(:last-child)`]: {

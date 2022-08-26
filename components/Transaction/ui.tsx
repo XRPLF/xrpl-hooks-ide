@@ -137,11 +137,14 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => 
           row
           fluid
           css={{
-            justifyContent: 'flex-end',
+            justifyContent: 'space-between',
             alignItems: 'center',
             mb: '$3',
             mt: '1px',
-            pr: '1px'
+            pr: '1px',
+            '@xl': {
+              justifyContent: 'flex-end'
+            }
           }}
         >
           <Text muted css={{ mr: '$3' }}>
@@ -152,7 +155,13 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => 
             placeholder="Select transaction type"
             options={transactionsOptions}
             hideSelectedOptions
-            css={{ width: '70%' }}
+            css={{
+              width: '60%',
+              minWidth: '200px',
+              '@lg': {
+                width: '70%'
+              }
+            }}
             value={selectedTransaction}
             onChange={(tt: any) => handleChangeTxType(tt)}
           />
@@ -161,10 +170,13 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => 
           row
           fluid
           css={{
-            justifyContent: 'flex-end',
+            justifyContent: 'space-between',
             alignItems: 'center',
             mb: '$3',
-            pr: '1px'
+            pr: '1px',
+            '@xl': {
+              justifyContent: 'flex-end'
+            }
           }}
         >
           <Text muted css={{ mr: '$3' }}>
@@ -173,7 +185,13 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => 
           <Select
             instanceId="from-account"
             placeholder="Select your account"
-            css={{ width: '70%' }}
+            css={{
+              width: '60%',
+              minWidth: '200px',
+              '@lg': {
+                width: '70%'
+              }
+            }}
             options={accountOptions}
             value={selectedAccount}
             onChange={(acc: any) => handleSetAccount(acc)} // TODO make react-select have correct types for acc
@@ -184,10 +202,13 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => 
             row
             fluid
             css={{
-              justifyContent: 'flex-end',
+              justifyContent: 'space-between',
               alignItems: 'center',
               mb: '$3',
-              pr: '1px'
+              pr: '1px',
+              '@xl': {
+                justifyContent: 'flex-end'
+              }
             }}
           >
             <Text muted css={{ mr: '$3' }}>
@@ -196,7 +217,13 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => 
             <Select
               instanceId="to-account"
               placeholder="Select the destination account"
-              css={{ width: '70%' }}
+              css={{
+                width: '60%',
+                minWidth: '200px',
+                '@lg': {
+                  width: '70%'
+                }
+              }}
               options={destAccountOptions}
               value={selectedDestAccount}
               isClearable
@@ -229,9 +256,12 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => 
                 row
                 fluid
                 css={{
-                  justifyContent: 'flex-end',
+                  justifyContent: 'space-between',
                   alignItems: 'center',
-                  position: 'relative'
+                  position: 'relative',
+                  '@xl': {
+                    justifyContent: 'flex-end'
+                  }
                 }}
               >
                 <Text muted css={{ mr: '$3' }}>
@@ -244,9 +274,13 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => 
                     spellCheck={false}
                     onChange={switchToJson}
                     css={{
-                      width: '70%',
+                      width: '60%',
+                      minWidth: '200px',
                       flex: 'inherit',
-                      resize: 'vertical'
+                      resize: 'vertical',
+                      '@lg': {
+                        width: '70%'
+                      }
                     }}
                   />
                 ) : (
@@ -271,7 +305,8 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => 
                         : undefined
                     }
                     css={{
-                      width: '70%',
+                      width: '60%',
+                      minWidth: '200px',
                       flex: 'inherit',
                       '-moz-appearance': 'textfield',
                       '&::-webkit-outer-spin-button': {
@@ -281,6 +316,9 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => 
                       '&::-webkit-inner-spin-button ': {
                         '-webkit-appearance': 'none',
                         margin: 0
+                      },
+                      '@lg': {
+                        width: '70%'
                       }
                     }}
                   />

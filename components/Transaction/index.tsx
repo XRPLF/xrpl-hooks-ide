@@ -185,11 +185,16 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
         row
         css={{
           justifyContent: 'space-between',
-          position: 'absolute',
-          left: 0,
-          bottom: 0,
           width: '100%',
-          mb: '$1'
+          mb: '$2',
+          mt: '$1',
+          '@md': {
+            position: 'absolute',
+            left: 0,
+            bottom: 0,
+            mt: '$0',
+            mb: '$2'
+          }
         }}
       >
         <Button

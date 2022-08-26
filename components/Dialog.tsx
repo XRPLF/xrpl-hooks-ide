@@ -40,11 +40,10 @@ const StyledContent = styled(DialogPrimitive.Content, {
   color: '$mauve12',
   borderRadius: '$md',
   position: 'relative',
-  mb: '15%',
+  mb: '0%',
   boxShadow: '0px 10px 38px -5px rgba(22, 23, 24, 0.25), 0px 10px 20px -5px rgba(22, 23, 24, 0.2)',
   width: '90vw',
   maxWidth: '450px',
-  // maxHeight: "85vh",
   padding: 25,
   '@media (prefers-reduced-motion: no-preference)': {
     animation: `${contentShow} 150ms cubic-bezier(0.16, 1, 0.3, 1)`
@@ -53,6 +52,9 @@ const StyledContent = styled(DialogPrimitive.Content, {
   '.dark &': {
     backgroundColor: '$mauve5',
     boxShadow: '0px 10px 38px 0px rgba(0, 0, 0, 0.85), 0px 10px 20px 0px rgba(0, 0, 0, 0.6)'
+  },
+  '@md': {
+    mb: '8%'
   }
 })
 
