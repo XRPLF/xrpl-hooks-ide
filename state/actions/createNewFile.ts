@@ -6,13 +6,14 @@ const languageMapping: Record<string, string | undefined> = {
   js: 'javascript',
   md: 'markdown',
   c: 'c',
-  h: 'c'
+  h: 'c',
+  txt: 'text'
 }
 
 export const createNewFile = (name: string) => {
   const ext = getFileExtention(name) || ''
 
-  const emptyFile: IFile = { name, language: languageMapping[ext] || '', content: '' }
+  const emptyFile: IFile = { name, language: languageMapping[ext] || 'text', content: '' }
   state.files.push(emptyFile)
   state.active = state.files.length - 1
 }
@@ -22,7 +23,7 @@ export const renameFile = (oldName: string, nwName: string) => {
   if (!file) throw Error(`No file exists with name ${oldName}`)
 
   const ext = getFileExtention(nwName) || ''
-  const language = languageMapping[ext] || ''
+  const language = languageMapping[ext] || 'text'
   file.name = nwName
   file.language = language
 }
