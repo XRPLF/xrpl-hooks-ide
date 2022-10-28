@@ -6,7 +6,7 @@
     "DestinationTag": 13,
     "Fee": "2000000",
     "Sequence": 2470665,
-    "Flags": 2147483648
+    "Flags": "2147483648"
   },
   {
     "TransactionType": "AccountSet",
@@ -48,7 +48,7 @@
     "Account": "rsUiUMpnrgxQp24dJYZDhmV4bE3aBtQyt8",
     "Authorize": "rEhxGqkqPPSxQ3P25J66ft5TwpzV14k2de",
     "Fee": "10",
-    "Flags": 2147483648,
+    "Flags": "2147483648",
     "Sequence": 2
   },
   {
@@ -109,7 +109,9 @@
     "Fee": "10",
     "NFTokenOffers": {
       "$type": "json",
-      "$value": ["4AAAEEA76E3C8148473CB3840CE637676E561FB02BD4CA22CA59729EA815B862"]
+      "$value": [
+        "4AAAEEA76E3C8148473CB3840CE637676E561FB02BD4CA22CA59729EA815B862"
+      ]
     }
   },
   {
@@ -120,7 +122,7 @@
       "$value": "100",
       "$type": "xrp"
     },
-    "Flags": 1,
+    "Flags": "1",
     "Destination": "",
     "Fee": "10"
   },
@@ -128,7 +130,7 @@
     "TransactionType": "OfferCancel",
     "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
     "Fee": "12",
-    "Flags": 0,
+    "Flags": "0",
     "LastLedgerSequence": 7108629,
     "OfferSequence": 6,
     "Sequence": 7
@@ -137,7 +139,7 @@
     "TransactionType": "OfferCreate",
     "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
     "Fee": "12",
-    "Flags": 0,
+    "Flags": "0",
     "LastLedgerSequence": 7108682,
     "Sequence": 8,
     "TakerGets": "6000000",
@@ -155,7 +157,7 @@
       "$type": "xrp"
     },
     "Fee": "12",
-    "Flags": 2147483648,
+    "Flags": "2147483648",
     "Sequence": 2
   },
   {
@@ -185,14 +187,14 @@
     "Fee": "10"
   },
   {
-    "Flags": 0,
+    "Flags": "0",
     "TransactionType": "SetRegularKey",
     "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
     "Fee": "12",
     "RegularKey": "rAR8rR8sUkBoCZFawhkWzY4Y5YoyuznwD"
   },
   {
-    "Flags": 0,
+    "Flags": "0",
     "TransactionType": "SignerListSet",
     "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
     "Fee": "12",
@@ -232,7 +234,7 @@
     "TransactionType": "TrustSet",
     "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
     "Fee": "12",
-    "Flags": 262144,
+    "Flags": "262144",
     "LastLedgerSequence": 8007750,
     "LimitAmount": {
       "$type": "json",

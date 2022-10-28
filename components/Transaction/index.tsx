@@ -19,6 +19,7 @@ import { TxJson } from './json'
 import { TxUI } from './ui'
 import { default as _estimateFee } from '../../utils/estimateFee'
 import toast from 'react-hot-toast'
+import { combineFlags, extractFlags, transactionFlags } from '../../state/constants/flags'
 
 export interface TransactionProps {
   header: string
@@ -39,14 +40,17 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
 
   const prepareOptions = useCallback(
     (state: Partial<TransactionState> = txState) => {
-      const { selectedTransaction, selectedDestAccount, selectedAccount, txFields } = state
+      const { selectedTransaction, selectedDestAccount, selectedAccount, txFields, selectedFlags } =
+        state
 
       const TransactionType = selectedTransaction?.value || null
       const Destination = selectedDestAccount?.value || txFields?.Destination
       const Account = selectedAccount?.value || null
+      const Flags = combineFlags(selectedFlags?.map(flag => flag.value)) || txFields?.Flags
 
       return prepareTransaction({
         ...txFields,
+        Flags,
         TransactionType,
         Destination,
         Account
@@ -136,8 +140,13 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
       } else {
         fields.Destination = undefined
       }
-      nwState.txFields = fields
 
+      if (transactionType?.value && transactionFlags[transactionType?.value] && fields.Flags) {
+        nwState.selectedFlags = extractFlags(transactionType.value, fields.Flags)
+        fields.Flags = undefined
+      }
+
+      nwState.txFields = fields
       const state = modifyTxState(header, nwState, { replaceState: true })
       const editorValue = getJsonString(state)
       return setState({ editorValue })
@@ -179,7 +188,12 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
           estimateFee={estimateFee}
         />
       ) : (
-        <TxUI state={txState} setState={setState} estimateFee={estimateFee} />
+        <TxUI
+          state={txState}
+          resetState={resetState}
+          setState={setState}
+          estimateFee={estimateFee}
+        />
       )}
       <Flex
         row

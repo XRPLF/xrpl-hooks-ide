@@ -4,6 +4,7 @@ import transactionsData from '../content/transactions.json'
 import state from '.'
 import { showAlert } from '../state/actions/showAlert'
 import { parseJSON } from '../utils/json'
+import { extractFlags, transactionFlags } from './constants/flags'
 
 export type SelectOption = {
   value: string
@@ -14,6 +15,7 @@ export interface TransactionState {
   selectedTransaction: SelectOption | null
   selectedAccount: SelectOption | null
   selectedDestAccount: SelectOption | null
+  selectedFlags: SelectOption[] | null
   txIsLoading: boolean
   txIsDisabled: boolean
   txFields: TxFields
@@ -31,6 +33,7 @@ export const defaultTransaction: TransactionState = {
   selectedTransaction: null,
   selectedAccount: null,
   selectedDestAccount: null,
+  selectedFlags: null,
   txIsLoading: false,
   txIsDisabled: false,
   txFields: {},
@@ -128,9 +131,8 @@ export const prepareTransaction = (data: any) => {
         try {
           options[field] = JSON.parse(_value.$value)
         } catch (error) {
-          const message = `Input error for json field '${field}': ${
-            error instanceof Error ? error.message : ''
-          }`
+          const message = `Input error for json field '${field}': ${error instanceof Error ? error.message : ''
+            }`
           console.error(message)
           options[field] = _value.$value
         }
@@ -203,6 +205,13 @@ export const prepareState = (value: string, transactionType?: string) => {
     }
   } else if (Destination) {
     rest.Destination = Destination
+  }
+
+  if (transactionFlags[TransactionType] && rest.Flags) {
+    const flags = extractFlags(TransactionType, rest.Flags)
+
+    rest.Flags = undefined
+    tx.selectedFlags = flags
   }
 
   Object.keys(rest).forEach(field => {
