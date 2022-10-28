@@ -13,6 +13,40 @@ export const transactionFlags: { [key: /* TransactionType */ string]: Flags } = 
         tfPartialPayment: '0x00020000',
         tfLimitQuality: '0x00040000',
     },
+    AccountSet: {
+        tfRequireDestTag: '0x00010000',
+        tfOptionalDestTag: '0x00020000',
+        tfRequireAuth: '0x00040000',
+        tfOptionalAuth: '0x00080000',
+        tfDisallowXRP: '0x00100000',
+        tfAllowXRP: '0x00200000',
+    },
+    NFTokenCreateOffer: {
+        tfSellNFToken: '0x00000001',
+    },
+    NFTokenMint: {
+        tfBurnable: '0x00000001',
+        tfOnlyXRP: '0x00000002',
+        tfTrustLine: '0x00000004',
+        tfTransferable: '0x00000008',
+    },
+    OfferCreate: {
+        tfPassive: '0x00010000',
+        tfImmediateOrCancel: '0x00020000',
+        tfFillOrKill: '0x00040000',
+        tfSell: '0x00080000',
+    },
+    PaymentChannelClaim: {
+        tfRenew: '0x00010000',
+        tfClose: '0x00020000',
+    },
+    TrustSet: {
+        tfSetfAuth: '0x00010000',
+        tfSetNoRipple: '0x00020000',
+        tfClearNoRipple: '0x00040000',
+        tfSetFreeze: '0x00100000',
+        tfClearFreeze: '0x00200000',
+    },
     // TODO Add more here
 }
 
