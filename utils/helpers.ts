@@ -13,3 +13,9 @@ export const capitalize = (value?: string) => {
 
   return value[0].toLocaleUpperCase() + value.slice(1)
 }
+
+export const getFileExtention = (filename?: string): string | undefined => {
+  if (!filename) return
+  const ext = (filename.includes('.') && filename.split('.').pop()) || undefined
+  return ext
+}
