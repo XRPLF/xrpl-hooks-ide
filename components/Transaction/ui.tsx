@@ -17,7 +17,7 @@ import state from '../../state'
 import { streamState } from '../DebugStream'
 import { Button } from '..'
 import Textarea from '../Textarea'
-import { transactionFlags } from '../../state/constants/flags'
+import { getFlags } from '../../state/constants/flags'
 
 interface UIProps {
   setState: (pTx?: Partial<TransactionState> | undefined) => TransactionState | undefined
@@ -44,7 +44,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
     .filter(acc => acc.value !== selectedAccount?.value)
 
   const flagsOptions: SelectOption[] = Object.entries(
-    transactionFlags[selectedTransaction?.value || ''] || {}
+    getFlags(selectedTransaction?.value) || {}
   ).map(([label, value]) => ({
     label,
     value
@@ -119,9 +119,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
     richFields.push('Flags')
   }
 
-  const otherFields = Object.keys(txFields).filter(k => !richFields.includes(k)) as [
-    keyof TxFields
-  ]
+  const otherFields = Object.keys(txFields).filter(k => !richFields.includes(k)) as [keyof TxFields]
 
   return (
     <Container

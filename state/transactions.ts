@@ -4,7 +4,7 @@ import transactionsData from '../content/transactions.json'
 import state from '.'
 import { showAlert } from '../state/actions/showAlert'
 import { parseJSON } from '../utils/json'
-import { extractFlags, transactionFlags } from './constants/flags'
+import { extractFlags, getFlags } from './constants/flags'
 
 export type SelectOption = {
   value: string
@@ -207,7 +207,7 @@ export const prepareState = (value: string, transactionType?: string) => {
     rest.Destination = Destination
   }
 
-  if (transactionFlags[TransactionType] && rest.Flags) {
+  if (getFlags(TransactionType) && rest.Flags) {
     const flags = extractFlags(TransactionType, rest.Flags)
 
     rest.Flags = undefined
