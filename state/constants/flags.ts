@@ -47,7 +47,6 @@ export const transactionFlags: { [key: /* TransactionType */ string]: Flags } = 
         tfSetFreeze: '0x00100000',
         tfClearFreeze: '0x00200000',
     },
-    // TODO Add more here
 }
 
 export const getFlags = (tt?: string) => {
