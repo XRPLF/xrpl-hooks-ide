@@ -187,7 +187,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
               pr: '1px'
             }}
           >
-            <Text muted css={{ mr: '$3' }}>
+            <Text muted css={{ mr: '$3', textAlign: 'end' }}>
               Destination account:{' '}
             </Text>
             <Select
