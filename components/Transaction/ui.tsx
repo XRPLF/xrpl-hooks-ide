@@ -17,16 +17,19 @@ import state from '../../state'
 import { streamState } from '../DebugStream'
 import { Button } from '..'
 import Textarea from '../Textarea'
+import { getFlags } from '../../state/constants/flags'
 
 interface UIProps {
   setState: (pTx?: Partial<TransactionState> | undefined) => TransactionState | undefined
+  resetState: (tt?: SelectOption) => TransactionState | undefined
   state: TransactionState
   estimateFee?: (...arg: any) => Promise<string | undefined>
 }
 
-export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => {
+export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estimateFee }) => {
   const { accounts } = useSnapshot(state)
-  const { selectedAccount, selectedDestAccount, selectedTransaction, txFields } = txState
+  const { selectedAccount, selectedDestAccount, selectedTransaction, txFields, selectedFlags } =
+    txState
 
   const accountOptions: SelectOption[] = accounts.map(acc => ({
     label: acc.name,
@@ -40,22 +43,14 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => 
     }))
     .filter(acc => acc.value !== selectedAccount?.value)
 
+  const flagsOptions: SelectOption[] = Object.entries(
+    getFlags(selectedTransaction?.value) || {}
+  ).map(([label, value]) => ({
+    label,
+    value
+  }))
+
   const [feeLoading, setFeeLoading] = useState(false)
-
-  const resetFields = useCallback(
-    (tt: string) => {
-      const fields = getTxFields(tt)
-
-      if (fields.Destination !== undefined) {
-        setState({ selectedDestAccount: null })
-        fields.Destination = ''
-      } else {
-        fields.Destination = undefined
-      }
-      return setState({ txFields: fields })
-    },
-    [setState]
-  )
 
   const handleSetAccount = (acc: SelectOption) => {
     setState({ selectedAccount: acc })
@@ -92,11 +87,11 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => 
     (tt: SelectOption) => {
       setState({ selectedTransaction: tt })
 
-      const newState = resetFields(tt.value)
+      const newState = resetState(tt)
 
       handleEstimateFee(newState, true)
     },
-    [handleEstimateFee, resetFields, setState]
+    [handleEstimateFee, resetState, setState]
   )
 
   const switchToJson = () => setState({ viewType: 'json' })
@@ -115,14 +110,16 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => 
     [selectedTransaction?.value]
   )
 
-  const specialFields = ['TransactionType', 'Account']
+  const richFields = ['TransactionType', 'Account']
   if (fields.Destination !== undefined) {
-    specialFields.push('Destination')
+    richFields.push('Destination')
   }
 
-  const otherFields = Object.keys(txFields).filter(k => !specialFields.includes(k)) as [
-    keyof TxFields
-  ]
+  if (flagsOptions.length) {
+    richFields.push('Flags')
+  }
+
+  const otherFields = Object.keys(txFields).filter(k => !richFields.includes(k)) as [keyof TxFields]
 
   return (
     <Container
@@ -179,7 +176,32 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => 
             onChange={(acc: any) => handleSetAccount(acc)} // TODO make react-select have correct types for acc
           />
         </Flex>
-        {fields.Destination !== undefined && (
+        {richFields.includes('Destination') && (
+          <Flex
+            row
+            fluid
+            css={{
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+              mb: '$3',
+              pr: '1px'
+            }}
+          >
+            <Text muted css={{ mr: '$3', textAlign: 'end' }}>
+              Destination account:{' '}
+            </Text>
+            <Select
+              instanceId="to-account"
+              placeholder="Select the destination account"
+              css={{ width: '70%' }}
+              options={destAccountOptions}
+              value={selectedDestAccount}
+              isClearable
+              onChange={(acc: any) => setState({ selectedDestAccount: acc })}
+            />
+          </Flex>
+        )}
+        {richFields.includes('Flags') && (
           <Flex
             row
             fluid
@@ -191,16 +213,21 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, estimateFee }) => 
             }}
           >
             <Text muted css={{ mr: '$3' }}>
-              Destination account:{' '}
+              Flags:{' '}
             </Text>
             <Select
-              instanceId="to-account"
-              placeholder="Select the destination account"
-              css={{ width: '70%' }}
-              options={destAccountOptions}
-              value={selectedDestAccount}
               isClearable
-              onChange={(acc: any) => setState({ selectedDestAccount: acc })}
+              css={{ width: '70%' }}
+              instanceId="flags"
+              placeholder="Select flags to apply"
+              menuPosition="fixed"
+              value={selectedFlags}
+              isMulti
+              options={flagsOptions}
+              onChange={flags => setState({ selectedFlags: flags as any })}
+              closeMenuOnSelect={
+                selectedFlags ? selectedFlags.length >= flagsOptions.length - 1 : false
+              }
             />
           </Flex>
         )}
