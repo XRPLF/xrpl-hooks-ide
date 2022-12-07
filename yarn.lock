@@ -4765,10 +4765,10 @@ vscode-uri@^3.0.2:
   resolved "https://registry.npmjs.org/vscode-uri/-/vscode-uri-3.0.3.tgz"
   integrity sha512-EcswR2S8bpR7fD0YPeS7r2xXExrScVMxg4MedACaWHEtx9ftCF/qHG1xGkolzTPcEmjTavCQgbVzHUIdTMzFGA==
 
-wabt@1.0.16:
-  version "1.0.16"
-  resolved "https://registry.npmjs.org/wabt/-/wabt-1.0.16.tgz"
-  integrity sha512-aSQEAJfYkoZRY9Qt2/6hTM8yRX/Nc2R1bScET/4lppRqfUyzynB5HI+lK0u/hp8NbCVTAXg0iETviSS3zoufJw==
+wabt@^1.0.30:
+  version "1.0.30"
+  resolved "https://registry.yarnpkg.com/wabt/-/wabt-1.0.30.tgz#23cff6d38a05d0718e298fda371a70f0dff38ad7"
+  integrity sha512-qM1QnttJhjZ4vTSuXvder43yxgGhVffT/0wMc0SwYpboEW0/ENISpei/2kIDEMPrnNfTQ4GdvD7JIFV0IJPYog==
 
 webidl-conversions@^3.0.0:
   version "3.0.1"
