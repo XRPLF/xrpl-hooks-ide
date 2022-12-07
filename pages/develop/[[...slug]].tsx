@@ -150,6 +150,7 @@ const Home: NextPage = () => {
 
   const activeFile = snap.files[snap.active] as IFile | undefined
   const activeFileExt = getFileExtention(activeFile?.name)
+  const canCompile = activeFileExt === 'c' || activeFileExt === 'wat'
   return (
     <Split
       direction="vertical"
@@ -162,7 +163,7 @@ const Home: NextPage = () => {
     >
       <main style={{ display: 'flex', flex: 1, position: 'relative' }}>
         <HooksEditor />
-        {activeFileExt === 'c' && (
+        {canCompile && (
           <Hotkeys
             keyName="command+b,ctrl+b"
             onKeyDown={() => !snap.compiling && snap.files.length && compileCode(snap.active)}

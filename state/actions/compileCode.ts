@@ -15,6 +15,11 @@ import { ref } from 'valtio'
 export const compileCode = async (activeId: number) => {
   // Save the file to global state
   saveFile(false, activeId)
+  const file = state.files[activeId]
+  if (file.name.endsWith('.wat')) {
+    return compileWat(activeId)
+  }
+
   if (!process.env.NEXT_PUBLIC_COMPILE_API_ENDPOINT) {
     throw Error('Missing env!')
   }
@@ -26,7 +31,6 @@ export const compileCode = async (activeId: number) => {
   // Set loading state to true
   state.compiling = true
   state.logs = []
-  const file = state.files[activeId]
   try {
     file.containsErrors = false
     let res: Response
@@ -72,7 +76,7 @@ export const compileCode = async (activeId: number) => {
 
       // Import wabt from and create human readable version of wasm file and
       // put it into state
-      const ww = (await import('wabt')).default()
+      const ww = await (await import('wabt')).default()
       const myModule = ww.readWasm(new Uint8Array(bufferData), {
         readDebugNames: true
       })
@@ -121,4 +125,47 @@ export const compileCode = async (activeId: number) => {
     toast.error(`Error occurred while compiling!`, { position: 'bottom-center' })
     file.containsErrors = true
   }
+}
+
+export const compileWat = async (activeId: number) => {
+  if (state.compiling) return;
+  const file = state.files[activeId]
+  state.compiling = true
+  state.logs = []
+  try {
+    const wabt = await (await import('wabt')).default()
+    const module = wabt.parseWat(file.name, file.content);
+    module.resolveNames();
+    module.validate();
+    const { buffer } = module.toBinary({
+      log: false,
+      write_debug_names: true,
+    });
+
+    file.compiledContent = ref(buffer)
+    file.lastCompiled = new Date()
+    file.compiledValueSnapshot = file.content
+    file.compiledWatContent = file.content
+
+    toast.success('Compiled successfully!', { position: 'bottom-center' })
+    state.logs.push({
+      type: 'success',
+      message: `File ${state.files?.[activeId]?.name} compiled successfully. Ready to deploy.`,
+      link: Router.asPath.replace('develop', 'deploy'),
+      linkText: 'Go to deploy'
+    })
+  } catch (err) {
+    console.log(err)
+    let message = "Error compiling WAT file!"
+    if (err instanceof Error) {
+      message = err.message
+    }
+    state.logs.push({
+      type: 'error',
+      message
+    })
+    toast.error(`Error occurred while compiling!`, { position: 'bottom-center' })
+    file.containsErrors = true
+  }
+  state.compiling = false
 }
