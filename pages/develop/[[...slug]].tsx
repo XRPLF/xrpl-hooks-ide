@@ -150,7 +150,9 @@ const Home: NextPage = () => {
 
   const activeFile = snap.files[snap.active] as IFile | undefined
   const activeFileExt = getFileExtention(activeFile?.name)
-  const canCompile = activeFileExt === 'c' || activeFileExt === 'wat'
+  const canCompile = activeFileExt === 'c' || activeFileExt === 'wat' || activeFileExt === 'ts'
+
+  const isCompiling = snap.compiling.includes(snap.active);
   return (
     <Split
       direction="vertical"
@@ -166,7 +168,9 @@ const Home: NextPage = () => {
         {canCompile && (
           <Hotkeys
             keyName="command+b,ctrl+b"
-            onKeyDown={() => !snap.compiling && snap.files.length && compileCode(snap.active)}
+            onKeyDown={() =>
+              snap.compiling === undefined && snap.files.length && compileCode(snap.active)
+            }
           >
             <Flex
               css={{
@@ -183,7 +187,7 @@ const Home: NextPage = () => {
                 variant="primary"
                 uppercase
                 disabled={!snap.files.length}
-                isLoading={snap.compiling}
+                isLoading={isCompiling}
                 onClick={() => compileCode(snap.active)}
               >
                 <Play weight="bold" size="16px" />
@@ -200,7 +204,9 @@ const Home: NextPage = () => {
         {activeFileExt === 'js' && (
           <Hotkeys
             keyName="command+b,ctrl+b"
-            onKeyDown={() => !snap.compiling && snap.files.length && compileCode(snap.active)}
+            onKeyDown={() =>
+              !isCompiling && snap.files.length && compileCode(snap.active)
+            }
           >
             <Flex
               css={{

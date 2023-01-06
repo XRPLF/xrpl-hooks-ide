@@ -9,9 +9,10 @@ declare module 'valtio' {
   function snapshot<T extends object>(p: T): T
 }
 
+export type ILang = "ts" | "javascript" | "markdown" | "c" | "text"
 export interface IFile {
   name: string
-  language: string
+  language: ILang | undefined
   content: string
   compiledValueSnapshot?: string
   compiledContent?: ArrayBuffer | null
@@ -66,7 +67,7 @@ export interface IState {
   loading: boolean
   gistLoading: boolean
   zipLoading: boolean
-  compiling: boolean
+  compiling: /* file id */ number[]
   logs: ILog[]
   deployLogs: ILog[]
   transactionLogs: ILog[]
@@ -98,7 +99,7 @@ let initialState: IState = {
   // Active file index on the Deploy page editor
   activeWat: 0,
   loading: false,
-  compiling: false,
+  compiling: [],
   logs: [],
   deployLogs: [],
   transactionLogs: [],

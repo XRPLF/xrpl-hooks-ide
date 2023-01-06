@@ -125,6 +125,16 @@ const HooksEditor = () => {
 
   const file = snap.files[snap.active]
 
+  const tsLangWarningRef = useRef(false)
+  useEffect(() => {
+    if (file?.language === 'ts' && !tsLangWarningRef.current) {
+      alert(
+        'Typescript suppport for hooks is still in early planning stage, write actual hooks in C only for now!'
+      )
+      tsLangWarningRef.current = true
+    }
+  }, [file])
+
   const renderNav = () => (
     <Tabs
       label="File"
@@ -221,7 +231,7 @@ const HooksEditor = () => {
                 monaco.languages.register({
                   id: 'text',
                   extensions: ['.txt'],
-                  mimetypes: ['text/plain'],
+                  mimetypes: ['text/plain']
                 })
                 MonacoServices.install(monaco)
                 const webSocket = createWebSocket(
