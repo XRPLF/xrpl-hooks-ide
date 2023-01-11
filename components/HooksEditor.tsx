@@ -94,6 +94,14 @@ const setMarkers = (monacoE: typeof monaco) => {
   })
 }
 
+const langWarnings: Record<string, { shown: boolean; message: string }> = {
+  ts: {
+    shown: false,
+    message:
+      'Typescript suppport for hooks is still in early planning stage, write actual hooks in C only for now!'
+  }
+}
+
 const HooksEditor = () => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>()
   const monacoRef = useRef<typeof monaco>()
@@ -125,13 +133,11 @@ const HooksEditor = () => {
 
   const file = snap.files[snap.active]
 
-  const tsLangWarningRef = useRef(false)
   useEffect(() => {
-    if (file?.language === 'ts' && !tsLangWarningRef.current) {
-      alert(
-        'Typescript suppport for hooks is still in early planning stage, write actual hooks in C only for now!'
-      )
-      tsLangWarningRef.current = true
+    let warning = langWarnings[file?.language || '']
+    if (warning && !warning.shown) {
+      alert(warning.message) // TODO Custom dialog.
+      warning.shown = true
     }
   }, [file])
 
