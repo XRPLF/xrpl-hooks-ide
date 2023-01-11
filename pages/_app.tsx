@@ -24,7 +24,7 @@ import { ChatCircleText } from 'phosphor-react'
 TimeAgo.setDefaultLocale(en.locale)
 TimeAgo.addLocale(en)
 
-function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps<{ session?: any }>) {
   const router = useRouter()
   const slug = router.query?.slug
   const gistId = (Array.isArray(slug) && slug[0]) ?? null

@@ -1,5 +1,5 @@
 import { Octokit } from '@octokit/core'
-import state, { IFile } from '../index'
+import state, { IFile, ILang } from '../index'
 import { templateFileIds } from '../constants'
 
 const octokit = new Octokit()
@@ -48,7 +48,7 @@ export const fetchFiles = async (gistId: string) => {
 
     const files: IFile[] = Object.keys(res.data.files).map(filename => ({
       name: res.data.files?.[filename]?.filename || 'untitled.c',
-      language: res.data.files?.[filename]?.language?.toLowerCase() || '',
+      language: res.data.files?.[filename]?.language?.toLowerCase() as ILang | undefined,
       content: res.data.files?.[filename]?.content || ''
     }))
 
