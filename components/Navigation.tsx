@@ -1,5 +1,5 @@
 import React from 'react'
-import Link from 'next/link'
+import NextLink from 'next/link'
 
 import { useSnapshot } from 'valtio'
 import { useRouter } from 'next/router'
@@ -78,7 +78,7 @@ const Navigation = () => {
             pr: '$4'
           }}
         >
-          <Link href={gistId ? `/develop/${gistId}` : '/develop'} passHref>
+          <NextLink legacyBehavior href={gistId ? `/develop/${gistId}` : '/develop'} passHref>
             <Box
               as="a"
               css={{
@@ -89,7 +89,7 @@ const Navigation = () => {
             >
               <Logo width="32px" height="32px" />
             </Box>
-          </Link>
+          </NextLink>
           <Flex
             css={{
               ml: '$5',
@@ -105,7 +105,8 @@ const Navigation = () => {
                 <Text css={{ fontSize: '$xs', color: '$mauve10', lineHeight: 1 }}>
                   {snap.files.length > 0 ? 'Gist: ' : 'Builder'}
                   {snap.files.length > 0 && (
-                    <Link
+                    <NextLink
+                      legacyBehavior
                       href={`https://gist.github.com/${snap.gistOwner || ''}/${snap.gistId || ''}`}
                       passHref
                     >
@@ -117,7 +118,7 @@ const Navigation = () => {
                       >
                         {`${snap.gistOwner || '-'}/${truncate(snap.gistId || '')}`}
                       </Text>
-                    </Link>
+                    </NextLink>
                   )}
                 </Text>
               </>
@@ -336,29 +337,39 @@ const Navigation = () => {
             }}
           >
             <ButtonGroup>
-              <Link href={gistId ? `/develop/${gistId}` : '/develop'} passHref shallow>
+              <NextLink
+                legacyBehavior
+                href={gistId ? `/develop/${gistId}` : '/develop'}
+                passHref
+                shallow
+              >
                 <Button as="a" outline={!router.pathname.includes('/develop')} uppercase>
                   Develop
                 </Button>
-              </Link>
-              <Link href={gistId ? `/deploy/${gistId}` : '/deploy'} passHref shallow>
+              </NextLink>
+              <NextLink
+                legacyBehavior
+                href={gistId ? `/deploy/${gistId}` : '/deploy'}
+                passHref
+                shallow
+              >
                 <Button as="a" outline={!router.pathname.includes('/deploy')} uppercase>
                   Deploy
                 </Button>
-              </Link>
-              <Link href={gistId ? `/test/${gistId}` : '/test'} passHref shallow>
+              </NextLink>
+              <NextLink legacyBehavior href={gistId ? `/test/${gistId}` : '/test'} passHref shallow>
                 <Button as="a" outline={!router.pathname.includes('/test')} uppercase>
                   Test
                 </Button>
-              </Link>
+              </NextLink>
             </ButtonGroup>
-            <Link href="https://xrpl-hooks.readme.io/v2.0" passHref>
+            <NextLink legacyBehavior href="https://xrpl-hooks.readme.io/v2.0" passHref>
               <a target="_blank" rel="noreferrer noopener">
                 <Button outline>
                   <BookOpen size="15px" />
                 </Button>
               </a>
-            </Link>
+            </NextLink>
           </Stack>
         </Flex>
       </Container>

@@ -1,7 +1,7 @@
-import type { NextRequest, NextFetchEvent } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { NextResponse as Response } from 'next/server'
 
-export default function middleware(req: NextRequest, ev: NextFetchEvent) {
+export default function middleware(req: NextRequest) {
   if (req.nextUrl.pathname === '/') {
     const url = req.nextUrl.clone()
     url.pathname = '/develop'
