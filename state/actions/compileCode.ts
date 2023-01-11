@@ -5,6 +5,8 @@ import state, { IFile } from '../index'
 import { saveFile } from './saveFile'
 import { decodeBinary } from '../../utils/decodeBinary'
 import { ref } from 'valtio'
+import asc from "@muzamilsofi/assemblyscript/dist/asc"
+import { getFileExtention, getFileNamePart } from '../../utils/helpers'
 
 type CompilationResult = Pick<IFile, "compiledContent" | "compiledWatContent">
 
@@ -51,6 +53,7 @@ export const compileCode = async (activeId: number) => {
     })
   } catch (err) {
     console.error(err)
+    let message: string;
 
     if (err instanceof Array && typeof err[0] === 'string') {
       err.forEach(message => {
@@ -59,19 +62,14 @@ export const compileCode = async (activeId: number) => {
           message
         })
       })
+      message = "Compilation errors occurred, see logs for more info."
     } else if (err instanceof Error) {
-      state.logs.push({
-        type: 'error',
-        message: err.message
-      })
+      message = err.message
     } else {
-      state.logs.push({
-        type: 'error',
-        message: 'Something went wrong, try again later!'
-      })
+      message = 'Something went wrong, try again later!'
     }
 
-    toast.error(`Error occurred while compiling!`, { position: 'bottom-center' })
+    toast.error(message, { position: 'bottom-center' })
     file.containsErrors = true
   }
   state.compiling = state.compiling.filter(id => id !== activeId);
@@ -161,5 +159,70 @@ export const compileWat = async (file: IFile): Promise<CompilationResult> => {
 }
 
 export const compileTs = async (file: IFile): Promise<CompilationResult> => {
-  throw Error("TBD")
+  return new Promise(async (resolve, reject) => {
+    const { error, stdout, stderr } = await asc.main([
+      // Command line options
+      file.name,
+      "--outFile", `${file.name}.wasm`,
+      "--textFile", `${file.name}.wat`,
+      "--runtime",
+      "stub",
+      "--initialMemory",
+      "1",
+      "--maximumMemory",
+      "1",
+      "--noExportMemory",
+      "--optimize",
+    ], {
+      readFile: (name, baseDir) => {
+        const file = state.files.find(file => file.name === name)
+        if (file) {
+          return file.content
+        }
+        return null
+      },
+      writeFile: async (name, data: ArrayBuffer | string, baseDir) => {
+        console.log("writeFile", { name, data, baseDir })
+        const filename = getFileNamePart(name);
+        const ext = getFileExtention(name);
+        let file = state.files.find(file => file.name === filename)
+        if (!file) {
+          return reject(Error("No source of compiled content found!"));
+        }
+
+        // TODO maybe clean? or NOT!
+
+        if (ext === 'wasm') {
+          file.compiledContent = ref(data as ArrayBuffer)
+        }
+        else if (ext === 'wat') {
+          file.compiledWatContent = data as string;
+        }
+        if (file.compiledContent && file.compiledWatContent) {
+          resolve({ compiledContent: file.compiledContent, compiledWatContent: file.compiledWatContent });
+        }
+      },
+      listFiles: (dirname, baseDir) => {
+        return state.files.map(file => file.name)
+      },
+      // reportDiagnostic?: ...,
+    });
+
+    let logMsg = stdout.toString()
+    let errMsg = stderr.toString()
+    if (logMsg) {
+      state.logs.push({
+        type: "log",
+        message: logMsg
+      })
+    }
+    if (errMsg) {
+      state.logs.push({
+        type: "error",
+        message: errMsg
+      })
+    }
+
+    if (error) return reject(error)
+  })
 }

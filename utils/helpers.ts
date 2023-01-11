@@ -19,3 +19,9 @@ export const getFileExtention = (filename?: string): string | undefined => {
   const ext = (filename.includes('.') && filename.split('.').pop()) || undefined
   return ext
 }
+
+export const getFileNamePart = (filename?: string): string | undefined => {
+  if (!filename) return
+  const name = (filename.includes('.') && filename.split('.').slice(0, -1).join(".")) || filename
+  return name
+}
