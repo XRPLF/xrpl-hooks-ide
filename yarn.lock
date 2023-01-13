@@ -216,10 +216,10 @@
     "@monaco-editor/loader" "^1.3.2"
     prop-types "^15.7.2"
 
-"@muzamilsofi/assemblyscript@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@muzamilsofi/assemblyscript/-/assemblyscript-0.0.4.tgz#4ac073fc90537855d9b7bbcbf84790a7caf91bf1"
-  integrity sha512-8DiRwQZ7xtUqldCjjovTLmbT2lX1en7KxOMBA3/p3ZtBV1F4qrwcFkgGBtw7GiE2GM12OhwX0WwYxEQQr2mKog==
+"@muzamilsofi/assemblyscript@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@muzamilsofi/assemblyscript/-/assemblyscript-0.0.5.tgz#6c6720b414efdb6e3f98d86eabf5b240b86ce719"
+  integrity sha512-KZVHM9N0Xi70sXXQN9IIZoSEkAtUn8dHmf0ykI1bmAWX5xRkurPipnE682EXr07PxNZC+K3FpC40rlsurKwX2Q==
   dependencies:
     binaryen "110.0.0-nightly.20221019"
     long "^5.2.0"
