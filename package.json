@@ -65,7 +65,7 @@
     "valtio": "^1.2.5",
     "vscode-languageserver": "^7.0.0",
     "vscode-uri": "^3.0.2",
-    "wabt": "^1.0.30",
+    "wabt": "^1.0.32",
     "xrpl-accountlib": "^1.5.2",
     "xrpl-client": "^1.9.4"
   },
