@@ -29,11 +29,11 @@ export const compileCode = async (activeId: number) => {
     if (file.name.endsWith('.wat')) {
       result = await compileWat(file);
     }
-    if (navigator?.onLine === false) {
-      throw Error('You seem offline, check you internet connection and try again!')
-    }
-    if (file.language === "ts") {
+    else if (file.language === "ts") {
       result = await compileTs(file);
+    }
+    else if (navigator?.onLine === false) {
+      throw Error('You seem offline, check you internet connection and try again!')
     }
     else if (file.language === 'c') {
       result = await compileC(file)
@@ -144,10 +144,10 @@ export const compileC = async (file: IFile): Promise<CompilationResult> => {
 
 export const compileWat = async (file: IFile): Promise<CompilationResult> => {
   const wabt = await (await import('wabt')).default()
-  const module = wabt.parseWat(file.name, file.content);
-  module.resolveNames();
-  module.validate();
-  const { buffer } = module.toBinary({
+  const mod = wabt.parseWat(file.name, file.content);
+  mod.resolveNames();
+  mod.validate();
+  const { buffer } = mod.toBinary({
     log: false,
     write_debug_names: true,
   });
@@ -165,12 +165,9 @@ export const compileTs = async (file: IFile): Promise<CompilationResult> => {
       file.name,
       "--outFile", `${file.name}.wasm`,
       "--textFile", `${file.name}.wat`,
-      "--runtime",
-      "stub",
-      "--initialMemory",
-      "1",
-      "--maximumMemory",
-      "1",
+      "--runtime", "stub",
+      "--initialMemory", "1",
+      "--maximumMemory", "1",
       "--noExportMemory",
       "--optimize",
     ], {
