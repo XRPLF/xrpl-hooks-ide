@@ -6,7 +6,7 @@ import { saveFile } from './saveFile'
 import { decodeBinary } from '../../utils/decodeBinary'
 import { ref } from 'valtio'
 import asc from "@muzamilsofi/assemblyscript/dist/asc"
-import { getFileExtention, getFileNamePart } from '../../utils/helpers'
+import { getFileExtention } from '../../utils/helpers'
 
 type CompilationResult = Pick<IFile, "compiledContent" | "compiledWatContent">
 
@@ -160,6 +160,7 @@ export const compileWat = async (file: IFile): Promise<CompilationResult> => {
 
 export const compileTs = async (file: IFile): Promise<CompilationResult> => {
   return new Promise(async (resolve, reject) => {
+    let result: Partial<CompilationResult> = {}
     const { error, stdout, stderr } = await asc.main([
       // Command line options
       file.name,
@@ -180,23 +181,15 @@ export const compileTs = async (file: IFile): Promise<CompilationResult> => {
       },
       writeFile: async (name, data: ArrayBuffer | string, baseDir) => {
         console.log("writeFile", { name, data, baseDir })
-        const filename = getFileNamePart(name);
         const ext = getFileExtention(name);
-        let file = state.files.find(file => file.name === filename)
-        if (!file) {
-          return reject(Error("No source of compiled content found!"));
-        }
-
-        // TODO maybe clean? or NOT!
-
         if (ext === 'wasm') {
-          file.compiledContent = ref(data as ArrayBuffer)
+          result.compiledContent = data as ArrayBuffer;
         }
         else if (ext === 'wat') {
-          file.compiledWatContent = data as string;
+          result.compiledWatContent = data as string;
         }
-        if (file.compiledContent && file.compiledWatContent) {
-          resolve({ compiledContent: file.compiledContent, compiledWatContent: file.compiledWatContent });
+        if (result.compiledContent && result.compiledWatContent) {
+          resolve({ ...result });
         }
       },
       listFiles: (dirname, baseDir) => {
