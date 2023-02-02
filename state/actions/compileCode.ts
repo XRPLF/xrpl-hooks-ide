@@ -171,6 +171,7 @@ export const compileTs = async (file: IFile): Promise<CompilationResult> => {
       "--maximumMemory", "1",
       "--noExportMemory",
       "--optimize",
+      "--topLevelToHook"
     ], {
       readFile: (name, baseDir) => {
         const file = state.files.find(file => file.name === name)
