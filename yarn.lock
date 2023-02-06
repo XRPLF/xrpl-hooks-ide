@@ -1343,13 +1343,6 @@ balanced-match@^1.0.0:
   resolved "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.2.tgz"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
-base-x@3.0.4:
-  version "3.0.4"
-  resolved "https://registry.npmjs.org/base-x/-/base-x-3.0.4.tgz"
-  integrity sha512-UYOadoSIkEI/VrRGSG6qp93rp2WdokiAiNYDfGW5qURAY8GiAQkvMbwNNSDYiVJopqv4gCna7xqf4rrNGp+5AA==
-  dependencies:
-    safe-buffer "^5.0.1"
-
 base-x@3.0.9, base-x@^3.0.2, base-x@^3.0.3:
   version "3.0.9"
   resolved "https://registry.npmjs.org/base-x/-/base-x-3.0.9.tgz"
@@ -1367,7 +1360,7 @@ before-after-hook@^2.2.0:
   resolved "https://registry.npmjs.org/before-after-hook/-/before-after-hook-2.2.2.tgz"
   integrity sha512-3pZEU3NT5BFUo/AD5ERPWOgQOCZITni6iavr5AUw5AUwQjMlI0kzu5btnyD39AF0gUEsDPwJT+oY1ORBJijPjQ==
 
-big-integer@^1.6.48, big-integer@latest:
+big-integer@^1.6.48, big-integer@^1.6.51:
   version "1.6.51"
   resolved "https://registry.npmjs.org/big-integer/-/big-integer-1.6.51.tgz"
   integrity sha512-GPEid2Y9QU1Exl1rpO9B2IPJGHPSupF5GnVIP0blYvNOMer2bTvSWs1jGOUg04hTmu67nmLsQ9TBo1puaotBHg==
@@ -1376,11 +1369,6 @@ big.js@^5.2.2:
   version "5.2.2"
   resolved "https://registry.npmjs.org/big.js/-/big.js-5.2.2.tgz"
   integrity sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==
-
-bignumber.js@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.npmjs.org/bignumber.js/-/bignumber.js-4.1.0.tgz"
-  integrity sha512-eJzYkFYy9L4JzXsbymsFn3p54D+llV27oTQ+ziJG7WFRheJcNZilgVXMG0LoZtlQSKBsJdWtLFqOD0u+U0jZKA==
 
 bignumber.js@^5.0.0:
   version "5.0.0"
@@ -1399,9 +1387,9 @@ bindings@^1.3.0:
   dependencies:
     file-uri-to-path "1.0.0"
 
-bip32@^2.0.5:
+bip32@^2.0.6:
   version "2.0.6"
-  resolved "https://registry.npmjs.org/bip32/-/bip32-2.0.6.tgz"
+  resolved "https://registry.yarnpkg.com/bip32/-/bip32-2.0.6.tgz#6a81d9f98c4cd57d05150c60d8f9e75121635134"
   integrity sha512-HpV5OMLLGTjSVblmrtYRfFFKuQB+GArM0+XP8HGWfJ5vxYBqo+DesvJwOdC2WJ3bCkZShGf0QIfoIpeomVzVdA==
   dependencies:
     "@types/node" "10.12.18"
@@ -1412,9 +1400,9 @@ bip32@^2.0.5:
     typeforce "^1.11.5"
     wif "^2.0.6"
 
-bip39@^3.0.2:
+bip39@^3.0.4:
   version "3.0.4"
-  resolved "https://registry.npmjs.org/bip39/-/bip39-3.0.4.tgz"
+  resolved "https://registry.yarnpkg.com/bip39/-/bip39-3.0.4.tgz#5b11fed966840b5e1b8539f0f54ab6392969b2a0"
   integrity sha512-YZKQlb752TrUWqHWj7XAwCSjYEgGAk+/Aas3V7NyjQeZYsztO8JnQUaCWhcnL4T+jL8nvB8typ2jRPzTlgugNw==
   dependencies:
     "@types/node" "11.11.6"
@@ -1431,6 +1419,11 @@ bn.js@^5.1.1:
   version "5.2.0"
   resolved "https://registry.npmjs.org/bn.js/-/bn.js-5.2.0.tgz"
   integrity sha512-D7iWRBvnZE8ecXiLj/9wbxH7Tk79fAh8IHaTNq1RWRixsS02W+5qS+iE9yq6RYl0asXx5tw0bLhmT5pIfbSquw==
+
+bn.js@^5.2.1:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.2.1.tgz#0bc527a6a0d18d0aa8d5b0538ce4a77dccfa7b70"
+  integrity sha512-eXRvHzWyYPBuB4NBy0cmYQjGitUrtqwbvlzP3G6VFnNRbsZQIxQ10PbKKHt8gZ/HW/D/747aDl+QkDqg3KQLMQ==
 
 bottleneck@^2.15.3:
   version "2.19.5"
@@ -4045,15 +4038,7 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-ripple-address-codec@^3.0.4:
-  version "3.0.4"
-  resolved "https://registry.npmjs.org/ripple-address-codec/-/ripple-address-codec-3.0.4.tgz"
-  integrity sha512-GFk1BgavW+9oy5Z1Cp6YAGMfB51QdbeuhOo0Zir+s+S40F5vHtVZYu6zZE1eOAX92A5kygPuBRX4APH2v8Yhmg==
-  dependencies:
-    base-x "3.0.4"
-    create-hash "^1.1.2"
-
-ripple-address-codec@^4.1.0, ripple-address-codec@^4.1.1, ripple-address-codec@^4.2.3:
+ripple-address-codec@^4.1.1, ripple-address-codec@^4.2.3:
   version "4.2.3"
   resolved "https://registry.npmjs.org/ripple-address-codec/-/ripple-address-codec-4.2.3.tgz"
   integrity sha512-9Nd0hQmKoJEhSTzYR9kYjKmSWlH6HaVosNVAM7mIIVlzcNlQCPfKXj7CfvXcRiHl3C6XUZj7RFLqzVaPjq2ufA==
@@ -4069,7 +4054,7 @@ ripple-address-codec@^4.2.4:
     base-x "3.0.9"
     create-hash "^1.1.2"
 
-ripple-binary-codec@=1.4.2, ripple-binary-codec@^0.2.4, ripple-binary-codec@^1.1.3, ripple-binary-codec@^1.4.2:
+ripple-binary-codec@=1.4.2, ripple-binary-codec@^1.1.3, ripple-binary-codec@^1.4.2, ripple-binary-codec@^1.5.0-beta.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/ripple-binary-codec/-/ripple-binary-codec-1.4.2.tgz#cdc35353e4bc7c3a704719247c82b4c4d0b57dd3"
   integrity sha512-EDKIyZMa/6Ay/oNgCwjD9b9CJv0zmBreeHVQeG4BYwy+9GPnIQjNeT5e/aB6OjAnhcmpgbPeBmzwmNVwzxlt0w==
@@ -4081,32 +4066,7 @@ ripple-binary-codec@=1.4.2, ripple-binary-codec@^0.2.4, ripple-binary-codec@^1.1
     decimal.js "^10.2.0"
     ripple-address-codec "^4.2.4"
 
-ripple-bs58@^4.0.0:
-  version "4.0.1"
-  resolved "https://registry.npmjs.org/ripple-bs58/-/ripple-bs58-4.0.1.tgz"
-  integrity sha512-qV88Ls19OIcTt5e70Helj9aLfuFA1f9HLv1EfUGqMXOLgJhpotzfdcn+rXo9oYHd31BvPT/q64BuRKP5IEM+AA==
-  dependencies:
-    base-x "^3.0.2"
-
-ripple-bs58check@latest:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/ripple-bs58check/-/ripple-bs58check-2.0.2.tgz#f270dbcd81630b26a21901c3ce27b7d62a4e9c91"
-  integrity sha512-clZI2ytGYs3st8yz66EFfyXs5ZpHQjL/Y2txXUPkzj5bjwgODXFO7Ms0tuUj6aFek/NKk8dsqxUmQsPjmsBrwg==
-  dependencies:
-    create-hash "^1.1.0"
-    ripple-bs58 "^4.0.0"
-
-ripple-hashes@^0.3.4, ripple-hashes@latest:
-  version "0.3.4"
-  resolved "https://registry.npmjs.org/ripple-hashes/-/ripple-hashes-0.3.4.tgz"
-  integrity sha512-u2kgg9Yu9D44HWnC9R2lNg+amVLllJkMQmXZEEM2DAMFXigr4+ph1O8LLxLv+k0fbdjAjos4aUyWwcw6cxzYMw==
-  dependencies:
-    bignumber.js "^4.1.0"
-    create-hash "^1.1.2"
-    ripple-address-codec "^3.0.4"
-    ripple-binary-codec "^0.2.4"
-
-ripple-keypairs@^1.0.3, ripple-keypairs@latest:
+ripple-keypairs@^1.0.3:
   version "1.1.3"
   resolved "https://registry.npmjs.org/ripple-keypairs/-/ripple-keypairs-1.1.3.tgz"
   integrity sha512-y74Y3c0g652BgpDhWsf0x98GnUyY2D9eO2ay2exienUfbIe00TeIiFhYXQhCGVnliGsxeV9WTpU+YuEWuIxuhw==
@@ -4117,6 +4077,17 @@ ripple-keypairs@^1.0.3, ripple-keypairs@latest:
     hash.js "^1.0.3"
     ripple-address-codec "^4.2.3"
 
+ripple-keypairs@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/ripple-keypairs/-/ripple-keypairs-1.1.4.tgz#4486fca703b8a2fc4f30cfd568478f3d12c1a911"
+  integrity sha512-PMMjTOxZmCSBOvHPj6bA+V/HGx7oFgDtGGI8VcZYuaFO2H87UX0X0jhfHy+LA2Xy31WYlD7GaDIDDt2QO+AMtw==
+  dependencies:
+    bn.js "^5.1.1"
+    brorand "^1.0.5"
+    elliptic "^6.5.4"
+    hash.js "^1.0.3"
+    ripple-address-codec "^4.2.4"
+
 ripple-lib-transactionparser@0.8.2:
   version "0.8.2"
   resolved "https://registry.npmjs.org/ripple-lib-transactionparser/-/ripple-lib-transactionparser-0.8.2.tgz"
@@ -4125,10 +4096,10 @@ ripple-lib-transactionparser@0.8.2:
     bignumber.js "^9.0.0"
     lodash "^4.17.15"
 
-ripple-lib@^1.6.4:
-  version "1.10.0"
-  resolved "https://registry.npmjs.org/ripple-lib/-/ripple-lib-1.10.0.tgz"
-  integrity sha512-Cg2u73UybfM1PnzcuLt5flvLKZn35ovdIp+1eLrReVB4swuRuUF/SskJG9hf5wMosbvh+E+jZu8A6IbYJoyFIA==
+ripple-lib@^1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/ripple-lib/-/ripple-lib-1.10.1.tgz#9c353702792b25465cdb269265d6f5bb27b1471b"
+  integrity sha512-OQk+Syl2JfxKxV2KuF/kBMtnh012I5tNnziP3G4WDGCGSIAgeqkOgkR59IQ0YDNrs1YW8GbApxrdMSRi/QClcA==
   dependencies:
     "@types/lodash" "^4.14.136"
     "@types/ws" "^7.2.0"
@@ -4142,10 +4113,10 @@ ripple-lib@^1.6.4:
     ripple-lib-transactionparser "0.8.2"
     ws "^7.2.0"
 
-ripple-secret-codec@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/ripple-secret-codec/-/ripple-secret-codec-1.0.2.tgz"
-  integrity sha512-BgI49rBThZm/Y01EE8vTdDh0iTFffvHzyc3M4K5kS33+od7lww/9+n/DaSCGkIbz0mZxsghlkQx0Z7GAt7Chlg==
+ripple-secret-codec@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/ripple-secret-codec/-/ripple-secret-codec-1.0.3.tgz#dbc27bf18f09fb5cfe2aa8f814ee378e7731d001"
+  integrity sha512-vYcHlJx1p+5uH4ORda2dlvbgCy68m/Ib2kn+Np6PMmRoBenf9pKHa4vzaWmp2SjJKPi1921lQjdeAWoXdm7E0g==
   dependencies:
     base-x "^3.0.3"
     bignumber.js "^5.0.0"
@@ -4854,30 +4825,29 @@ ws@^7.2.0:
   resolved "https://registry.npmjs.org/ws/-/ws-7.5.7.tgz"
   integrity sha512-KMvVuFzpKBuiIXW3E4u3mySRO2/mCHSyZDJQM5NQ9Q9KHWHWh0NHgfbRMLLrceUK5qAL4ytALJbpRMjixFZh8A==
 
-xrpl-accountlib@^1.5.2:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/xrpl-accountlib/-/xrpl-accountlib-1.5.2.tgz#8f16abe449fd60ba9ed75597f6ce3f0c45dfff43"
-  integrity sha512-lieY2/5G9DySqdtgQ0AD/aMMG5Sy/MLAmbIsmsCaF06scM5DpR8s4SsEzgHni7dOG68Wjnb2Uz6tf5aV+l4/Kg==
+xrpl-accountlib@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/xrpl-accountlib/-/xrpl-accountlib-1.6.1.tgz#97a027e1c774246c536593e7c3d689ac58bfc0e8"
+  integrity sha512-H7hvrbIFfO1N6XkTZVFtO8LntlLfNpNByH2Cqov1ZNocJLSvqAClVpVdHIwU9K9cW1koiP/7o2ww++PksfmbIQ==
   dependencies:
     assert "^2.0.0"
-    bip32 "^2.0.5"
-    bip39 "^3.0.2"
-    bn.js "^5.1.1"
+    bip32 "^2.0.6"
+    bip39 "^3.0.4"
+    bn.js "^5.2.1"
     elliptic "6.5.4"
     hash.js "^1.1.7"
-    ripple-address-codec "^4.1.0"
+    ripple-address-codec "^4.2.4"
     ripple-binary-codec "^1.4.2"
-    ripple-hashes "^0.3.4"
-    ripple-keypairs "^1.0.3"
-    ripple-lib "^1.6.4"
-    ripple-secret-codec "^1.0.2"
+    ripple-keypairs "^1.1.4"
+    ripple-lib "^1.10.1"
+    ripple-secret-codec "^1.0.3"
     xrpl-secret-numbers "^0.3.3"
-    xrpl-sign-keypairs "^2.1.1"
+    xrpl-sign-keypairs "^2.1.2"
 
-xrpl-client@^1.9.4:
-  version "1.9.4"
-  resolved "https://registry.npmjs.org/xrpl-client/-/xrpl-client-1.9.4.tgz"
-  integrity sha512-0+O5TbJB4GBAuZVvIrZje8VMSTTQKU8pyvuOggSmX9fhqed5c7+GGOSmKD7RWNmyQ1dZT2I70tDpzocZybtYyg==
+xrpl-client@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/xrpl-client/-/xrpl-client-2.0.2.tgz#f24c7fb38fe0de3b1d45cd8c3a5e9f5ef1a0c439"
+  integrity sha512-ujquoaRn4U0FTm3jEAISr9VS+FMwPVVjWTLqBrQL1MiYypShUSje17R721dHa5ZebxWRwz6SG3BBZsKgcx6egw==
   dependencies:
     debug "^4.1.1"
     websocket "^1.0.34"
@@ -4891,16 +4861,15 @@ xrpl-secret-numbers@^0.3.3:
     brorand "^1.1.0"
     ripple-keypairs "^1.0.3"
 
-xrpl-sign-keypairs@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/xrpl-sign-keypairs/-/xrpl-sign-keypairs-2.1.1.tgz#2f7f2855799c5d4ba091007963825eef1db21a4e"
-  integrity sha512-rKQmUCx+x7gjjJ5zv/Z7bOYR+8I36JwUCFlpuD9UzYD4w2msGQDG0rmxVENyZSfThDBVQ1kEArVn6SMDMe9LUQ==
+xrpl-sign-keypairs@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/xrpl-sign-keypairs/-/xrpl-sign-keypairs-2.1.2.tgz#dbe1543c4ded5fa2ffab763c31c26bff895cbf3b"
+  integrity sha512-4QieWblhpL3upnUw7lJ0lgyDSY8Q/KT35HP7xhHk03o5fcqMo0FU5b8Aa6YUXhDZIlQoy8ssjCYB9rRQO4DSWg==
   dependencies:
-    big-integer latest
-    ripple-binary-codec "^1.4.2"
-    ripple-bs58check latest
-    ripple-hashes latest
-    ripple-keypairs latest
+    big-integer "^1.6.51"
+    ripple-address-codec "^4.2.4"
+    ripple-binary-codec "^1.5.0-beta.2"
+    ripple-keypairs "^1.1.4"
 
 yaeti@^0.0.6:
   version "0.0.6"

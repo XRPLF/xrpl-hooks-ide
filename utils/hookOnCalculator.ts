@@ -29,17 +29,15 @@ export const tts = {
 export type TTS = typeof tts
 
 const calculateHookOn = (arr: (keyof TTS)[]) => {
-  let start = '0x000000003e3ff5bf'
+  let s = '0x3e3ff5bf'
   arr.forEach(n => {
-    let v = BigInt(start)
+    let v = BigInt(s)
     v ^= BigInt(1) << BigInt(tts[n as keyof TTS])
-    let s = v.toString(16)
-    let l = s.length
-    if (l < 16) s = '0'.repeat(16 - l) + s
-    s = '0x' + s
-    start = s
+    s = "0x" + v.toString(16)
   })
-  return start.substring(2)
+  s = s.replace('0x', '')
+  s = s.padStart(64, '0')
+  return s
 }
 
 export default calculateHookOn

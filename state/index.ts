@@ -78,7 +78,7 @@ export interface IState {
   splits: {
     [id: string]: SplitSize
   }
-  client: XrplClient | null
+  client: XrplClient
   clientStatus: 'offline' | 'online'
   mainModalOpen: boolean
   mainModalShowed: boolean
@@ -113,7 +113,7 @@ let initialState: IState = {
     tabSize: 2
   },
   splits: {},
-  client: null,
+  client: undefined!, // set below only.
   clientStatus: 'offline' as 'offline',
   mainModalOpen: false,
   mainModalShowed: false,
@@ -153,9 +153,9 @@ const state = proxy<IState>({
 })
 // Initialize socket connection
 const client = new XrplClient(`wss://${process.env.NEXT_PUBLIC_TESTNET_URL}`)
+state.client = ref(client);
 
 client.on('online', () => {
-  state.client = ref(client)
   state.clientStatus = 'online'
 })
 

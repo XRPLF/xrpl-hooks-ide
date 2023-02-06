@@ -4,6 +4,7 @@ import state from '..'
 import type { IAccount } from '..'
 import ResultLink from '../../components/ResultLink'
 import { ref } from 'valtio'
+import { xrplSend } from './xrpl-client'
 
 interface TransactionOptions {
   TransactionType: string
@@ -21,20 +22,19 @@ export const sendTransaction = async (
   txOptions: TransactionOptions,
   options?: OtherOptions
 ) => {
-  if (!state.client) throw Error('XRPL client not initalized')
-
   const { Fee = '1000', ...opts } = txOptions
   const tx: TransactionOptions = {
     Account: account.address,
     Sequence: account.sequence,
-    Fee, // TODO auto-fillable default
+    Fee,
+    NetworkID: process.env.NEXT_PUBLIC_NETWORK_ID || state.client.getState().server.networkId,
     ...opts
   }
   const { logPrefix = '' } = options || {}
   try {
     const signedAccount = derive.familySeed(account.secret)
     const { signedTransaction } = sign(tx, signedAccount)
-    const response = await state.client.send({
+    const response = await xrplSend({
       command: 'submit',
       tx_blob: signedTransaction
     })

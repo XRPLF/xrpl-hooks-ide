@@ -8,6 +8,7 @@ import { ref } from 'valtio'
 import estimateFee from '../../utils/estimateFee'
 import { SetHookData } from '../../utils/setHook'
 import ResultLink from '../../components/ResultLink'
+import { xrplSend } from './xrpl-client'
 
 export const sha256 = async (string: string) => {
   const utf8 = new TextEncoder().encode(string)
@@ -64,9 +65,6 @@ export const prepareDeployHookTx = async (
   if (!activeFile?.compiledContent) {
     return
   }
-  if (!state.client) {
-    return
-  }
   const HookNamespace = (await sha256(data.HookNamespace)).toUpperCase()
   const hookOnValues: (keyof TTS)[] = data.Invoke.map(tt => tt.value)
   const { HookParameters } = data
@@ -87,30 +85,30 @@ export const prepareDeployHookTx = async (
   //     }
   //   }
   // });
-  if (typeof window !== 'undefined') {
-    const tx = {
-      Account: account.address,
-      TransactionType: 'SetHook',
-      Sequence: account.sequence,
-      Fee: data.Fee,
-      Hooks: [
-        {
-          Hook: {
-            CreateCode: arrayBufferToHex(activeFile?.compiledContent).toUpperCase(),
-            HookOn: calculateHookOn(hookOnValues),
-            HookNamespace,
-            HookApiVersion: 0,
-            Flags: 1,
-            // ...(filteredHookGrants.length > 0 && { HookGrants: filteredHookGrants }),
-            ...(filteredHookParameters.length > 0 && {
-              HookParameters: filteredHookParameters
-            })
-          }
+  if (typeof window === 'undefined') return;
+  const tx = {
+    Account: account.address,
+    TransactionType: 'SetHook',
+    Sequence: account.sequence,
+    Fee: data.Fee,
+    NetworkID: process.env.NEXT_PUBLIC_NETWORK_ID || state.client.getState().server.networkId,
+    Hooks: [
+      {
+        Hook: {
+          CreateCode: arrayBufferToHex(activeFile?.compiledContent).toUpperCase(),
+          HookOn: calculateHookOn(hookOnValues),
+          HookNamespace,
+          HookApiVersion: 0,
+          Flags: 1,
+          // ...(filteredHookGrants.length > 0 && { HookGrants: filteredHookGrants }),
+          ...(filteredHookParameters.length > 0 && {
+            HookParameters: filteredHookParameters
+          })
         }
-      ]
-    }
-    return tx
+      }
+    ]
   }
+  return tx
 }
 
 /* deployHook function turns the wasm binary into
@@ -127,9 +125,6 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
     if (!tx) {
       return
     }
-    if (!state.client) {
-      return
-    }
     const keypair = derive.familySeed(account.secret)
 
     const { signedTransaction } = sign(tx, keypair)
@@ -140,7 +135,7 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
     let submitRes
 
     try {
-      submitRes = await state.client?.send({
+      submitRes = await xrplSend({
         command: 'submit',
         tx_blob: signedTransaction
       })
@@ -199,9 +194,6 @@ export const deployHook = async (account: IAccount & { name?: string }, data: Se
 }
 
 export const deleteHook = async (account: IAccount & { name?: string }) => {
-  if (!state.client) {
-    return
-  }
   const currentAccount = state.accounts.find(acc => acc.address === account.address)
   if (currentAccount?.isLoading || !currentAccount?.hooks.length) {
     return
@@ -239,7 +231,7 @@ export const deleteHook = async (account: IAccount & { name?: string }) => {
     let submitRes
     const toastId = toast.loading('Deleting hook...')
     try {
-      submitRes = await state.client.send({
+      submitRes = await xrplSend({
         command: 'submit',
         tx_blob: signedTransaction
       })
