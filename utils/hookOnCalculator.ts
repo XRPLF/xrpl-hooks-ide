@@ -32,7 +32,7 @@ const calculateHookOn = (arr: (keyof TTS)[]) => {
   let s = '0x3e3ff5bf'
   arr.forEach(n => {
     let v = BigInt(s)
-    v ^= BigInt(1) << BigInt(tts[n as keyof TTS])
+    v ^= BigInt(1) << BigInt(tts[n])
     s = "0x" + v.toString(16)
   })
   s = s.replace('0x', '')
