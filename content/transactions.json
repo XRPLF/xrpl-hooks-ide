@@ -245,5 +245,8 @@
       }
     },
     "Sequence": 12
+  },
+  {
+    "TransactionType": "Invoke"
   }
 ]
