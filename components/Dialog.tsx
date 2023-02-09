@@ -15,7 +15,7 @@ const contentShow = keyframes({
   '100%': { opacity: 1 }
 })
 const StyledOverlay = styled(DialogPrimitive.Overlay, {
-  zIndex: 10000,
+  zIndex: 3000,
   backgroundColor: blackA.blackA9,
   position: 'fixed',
   inset: 0,

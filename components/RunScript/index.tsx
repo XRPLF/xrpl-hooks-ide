@@ -31,7 +31,7 @@ const generateHtmlTemplate = async (code: string, data?: Record<string, any>) =>
   }
 
   processString = JSON.stringify(process)
-  
+
   const libs = (await import("xrpl-accountlib/dist/browser.hook-bundle.js")).default;
   return `
   <html>
@@ -135,14 +135,28 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
   const runScript = useCallback(async () => {
     setIsLoading(true);
     try {
+      // Show loading toast only after 1 second, otherwise skip it.
+      let loaded = false
+      let toastId: string | undefined;
+      setTimeout(() => {
+        if (!loaded) {
+          toastId = toast.loading('Loading packages, may take a few seconds...', {
+            position: 'bottom-center',
+          })
+        }
+      }, 1000)
+
       let data: any = {}
       Object.keys(fields).forEach(key => {
         data[key] = fields[key].value
       })
       const template = await generateHtmlTemplate(content, data)
-
       setIframeCode(template)
 
+      loaded = true
+      if (toastId) {
+        toast.dismiss(toastId)
+      }
       state.scriptLogs = [{ type: 'success', message: 'Started running...' }]
     } catch (err) {
       state.scriptLogs = [
@@ -181,11 +195,11 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
 
   const isDisabled = Object.values(fields).some(field => field.required && !field.value)
 
-  const handleRun = useCallback(() => {
+  const handleRun = useCallback(async () => {
     if (isDisabled) return toast.error('Please fill in all the required fields.')
 
     state.scriptLogs = []
-    runScript()
+    await runScript();
     setIsDialogOpen(false)
   }, [isDisabled, runScript])
 
