@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package && yarn run postinstall-postinstall",
+    "postinstall-postinstall": "./node_modules/.bin/browserify -r ripple-binary-codec -r ripple-keypairs -r ripple-address-codec -r ripple-secret-codec -r ./node_modules/xrpl-accountlib/dist/index.js:xrpl-accountlib -o node_modules/xrpl-accountlib/dist/browser.hook-bundle.js"
   },
   "dependencies": {
     "@codingame/monaco-jsonrpc": "^0.3.1",
@@ -75,6 +76,7 @@
     "@types/lodash.xor": "^4.5.6",
     "@types/pako": "^1.0.2",
     "@types/react": "17.0.31",
+    "browserify": "^17.0.0",
     "eslint": "7.32.0",
     "eslint-config-next": "11.1.2",
     "raw-loader": "^4.0.2",
