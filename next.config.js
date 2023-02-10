@@ -12,7 +12,7 @@ module.exports = {
       config.resolve.fallback.fs = false
     }
     config.module.rules.push({
-      test: /\.md$/,
+      test: [/\.md$/, /hook-bundle\.js$/],
       use: 'raw-loader'
     })
     return config
