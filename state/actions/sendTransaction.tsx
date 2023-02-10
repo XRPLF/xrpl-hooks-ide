@@ -27,7 +27,7 @@ export const sendTransaction = async (
     Account: account.address,
     Sequence: account.sequence,
     Fee,
-    NetworkID: process.env.NEXT_PUBLIC_NETWORK_ID || state.client.getState().server.networkId,
+    NetworkID: process.env.NEXT_PUBLIC_NETWORK_ID,
     ...opts
   }
   const { logPrefix = '' } = options || {}
