@@ -5,7 +5,7 @@ import state, { IFile } from '../index'
 import { saveFile } from './saveFile'
 import { decodeBinary } from '../../utils/decodeBinary'
 import { ref } from 'valtio'
-import asc from "@muzamilsofi/assemblyscript/dist/asc"
+import asc from "@eqlabs/assemblyscript/dist/asc"
 import { getFileExtention } from '../../utils/helpers'
 
 type CompilationResult = Pick<IFile, "compiledContent" | "compiledWatContent">
