@@ -22,6 +22,7 @@ import hooksFloatManipPure from './md/hooks-float-manip-pure.md'
 import hooksFloatOnePure from './md/hooks-float-one-pure.md'
 import hooksFloatPure from './md/hooks-float-pure.md'
 import hooksGuardCalled from './md/hooks-guard-called.md'
+import hooksGuardCallNonConst from './md/hooks-guard-call-non-const.md'
 import hooksGuardInFor from './md/hooks-guard-in-for.md'
 import hooksGuardInWhile from './md/hooks-guard-in-while.md'
 import hooksHashBufLen from './md/hooks-hash-buf-len.md'
@@ -70,6 +71,7 @@ const docs: { [key: string]: string } = {
   'hooks-float-one-pure': hooksFloatOnePure,
   'hooks-float-pure': hooksFloatPure,
   'hooks-guard-called': hooksGuardCalled,
+  'hooks-guard-call-non-const': hooksGuardCallNonConst,
   'hooks-guard-in-for': hooksGuardInFor,
   'hooks-guard-in-while': hooksGuardInWhile,
   'hooks-hash-buf-len': hooksHashBufLen,

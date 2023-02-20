@@ -33,6 +33,7 @@ import { addFunds } from '../state/actions/addFaucetAccount'
 import { deleteHook } from '../state/actions/deployHook'
 import { capitalize } from '../utils/helpers'
 import { deleteAccount } from '../state/actions/deleteAccount'
+import { xrplSend } from '../state/actions/xrpl-client'
 
 export const AccountDialog = ({
   activeAccountAddress,
@@ -301,7 +302,7 @@ const Accounts: FC<AccountProps> = props => {
     const fetchAccInfo = async () => {
       if (snap.clientStatus === 'online') {
         const requests = snap.accounts.map(acc =>
-          snap.client?.send({
+          xrplSend({
             id: `hooks-builder-req-info-${acc.address}`,
             command: 'account_info',
             account: acc.address
@@ -329,7 +330,7 @@ const Accounts: FC<AccountProps> = props => {
           }
         })
         const objectRequests = snap.accounts.map(acc => {
-          return snap.client?.send({
+          return xrplSend({
             id: `hooks-builder-req-objects-${acc.address}`,
             command: 'account_objects',
             account: acc.address

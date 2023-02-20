@@ -21,7 +21,7 @@ import { saveFile } from '../../state/actions/saveFile'
 import { getErrors, getTags } from '../../utils/comment-parser'
 import toast from 'react-hot-toast'
 
-const generateHtmlTemplate = (code: string, data?: Record<string, any>) => {
+const generateHtmlTemplate = async (code: string, data?: Record<string, any>) => {
   let processString: string | undefined
   const process = { env: { NODE_ENV: 'production' } } as any
   if (data) {
@@ -29,8 +29,10 @@ const generateHtmlTemplate = (code: string, data?: Record<string, any>) => {
       process.env[key] = data[key]
     })
   }
+
   processString = JSON.stringify(process)
 
+  const libs = (await import("xrpl-accountlib/dist/browser.hook-bundle.js")).default;
   return `
   <html>
   <head>
@@ -72,7 +74,9 @@ const generateHtmlTemplate = (code: string, data?: Record<string, any>) => {
 
       window.addEventListener('error', windowErrorHandler);
     </script>
-
+    <script>
+      ${libs}
+    </script>
     <script type="module">
       ${code}
     </script>
@@ -100,6 +104,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
   const [fields, setFields] = useState<Fields>({})
   const [iFrameCode, setIframeCode] = useState('')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const getFields = useCallback(() => {
     const inputTags = ['input', 'param', 'arg', 'argument']
@@ -127,16 +132,31 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
     return fields
   }, [content])
 
-  const runScript = useCallback(() => {
+  const runScript = useCallback(async () => {
+    setIsLoading(true);
     try {
+      // Show loading toast only after 1 second, otherwise skip it.
+      let loaded = false
+      let toastId: string | undefined;
+      setTimeout(() => {
+        if (!loaded) {
+          toastId = toast.loading('Loading packages, may take a few seconds...', {
+            position: 'bottom-center',
+          })
+        }
+      }, 1000)
+
       let data: any = {}
       Object.keys(fields).forEach(key => {
         data[key] = fields[key].value
       })
-      const template = generateHtmlTemplate(content, data)
-
+      const template = await generateHtmlTemplate(content, data)
       setIframeCode(template)
 
+      loaded = true
+      if (toastId) {
+        toast.dismiss(toastId)
+      }
       state.scriptLogs = [{ type: 'success', message: 'Started running...' }]
     } catch (err) {
       state.scriptLogs = [
@@ -145,6 +165,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
         { type: 'error', message: err?.message || 'Could not parse template' }
       ]
     }
+    setIsLoading(false);
   }, [content, fields, snap.scriptLogs])
 
   useEffect(() => {
@@ -174,11 +195,11 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
 
   const isDisabled = Object.values(fields).some(field => field.required && !field.value)
 
-  const handleRun = useCallback(() => {
+  const handleRun = useCallback(async () => {
     if (isDisabled) return toast.error('Please fill in all the required fields.')
 
     state.scriptLogs = []
-    runScript()
+    await runScript();
     setIsDialogOpen(false)
   }, [isDisabled, runScript])
 
@@ -279,7 +300,7 @@ const RunScript: React.FC<{ file: IFile }> = ({ file: { content, name } }) => {
               <DialogClose asChild>
                 <Button outline>Cancel</Button>
               </DialogClose>
-              <Button variant="primary" isDisabled={isDisabled} onClick={handleRun}>
+              <Button variant="primary" isDisabled={isDisabled || isLoading} isLoading={isLoading} onClick={handleRun}>
                 Run script
               </Button>
             </Flex>

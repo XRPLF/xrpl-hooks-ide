@@ -20,7 +20,7 @@ module.exports = {
       }
     }
     config.module.rules.push({
-      test: /\.md$/,
+      test: [/\.md$/, /hook-bundle\.js$/],
       use: 'raw-loader'
     })
     return config
