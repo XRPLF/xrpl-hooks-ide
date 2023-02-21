@@ -181,7 +181,6 @@ export const compileTs = async (file: IFile): Promise<CompilationResult> => {
         return null
       },
       writeFile: async (name, data: ArrayBuffer | string, baseDir) => {
-        console.log("writeFile", { name, data, baseDir })
         const ext = getFileExtention(name);
         if (ext === 'wasm') {
           result.compiledContent = data as ArrayBuffer;

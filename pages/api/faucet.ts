@@ -40,7 +40,7 @@ export default async function handler(
     }
     return res.status(200).json(json)
   } catch (err) {
-    console.log(err)
+    console.error(err)
     return res.status(500).json({ error: 'Server error' })
   }
   return res.status(500).json({ error: 'Not able to create faucet, try again' })

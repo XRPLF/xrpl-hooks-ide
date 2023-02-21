@@ -136,7 +136,7 @@ if (typeof window !== 'undefined') {
   try {
     localStorageAccounts = localStorage.getItem('hooksIdeAccounts')
   } catch (err) {
-    console.log(`localStorage state broken`)
+    console.error(`localStorage state broken`)
     localStorage.removeItem('hooksIdeAccounts')
   }
   if (localStorageAccounts) {
