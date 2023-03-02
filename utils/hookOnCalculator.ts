@@ -23,7 +23,8 @@ export const tts = {
   ttNFTOKEN_BURN: 26,
   ttNFTOKEN_CREATE_OFFER: 27,
   ttNFTOKEN_CANCEL_OFFER: 28,
-  ttNFTOKEN_ACCEPT_OFFER: 29
+  ttNFTOKEN_ACCEPT_OFFER: 29,
+  ttINVOKE: 99,
 }
 
 export type TTS = typeof tts
