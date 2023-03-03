@@ -6,7 +6,7 @@ import calculateHookOn, { TTS } from '../../utils/hookOnCalculator'
 import { Link } from '../../components'
 import { ref } from 'valtio'
 import estimateFee from '../../utils/estimateFee'
-import { SetHookData } from '../../utils/setHook'
+import { SetHookData, toHex } from '../../utils/setHook'
 import ResultLink from '../../components/ResultLink'
 import { xrplSend } from './xrpl-client'
 
@@ -18,13 +18,6 @@ export const sha256 = async (string: string) => {
   return hashHex
 }
 
-function toHex(str: string) {
-  var result = ''
-  for (var i = 0; i < str.length; i++) {
-    result += str.charCodeAt(i).toString(16)
-  }
-  return result.toUpperCase()
-}
 
 function arrayBufferToHex(arrayBuffer?: ArrayBuffer | null) {
   if (!arrayBuffer) {

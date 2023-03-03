@@ -29,8 +29,14 @@ interface UIProps {
 
 export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estimateFee }) => {
   const { accounts } = useSnapshot(state)
-  const { selectedAccount, selectedDestAccount, selectedTransaction, txFields, selectedFlags } =
-    txState
+  const {
+    selectedAccount,
+    selectedDestAccount,
+    selectedTransaction,
+    txFields,
+    selectedFlags,
+    hookParameters
+  } = txState
 
   const accountOptions: SelectOption[] = accounts.map(acc => ({
     label: acc.name,
@@ -111,7 +117,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
     [selectedTransaction?.value]
   )
 
-  const richFields = ['TransactionType', 'Account']
+  const richFields = ['TransactionType', 'Account', 'HookParameters']
   if (fields.Destination !== undefined) {
     richFields.push('Destination')
   }
@@ -121,8 +127,6 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
   }
 
   const otherFields = Object.keys(txFields).filter(k => !richFields.includes(k)) as [keyof TxFields]
-  const hookParams = [{ id: 1 }]
-
   return (
     <Container
       css={{
@@ -271,15 +275,73 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
             </TxField>
           )
         })}
+        <TxField multiLine label="Hook parameters">
+          <Flex column fluid>
+            {Object.entries(hookParameters).map(([id, { label, value }]) => (
+              <Flex column key={id} css={{ mb: '$2' }}>
+                <Flex row>
+                  <Input
+                    placeholder="Parameter name"
+                    value={label}
+                    onChange={e => {
+                      setState({
+                        hookParameters: {
+                          ...hookParameters,
+                          [id]: { label: e.target.value, value }
+                        }
+                      })
+                    }}
+                  />
+                  <Input
+                    css={{ mx: '$2' }}
+                    placeholder="Value"
+                    value={value}
+                    onChange={e => {
+                      setState({
+                        hookParameters: {
+                          ...hookParameters,
+                          [id]: { label, value: e.target.value }
+                        }
+                      })
+                    }}
+                  />
+                  <Button
+                    onClick={() => {
+                      const { [id]: _, ...rest } = hookParameters
+                      setState({ hookParameters: rest })
+                    }}
+                    variant="destroy"
+                  >
+                    <Trash weight="regular" size="16px" />
+                  </Button>
+                </Flex>
+              </Flex>
+            ))}
+            <Button
+              outline
+              fullWidth
+              type="button"
+              onClick={() => {
+                const id = Object.keys(hookParameters).length
+                setState({
+                  hookParameters: { ...hookParameters, [id]: { label: '', value: '' } }
+                })
+              }}
+            >
+              <Plus size="16px" />
+              Add Hook Parameter
+            </Button>
+          </Flex>
+        </TxField>
       </Flex>
     </Container>
   )
 }
 
-export const TxField: FC<{ label: string; children: ReactNode; isMulti?: boolean }> = ({
+export const TxField: FC<{ label: string; children: ReactNode; multiLine?: boolean }> = ({
   label,
   children,
-  isMulti = false
+  multiLine = false
 }) => {
   return (
     <Flex
@@ -287,14 +349,14 @@ export const TxField: FC<{ label: string; children: ReactNode; isMulti?: boolean
       fluid
       css={{
         justifyContent: 'flex-end',
-        alignItems: isMulti ? 'flex-start' : 'center',
+        alignItems: multiLine ? 'flex-start' : 'center',
         position: 'relative',
         mb: '$3',
         mt: '1px',
         pr: '1px'
       }}
     >
-      <Text muted css={{ mr: '$3', mt: isMulti ? '$2' : 0 }}>
+      <Text muted css={{ mr: '$3', mt: multiLine ? '$2' : 0 }}>
         {label}:{' '}
       </Text>
       <Flex css={{ width: '70%', alignItems: 'center' }}>{children}</Flex>

@@ -31,6 +31,10 @@ export const sendTransaction = async (
     ...opts
   }
   const { logPrefix = '' } = options || {}
+  state.transactionLogs.push({
+    type: 'log',
+    message: `${logPrefix}${JSON.stringify(tx, null, 2)}`
+  })
   try {
     const signedAccount = derive.familySeed(account.secret)
     const { signedTransaction } = sign(tx, signedAccount)
