@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import Container from '../Container'
 import Flex from '../Flex'
 import Input from '../Input'
@@ -18,6 +18,7 @@ import { streamState } from '../DebugStream'
 import { Button } from '..'
 import Textarea from '../Textarea'
 import { getFlags } from '../../state/constants/flags'
+import { Plus, Trash } from 'phosphor-react'
 
 interface UIProps {
   setState: (pTx?: Partial<TransactionState> | undefined) => TransactionState | undefined
@@ -28,8 +29,14 @@ interface UIProps {
 
 export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estimateFee }) => {
   const { accounts } = useSnapshot(state)
-  const { selectedAccount, selectedDestAccount, selectedTransaction, txFields, selectedFlags } =
-    txState
+  const {
+    selectedAccount,
+    selectedDestAccount,
+    selectedTransaction,
+    txFields,
+    selectedFlags,
+    hookParameters
+  } = txState
 
   const accountOptions: SelectOption[] = accounts.map(acc => ({
     label: acc.name,
@@ -110,7 +117,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
     [selectedTransaction?.value]
   )
 
-  const richFields = ['TransactionType', 'Account']
+  const richFields = ['TransactionType', 'Account', 'HookParameters']
   if (fields.Destination !== undefined) {
     richFields.push('Destination')
   }
@@ -120,7 +127,6 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
   }
 
   const otherFields = Object.keys(txFields).filter(k => !richFields.includes(k)) as [keyof TxFields]
-
   return (
     <Container
       css={{
@@ -130,94 +136,41 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
       }}
     >
       <Flex column fluid css={{ height: '100%', overflowY: 'auto', pr: '$1' }}>
-        <Flex
-          row
-          fluid
-          css={{
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            mb: '$3',
-            mt: '1px',
-            pr: '1px'
-          }}
-        >
-          <Text muted css={{ mr: '$3' }}>
-            Transaction type:{' '}
-          </Text>
+        <TxField label="Transaction type">
           <Select
             instanceId="transactionsType"
             placeholder="Select transaction type"
             options={transactionsOptions}
             hideSelectedOptions
-            css={{ width: '70%' }}
             value={selectedTransaction}
             onChange={(tt: any) => handleChangeTxType(tt)}
           />
-        </Flex>
-        <Flex
-          row
-          fluid
-          css={{
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            mb: '$3',
-            pr: '1px'
-          }}
-        >
-          <Text muted css={{ mr: '$3' }}>
-            Account:{' '}
-          </Text>
+        </TxField>
+        <TxField label="Account">
           <Select
             instanceId="from-account"
             placeholder="Select your account"
-            css={{ width: '70%' }}
             options={accountOptions}
             value={selectedAccount}
             onChange={(acc: any) => handleSetAccount(acc)} // TODO make react-select have correct types for acc
           />
-        </Flex>
+        </TxField>
         {richFields.includes('Destination') && (
-          <Flex
-            row
-            fluid
-            css={{
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-              mb: '$3',
-              pr: '1px'
-            }}
-          >
-            <Text muted css={{ mr: '$3', textAlign: 'end' }}>
-              Destination account:{' '}
-            </Text>
+          <TxField label="Destination account">
             <Select
               instanceId="to-account"
               placeholder="Select the destination account"
-              css={{ width: '70%' }}
               options={destAccountOptions}
               value={selectedDestAccount}
               isClearable
               onChange={(acc: any) => setState({ selectedDestAccount: acc })}
             />
-          </Flex>
+          </TxField>
         )}
         {richFields.includes('Flags') && (
-          <Flex
-            row
-            fluid
-            css={{
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-              mb: '$3',
-              pr: '1px'
-            }}
-          >
-            <Text muted css={{ mr: '$3' }}>
-              Flags:{' '}
-            </Text>
+          <TxField label="Flags">
             <Select
               isClearable
-              css={{ width: '70%' }}
               instanceId="flags"
               placeholder="Select flags to apply"
               menuPosition="fixed"
@@ -229,7 +182,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
                 selectedFlags ? selectedFlags.length >= flagsOptions.length - 1 : false
               }
             />
-          </Flex>
+          </TxField>
         )}
         {otherFields.map(field => {
           let _value = txFields[field]
@@ -251,93 +204,162 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
           let rows = isJson ? (value?.match(/\n/gm)?.length || 0) + 1 : undefined
           if (rows && rows > 5) rows = 5
           return (
-            <Flex column key={field} css={{ mb: '$2', pr: '1px' }}>
-              <Flex
-                row
-                fluid
-                css={{
-                  justifyContent: 'flex-end',
-                  alignItems: 'center',
-                  position: 'relative'
-                }}
-              >
-                <Text muted css={{ mr: '$3' }}>
-                  {field + (isXrp ? ' (XRP)' : '')}:{' '}
-                </Text>
-                {isJson ? (
-                  <Textarea
-                    rows={rows}
-                    value={value}
-                    spellCheck={false}
-                    onChange={switchToJson}
-                    css={{
-                      width: '70%',
-                      flex: 'inherit',
-                      resize: 'vertical'
-                    }}
-                  />
-                ) : (
-                  <Input
-                    type={isFee ? 'number' : 'text'}
-                    value={value}
-                    onChange={e => {
-                      if (isFee) {
-                        const val = e.target.value.replaceAll('.', '').replaceAll(',', '')
-                        handleSetField(field, val)
-                      } else {
-                        handleSetField(field, e.target.value)
-                      }
-                    }}
-                    onKeyPress={
-                      isFee
-                        ? e => {
-                            if (e.key === '.' || e.key === ',') {
-                              e.preventDefault()
-                            }
-                          }
-                        : undefined
+            <TxField key={field} label={field + (isXrp ? ' (XRP)' : '')}>
+              {isJson ? (
+                <Textarea
+                  rows={rows}
+                  value={value}
+                  spellCheck={false}
+                  onChange={switchToJson}
+                  css={{
+                    flex: 'inherit',
+                    resize: 'vertical'
+                  }}
+                />
+              ) : (
+                <Input
+                  type={isFee ? 'number' : 'text'}
+                  value={value}
+                  onChange={e => {
+                    if (isFee) {
+                      const val = e.target.value.replaceAll('.', '').replaceAll(',', '')
+                      handleSetField(field, val)
+                    } else {
+                      handleSetField(field, e.target.value)
                     }
-                    css={{
-                      width: '70%',
-                      flex: 'inherit',
-                      '-moz-appearance': 'textfield',
-                      '&::-webkit-outer-spin-button': {
-                        '-webkit-appearance': 'none',
-                        margin: 0
-                      },
-                      '&::-webkit-inner-spin-button ': {
-                        '-webkit-appearance': 'none',
-                        margin: 0
-                      }
-                    }}
-                  />
-                )}
-                {isFee && (
-                  <Button
-                    size="xs"
-                    variant="primary"
-                    outline
-                    disabled={txState.txIsDisabled}
-                    isDisabled={txState.txIsDisabled}
-                    isLoading={feeLoading}
-                    css={{
-                      position: 'absolute',
-                      right: '$2',
-                      fontSize: '$xs',
-                      cursor: 'pointer',
-                      alignContent: 'center',
-                      display: 'flex'
-                    }}
-                    onClick={() => handleEstimateFee()}
-                  >
-                    Suggest
-                  </Button>
-                )}
-              </Flex>
-            </Flex>
+                  }}
+                  onKeyPress={
+                    isFee
+                      ? e => {
+                          if (e.key === '.' || e.key === ',') {
+                            e.preventDefault()
+                          }
+                        }
+                      : undefined
+                  }
+                  css={{
+                    flex: 'inherit',
+                    '-moz-appearance': 'textfield',
+                    '&::-webkit-outer-spin-button': {
+                      '-webkit-appearance': 'none',
+                      margin: 0
+                    },
+                    '&::-webkit-inner-spin-button ': {
+                      '-webkit-appearance': 'none',
+                      margin: 0
+                    }
+                  }}
+                />
+              )}
+              {isFee && (
+                <Button
+                  size="xs"
+                  variant="primary"
+                  outline
+                  disabled={txState.txIsDisabled}
+                  isDisabled={txState.txIsDisabled}
+                  isLoading={feeLoading}
+                  css={{
+                    position: 'absolute',
+                    right: '$2',
+                    fontSize: '$xs',
+                    cursor: 'pointer',
+                    alignContent: 'center',
+                    display: 'flex'
+                  }}
+                  onClick={() => handleEstimateFee()}
+                >
+                  Suggest
+                </Button>
+              )}
+            </TxField>
           )
         })}
+        <TxField multiLine label="Hook parameters">
+          <Flex column fluid>
+            {Object.entries(hookParameters).map(([id, { label, value }]) => (
+              <Flex column key={id} css={{ mb: '$2' }}>
+                <Flex row>
+                  <Input
+                    placeholder="Parameter name"
+                    value={label}
+                    onChange={e => {
+                      setState({
+                        hookParameters: {
+                          ...hookParameters,
+                          [id]: { label: e.target.value, value }
+                        }
+                      })
+                    }}
+                  />
+                  <Input
+                    css={{ mx: '$2' }}
+                    placeholder="Value"
+                    value={value}
+                    onChange={e => {
+                      setState({
+                        hookParameters: {
+                          ...hookParameters,
+                          [id]: { label, value: e.target.value }
+                        }
+                      })
+                    }}
+                  />
+                  <Button
+                    onClick={() => {
+                      const { [id]: _, ...rest } = hookParameters
+                      setState({ hookParameters: rest })
+                    }}
+                    variant="destroy"
+                  >
+                    <Trash weight="regular" size="16px" />
+                  </Button>
+                </Flex>
+              </Flex>
+            ))}
+            <Button
+              outline
+              fullWidth
+              type="button"
+              onClick={() => {
+                const id = Object.keys(hookParameters).length
+                setState({
+                  hookParameters: { ...hookParameters, [id]: { label: '', value: '' } }
+                })
+              }}
+            >
+              <Plus size="16px" />
+              Add Hook Parameter
+            </Button>
+          </Flex>
+        </TxField>
       </Flex>
     </Container>
+  )
+}
+
+export const TxField: FC<{ label: string; children: ReactNode; multiLine?: boolean }> = ({
+  label,
+  children,
+  multiLine = false
+}) => {
+  return (
+    <Flex
+      row
+      fluid
+      css={{
+        justifyContent: 'flex-end',
+        alignItems: multiLine ? 'flex-start' : 'center',
+        position: 'relative',
+        mb: '$3',
+        mt: '1px',
+        pr: '1px'
+      }}
+    >
+      <Text muted css={{ mr: '$3', mt: multiLine ? '$2' : 0 }}>
+        {label}:{' '}
+      </Text>
+      <Flex css={{ width: '70%', alignItems: 'center' }}>{children}</Flex>
+    </Flex>
   )
 }

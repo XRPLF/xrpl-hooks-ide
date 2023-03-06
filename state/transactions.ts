@@ -5,10 +5,15 @@ import state from '.'
 import { showAlert } from '../state/actions/showAlert'
 import { parseJSON } from '../utils/json'
 import { extractFlags, getFlags } from './constants/flags'
+import { fromHex } from '../utils/setHook'
 
 export type SelectOption = {
   value: string
   label: string
+}
+
+export type HookParameters = {
+  [key: string]: SelectOption
 }
 
 export interface TransactionState {
@@ -16,6 +21,7 @@ export interface TransactionState {
   selectedAccount: SelectOption | null
   selectedDestAccount: SelectOption | null
   selectedFlags: SelectOption[] | null
+  hookParameters: HookParameters
   txIsLoading: boolean
   txIsDisabled: boolean
   txFields: TxFields
@@ -24,9 +30,11 @@ export interface TransactionState {
   estimatedFee?: string
 }
 
+const commonFields = ['TransactionType', 'Account', 'Sequence', "HookParameters"] as const;
+
 export type TxFields = Omit<
   Partial<typeof transactionsData[0]>,
-  'Account' | 'Sequence' | 'TransactionType'
+  typeof commonFields[number]
 >
 
 export const defaultTransaction: TransactionState = {
@@ -34,6 +42,7 @@ export const defaultTransaction: TransactionState = {
   selectedAccount: null,
   selectedDestAccount: null,
   selectedFlags: null,
+  hookParameters: {},
   txIsLoading: false,
   txIsDisabled: false,
   txFields: {},
@@ -158,7 +167,7 @@ export const prepareState = (value: string, transactionType?: string) => {
     return
   }
 
-  const { Account, TransactionType, Destination, ...rest } = options
+  const { Account, TransactionType, Destination, HookParameters, ...rest } = options
   let tx: Partial<TransactionState> = {}
   const schema = getTxFields(transactionType)
 
@@ -186,6 +195,14 @@ export const prepareState = (value: string, transactionType?: string) => {
     }
   } else {
     tx.selectedTransaction = null
+  }
+
+  if (HookParameters && HookParameters instanceof Array) {
+    tx.hookParameters = HookParameters.reduce<TransactionState["hookParameters"]>((acc, cur, idx) => {
+      const param = { label: fromHex(cur.HookParameter?.HookParameterName || ""), value: fromHex(cur.HookParameter?.HookParameterValue || "") }
+      acc[idx] = param;
+      return acc;
+    }, {})
   }
 
   if (schema.Destination !== undefined) {
@@ -246,12 +263,12 @@ export const getTxFields = (tt?: string) => {
   if (!txFields) return {}
 
   let _txFields = Object.keys(txFields)
-    .filter(key => !['TransactionType', 'Account', 'Sequence'].includes(key))
+    .filter(key => !commonFields.includes(key as any))
     .reduce<TxFields>((tf, key) => ((tf[key as keyof TxFields] = (txFields as any)[key]), tf), {})
   return _txFields
 }
 
-export { transactionsData }
+export { transactionsData, commonFields }
 
 export const transactionsOptions = transactionsData.map(tx => ({
   value: tx.TransactionType,

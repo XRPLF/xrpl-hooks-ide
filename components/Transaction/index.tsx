@@ -20,6 +20,7 @@ import { TxUI } from './ui'
 import { default as _estimateFee } from '../../utils/estimateFee'
 import toast from 'react-hot-toast'
 import { combineFlags, extractFlags, transactionFlags } from '../../state/constants/flags'
+import { SetHookData, toHex } from '../../utils/setHook'
 
 export interface TransactionProps {
   header: string
@@ -40,16 +41,30 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
 
   const prepareOptions = useCallback(
     (state: Partial<TransactionState> = txState) => {
-      const { selectedTransaction, selectedDestAccount, selectedAccount, txFields, selectedFlags } =
-        state
+      const {
+        selectedTransaction,
+        selectedDestAccount,
+        selectedAccount,
+        txFields,
+        selectedFlags,
+        hookParameters
+      } = state
 
       const TransactionType = selectedTransaction?.value || null
       const Destination = selectedDestAccount?.value || txFields?.Destination
       const Account = selectedAccount?.value || null
       const Flags = combineFlags(selectedFlags?.map(flag => flag.value)) || txFields?.Flags
+      const HookParameters = Object.entries(hookParameters || {}).reduce<
+        SetHookData['HookParameters']
+      >((acc, [_, { label, value }]) => {
+        return acc.concat({
+          HookParameter: { HookParameterName: toHex(label), HookParameterValue: toHex(value) }
+        })
+      }, [])
 
       return prepareTransaction({
         ...txFields,
+        HookParameters,
         Flags,
         TransactionType,
         Destination,
