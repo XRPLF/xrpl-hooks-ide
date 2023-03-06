@@ -16,12 +16,21 @@ export type HookParameters = {
   [key: string]: SelectOption
 }
 
+export type Memos = {
+  [key: string]: {
+    type: string
+    format: string
+    data: string
+  }
+}
+
 export interface TransactionState {
   selectedTransaction: SelectOption | null
   selectedAccount: SelectOption | null
   selectedDestAccount: SelectOption | null
   selectedFlags: SelectOption[] | null
   hookParameters: HookParameters
+  memos: Memos
   txIsLoading: boolean
   txIsDisabled: boolean
   txFields: TxFields
@@ -43,6 +52,7 @@ export const defaultTransaction: TransactionState = {
   selectedDestAccount: null,
   selectedFlags: null,
   hookParameters: {},
+  memos: {},
   txIsLoading: false,
   txIsDisabled: false,
   txFields: {},
@@ -167,7 +177,7 @@ export const prepareState = (value: string, transactionType?: string) => {
     return
   }
 
-  const { Account, TransactionType, Destination, HookParameters, ...rest } = options
+  const { Account, TransactionType, Destination, HookParameters, Memos, ...rest } = options
   let tx: Partial<TransactionState> = {}
   const schema = getTxFields(transactionType)
 
@@ -201,6 +211,14 @@ export const prepareState = (value: string, transactionType?: string) => {
     tx.hookParameters = HookParameters.reduce<TransactionState["hookParameters"]>((acc, cur, idx) => {
       const param = { label: fromHex(cur.HookParameter?.HookParameterName || ""), value: fromHex(cur.HookParameter?.HookParameterValue || "") }
       acc[idx] = param;
+      return acc;
+    }, {})
+  }
+
+  if (Memos && Memos instanceof Array) {
+    tx.memos = Memos.reduce<TransactionState["memos"]>((acc, cur, idx) => {
+      const memo = { data: fromHex(cur.Memo?.MemoData || ""), type: fromHex(cur.Memo?.MemoType || ""), format: fromHex(cur.Memo?.MemoFormat || "") }
+      acc[idx] = memo;
       return acc;
     }, {})
   }

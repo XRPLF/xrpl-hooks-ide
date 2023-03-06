@@ -20,6 +20,13 @@ export type SetHookData = {
     }
     $metaData?: any
   }[]
+  Memos?: {
+    Memo: {
+      MemoType: string,
+      MemoData: string
+      MemoFormat: string
+    }
+  }[]
   // HookGrants: {
   //   HookGrant: {
   //     Authorize: string;
