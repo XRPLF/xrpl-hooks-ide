@@ -358,7 +358,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
                     }}
                   />
                   <Input
-                    placeholder="Memo data"
+                    placeholder="Data"
                     css={{ mx: '$2' }}
                     value={memo.data}
                     onChange={e => {
@@ -371,7 +371,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
                     }}
                   />
                   <Input
-                    placeholder="Memo format"
+                    placeholder="Format"
                     value={memo.format}
                     onChange={e => {
                       setState({
