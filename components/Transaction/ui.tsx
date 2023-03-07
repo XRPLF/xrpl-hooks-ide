@@ -338,51 +338,61 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
           <Flex column fluid>
             {Object.entries(memos).map(([id, memo]) => (
               <Flex column key={id} css={{ mb: '$2' }}>
-                <Input
-                  placeholder="Memo type"
-                  value={memo.type}
-                  onChange={e => {
-                    setState({
-                      memos: {
-                        ...memos,
-                        [id]: { ...memo, type: e.target.value }
-                      }
-                    })
+                <Flex
+                  row
+                  css={{
+                    flexWrap: 'wrap',
+                    width: '100%',
                   }}
-                />
-                <Input
-                  placeholder="Memo data"
-                  value={memo.data}
-                  onChange={e => {
-                    setState({
-                      memos: {
-                        ...memos,
-                        [id]: { ...memo, data: e.target.value }
-                      }
-                    })
-                  }}
-                />
-                <Input
-                  placeholder="Memo format"
-                  value={memo.format}
-                  onChange={e => {
-                    setState({
-                      memos: {
-                        ...memos,
-                        [id]: { ...memo, format: e.target.value }
-                      }
-                    })
-                  }}
-                />
-                <Button
-                  onClick={() => {
-                    const { [id]: _, ...rest } = memos
-                    setState({ memos: rest })
-                  }}
-                  variant="destroy"
                 >
-                  <Trash weight="regular" size="16px" />
-                </Button>
+                  <Input
+                    placeholder="Memo type"
+                    value={memo.type}
+                    onChange={e => {
+                      setState({
+                        memos: {
+                          ...memos,
+                          [id]: { ...memo, type: e.target.value }
+                        }
+                      })
+                    }}
+                  />
+                  <Input
+                    placeholder="Memo data"
+                    css={{ mx: '$2' }}
+                    value={memo.data}
+                    onChange={e => {
+                      setState({
+                        memos: {
+                          ...memos,
+                          [id]: { ...memo, data: e.target.value }
+                        }
+                      })
+                    }}
+                  />
+                  <Input
+                    placeholder="Memo format"
+                    value={memo.format}
+                    onChange={e => {
+                      setState({
+                        memos: {
+                          ...memos,
+                          [id]: { ...memo, format: e.target.value }
+                        }
+                      })
+                    }}
+                  />
+                  <Button
+                    css={{ ml: '$2' }}
+                    onClick={() => {
+                      const { [id]: _, ...rest } = memos
+                      setState({ memos: rest })
+                    }}
+                    variant="destroy"
+                  >
+                    <Trash weight="regular" size="16px" />
+                  </Button>
+                </Flex>
               </Flex>
             ))}
             <Button
