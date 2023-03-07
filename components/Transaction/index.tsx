@@ -47,7 +47,8 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
         selectedAccount,
         txFields,
         selectedFlags,
-        hookParameters
+        hookParameters,
+        memos
       } = state
 
       const TransactionType = selectedTransaction?.value || null
@@ -61,6 +62,13 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
           HookParameter: { HookParameterName: toHex(label), HookParameterValue: toHex(value) }
         })
       }, [])
+      const Memos = memos
+        ? Object.entries(memos).reduce<SetHookData['Memos']>((acc, [_, { format, data, type }]) => {
+            return acc?.concat({
+              Memo: { MemoData: toHex(data), MemoFormat: toHex(format), MemoType: toHex(type) }
+            })
+          }, [])
+        : undefined
 
       return prepareTransaction({
         ...txFields,
@@ -68,7 +76,8 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
         Flags,
         TransactionType,
         Destination,
-        Account
+        Account,
+        Memos
       })
     },
     [txState]

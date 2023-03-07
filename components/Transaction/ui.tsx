@@ -35,7 +35,8 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
     selectedTransaction,
     txFields,
     selectedFlags,
-    hookParameters
+    hookParameters,
+    memos
   } = txState
 
   const accountOptions: SelectOption[] = accounts.map(acc => ({
@@ -117,7 +118,7 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
     [selectedTransaction?.value]
   )
 
-  const richFields = ['TransactionType', 'Account', 'HookParameters']
+  const richFields = ['TransactionType', 'Account', 'HookParameters', 'Memos']
   if (fields.Destination !== undefined) {
     richFields.push('Destination')
   }
@@ -330,6 +331,83 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
             >
               <Plus size="16px" />
               Add Hook Parameter
+            </Button>
+          </Flex>
+        </TxField>
+        <TxField multiLine label="Memos">
+          <Flex column fluid>
+            {Object.entries(memos).map(([id, memo]) => (
+              <Flex column key={id} css={{ mb: '$2' }}>
+                <Flex
+                  row
+                  css={{
+                    flexWrap: 'wrap',
+                    width: '100%',
+                  }}
+                >
+                  <Input
+                    placeholder="Memo type"
+                    value={memo.type}
+                    onChange={e => {
+                      setState({
+                        memos: {
+                          ...memos,
+                          [id]: { ...memo, type: e.target.value }
+                        }
+                      })
+                    }}
+                  />
+                  <Input
+                    placeholder="Data"
+                    css={{ mx: '$2' }}
+                    value={memo.data}
+                    onChange={e => {
+                      setState({
+                        memos: {
+                          ...memos,
+                          [id]: { ...memo, data: e.target.value }
+                        }
+                      })
+                    }}
+                  />
+                  <Input
+                    placeholder="Format"
+                    value={memo.format}
+                    onChange={e => {
+                      setState({
+                        memos: {
+                          ...memos,
+                          [id]: { ...memo, format: e.target.value }
+                        }
+                      })
+                    }}
+                  />
+                  <Button
+                    css={{ ml: '$2' }}
+                    onClick={() => {
+                      const { [id]: _, ...rest } = memos
+                      setState({ memos: rest })
+                    }}
+                    variant="destroy"
+                  >
+                    <Trash weight="regular" size="16px" />
+                  </Button>
+                </Flex>
+              </Flex>
+            ))}
+            <Button
+              outline
+              fullWidth
+              type="button"
+              onClick={() => {
+                const id = Object.keys(memos).length
+                setState({
+                  memos: { ...memos, [id]: { data: '', format: '', type: '' } }
+                })
+              }}
+            >
+              <Plus size="16px" />
+              Add Memo
             </Button>
           </Flex>
         </TxField>
