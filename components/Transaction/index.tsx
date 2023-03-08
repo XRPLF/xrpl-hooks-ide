@@ -93,15 +93,29 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
     }
   }, [selectedAccount?.value, selectedTransaction?.value, setState, txIsLoading])
 
+  const getJsonString = useCallback(
+    (state?: Partial<TransactionState>) =>
+      JSON.stringify(prepareOptions?.(state) || {}, null, editorSettings.tabSize),
+    [editorSettings.tabSize, prepareOptions]
+  )
+
+  const saveEditorState = useCallback(
+    (value: string = '', transactionType?: string) => {
+      const pTx = prepareState(value, transactionType)
+      if (pTx) {
+        pTx.editorValue = getJsonString(pTx)
+        return setState(pTx)
+      }
+    },
+    [getJsonString, setState]
+  )
+
   const submitTest = useCallback(async () => {
     let st: TransactionState | undefined
     const tt = txState.selectedTransaction?.value
     if (viewType === 'json') {
-      // save the editor state first
-      const pst = prepareState(editorValue || '', tt)
-      if (!pst) return
-
-      st = setState(pst)
+      st = saveEditorState(editorValue, tt)
+      if (!st) return
     }
 
     const account = accounts.find(acc => acc.address === selectedAccount?.value)
@@ -132,22 +146,17 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
     }
     setState({ txIsLoading: false })
   }, [
+    txState.selectedTransaction?.value,
     viewType,
     accounts,
     txIsDisabled,
     setState,
     header,
+    saveEditorState,
     editorValue,
-    txState,
     selectedAccount?.value,
     prepareOptions
   ])
-
-  const getJsonString = useCallback(
-    (state?: Partial<TransactionState>) =>
-      JSON.stringify(prepareOptions?.(state) || {}, null, editorSettings.tabSize),
-    [editorSettings.tabSize, prepareOptions]
-  )
 
   const resetState = useCallback(
     (transactionType: SelectOption | undefined = defaultTransactionType) => {
@@ -201,11 +210,21 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
     [accounts, prepareOptions, setState, txState]
   )
 
+  const switchToJson = useCallback(() => {
+    const editorValue = getJsonString()
+    setState({ viewType: 'json', editorValue })
+  }, [getJsonString, setState])
+
+  const switchToUI = useCallback(() => {
+    setState({ viewType: 'ui' })
+  }, [setState])
+
   return (
     <Box css={{ position: 'relative', height: 'calc(100% - 28px)' }} {...props}>
       {viewType === 'json' ? (
         <TxJson
           getJsonString={getJsonString}
+          saveEditorState={saveEditorState}
           header={header}
           state={txState}
           setState={setState}
@@ -213,6 +232,7 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
         />
       ) : (
         <TxUI
+          switchToJson={switchToJson}
           state={txState}
           resetState={resetState}
           setState={setState}
@@ -233,8 +253,8 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
         <Button
           onClick={() => {
             if (viewType === 'ui') {
-              setState({ viewType: 'json' })
-            } else setState({ viewType: 'ui' })
+              switchToJson()
+            } else switchToUI()
           }}
           outline
         >
