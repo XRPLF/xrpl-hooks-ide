@@ -25,9 +25,16 @@ interface UIProps {
   resetState: (tt?: SelectOption) => TransactionState | undefined
   state: TransactionState
   estimateFee?: (...arg: any) => Promise<string | undefined>
+  switchToJson: () => void
 }
 
-export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estimateFee }) => {
+export const TxUI: FC<UIProps> = ({
+  state: txState,
+  setState,
+  resetState,
+  estimateFee,
+  switchToJson
+}) => {
   const { accounts } = useSnapshot(state)
   const {
     selectedAccount,
@@ -101,8 +108,6 @@ export const TxUI: FC<UIProps> = ({ state: txState, setState, resetState, estima
     },
     [handleEstimateFee, resetState, setState]
   )
-
-  const switchToJson = () => setState({ viewType: 'json' })
 
   // default tx
   useEffect(() => {

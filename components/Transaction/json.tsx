@@ -11,7 +11,7 @@ import Monaco from '../Monaco'
 import type monaco from 'monaco-editor'
 
 interface JsonProps {
-  getJsonString?: (state?: Partial<TransactionState>) => string
+  getJsonString: (state?: Partial<TransactionState>) => string
   header?: string
   setState: (pTx?: Partial<TransactionState> | undefined) => void
   state: TransactionState
@@ -24,13 +24,6 @@ export const TxJson: FC<JsonProps> = ({ getJsonString, state: txState, header, s
   const [currTxType, setCurrTxType] = useState<string | undefined>(
     txState.selectedTransaction?.value
   )
-
-  useEffect(() => {
-    setState({
-      editorValue: getJsonString?.()
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   useEffect(() => {
     const parsed = parseJSON(editorValue)
@@ -48,9 +41,6 @@ export const TxJson: FC<JsonProps> = ({ getJsonString, state: txState, header, s
     const tx = prepareState(value, transactionType)
     if (tx) {
       setState(tx)
-      setState({
-        editorValue: getJsonString?.(tx)
-      })
     }
   }
 
@@ -59,7 +49,7 @@ export const TxJson: FC<JsonProps> = ({ getJsonString, state: txState, header, s
       body: 'Are you sure to discard these changes?',
       confirmText: 'Yes',
       onCancel: () => {},
-      onConfirm: () => setState({ editorValue: getJsonString?.() })
+      onConfirm: () => setState({ editorValue: getJsonString() })
     })
   }
 
@@ -163,7 +153,7 @@ export const TxJson: FC<JsonProps> = ({ getJsonString, state: txState, header, s
     })
   }, [getSchemas, monacoInst])
 
-  const hasUnsaved = useMemo(() => editorValue !== getJsonString?.(), [editorValue, getJsonString])
+  const hasUnsaved = useMemo(() => editorValue !== getJsonString(), [editorValue, getJsonString])
 
   return (
     <Monaco

@@ -201,6 +201,15 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
     [accounts, prepareOptions, setState, txState]
   )
 
+  const switchToJson = useCallback(() => {
+    const editorValue = getJsonString()
+    setState({ viewType: 'json', editorValue })
+  }, [getJsonString, setState])
+
+  const switchToUI = useCallback(() => {
+    setState({ viewType: 'ui' })
+  }, [setState])
+
   return (
     <Box css={{ position: 'relative', height: 'calc(100% - 28px)' }} {...props}>
       {viewType === 'json' ? (
@@ -213,6 +222,7 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
         />
       ) : (
         <TxUI
+          switchToJson={switchToJson}
           state={txState}
           resetState={resetState}
           setState={setState}
@@ -233,8 +243,8 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
         <Button
           onClick={() => {
             if (viewType === 'ui') {
-              setState({ viewType: 'json' })
-            } else setState({ viewType: 'ui' })
+              switchToJson()
+            } else switchToUI()
           }}
           outline
         >
