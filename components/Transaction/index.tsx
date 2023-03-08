@@ -93,15 +93,29 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
     }
   }, [selectedAccount?.value, selectedTransaction?.value, setState, txIsLoading])
 
+  const getJsonString = useCallback(
+    (state?: Partial<TransactionState>) =>
+      JSON.stringify(prepareOptions?.(state) || {}, null, editorSettings.tabSize),
+    [editorSettings.tabSize, prepareOptions]
+  )
+
+  const saveEditorState = useCallback(
+    (value: string = '', transactionType?: string) => {
+      const pTx = prepareState(value, transactionType)
+      if (pTx) {
+        pTx.editorValue = getJsonString(pTx)
+        return setState(pTx)
+      }
+    },
+    [getJsonString, setState]
+  )
+
   const submitTest = useCallback(async () => {
     let st: TransactionState | undefined
     const tt = txState.selectedTransaction?.value
     if (viewType === 'json') {
-      // save the editor state first
-      const pst = prepareState(editorValue || '', tt)
-      if (!pst) return
-
-      st = setState(pst)
+      st = saveEditorState(editorValue, tt)
+      if (!st) return
     }
 
     const account = accounts.find(acc => acc.address === selectedAccount?.value)
@@ -132,22 +146,17 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
     }
     setState({ txIsLoading: false })
   }, [
+    txState.selectedTransaction?.value,
     viewType,
     accounts,
     txIsDisabled,
     setState,
     header,
+    saveEditorState,
     editorValue,
-    txState,
     selectedAccount?.value,
     prepareOptions
   ])
-
-  const getJsonString = useCallback(
-    (state?: Partial<TransactionState>) =>
-      JSON.stringify(prepareOptions?.(state) || {}, null, editorSettings.tabSize),
-    [editorSettings.tabSize, prepareOptions]
-  )
 
   const resetState = useCallback(
     (transactionType: SelectOption | undefined = defaultTransactionType) => {
@@ -215,6 +224,7 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
       {viewType === 'json' ? (
         <TxJson
           getJsonString={getJsonString}
+          saveEditorState={saveEditorState}
           header={header}
           state={txState}
           setState={setState}

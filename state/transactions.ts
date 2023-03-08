@@ -36,6 +36,7 @@ export interface TransactionState {
   txFields: TxFields
   viewType: 'json' | 'ui'
   editorValue?: string
+  editorIsSaved: boolean
   estimatedFee?: string
 }
 
@@ -53,6 +54,7 @@ export const defaultTransaction: TransactionState = {
   selectedFlags: null,
   hookParameters: {},
   memos: {},
+  editorIsSaved: true,
   txIsLoading: false,
   txIsDisabled: false,
   txFields: {},
@@ -271,6 +273,7 @@ export const prepareState = (value: string, transactionType?: string) => {
   })
 
   tx.txFields = rest
+  tx.editorIsSaved = true;
 
   return tx
 }
