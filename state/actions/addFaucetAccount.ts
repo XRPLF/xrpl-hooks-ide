@@ -1,5 +1,6 @@
 import toast from 'react-hot-toast'
 import state, { FaucetAccountRes } from '../index'
+import fetchAccountInfo from '../../utils/accountInfo';
 
 export const names = [
   'Alice',
@@ -35,40 +36,37 @@ export const addFaucetAccount = async (name?: string, showToast: boolean = false
   })
   const json: FaucetAccountRes | { error: string } = await res.json()
   if ('error' in json) {
-    if (showToast) {
-      return toast.error(json.error, { id: toastId })
-    } else {
-      return
-    }
-  } else {
-    if (showToast) {
-      toast.success('New account created', { id: toastId })
-    }
-    const currNames = state.accounts.map(acc => acc.name)
-    state.accounts.push({
-      name: name || names.filter(name => !currNames.includes(name))[0],
-      xrp: (json.xrp || 0 * 1000000).toString(),
-      address: json.address,
-      secret: json.secret,
-      sequence: 1,
-      hooks: [],
-      isLoading: false,
-      version: '2'
-    })
+    if (!showToast) return;
+    return toast.error(json.error, { id: toastId })
+  }
+  const currNames = state.accounts.map(acc => acc.name)
+  const info = await fetchAccountInfo(json.address, { silent: true })
+  state.accounts.push({
+    name: name || names.filter(name => !currNames.includes(name))[0],
+    xrp: (json.xrp || 0 * 1000000).toString(),
+    address: json.address,
+    secret: json.secret,
+    sequence: info?.Sequence || 1,
+    hooks: [],
+    isLoading: false,
+    version: '2'
+  })
+  if (showToast) {
+    toast.success('New account created', { id: toastId })
   }
 }
 
-// fetch initial faucets
-;(async function fetchFaucets() {
-  if (typeof window !== 'undefined') {
-    if (state.accounts.length === 0) {
-      await addFaucetAccount()
-      // setTimeout(() => {
-      //   addFaucetAccount();
-      // }, 10000);
+  // fetch initial faucets
+  ; (async function fetchFaucets() {
+    if (typeof window !== 'undefined') {
+      if (state.accounts.length === 0) {
+        await addFaucetAccount()
+        // setTimeout(() => {
+        //   addFaucetAccount();
+        // }, 10000);
+      }
     }
-  }
-})()
+  })()
 
 export const addFunds = async (address: string) => {
   const toastId = toast.loading('Requesting funds')
