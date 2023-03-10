@@ -21,6 +21,7 @@ import { prepareDeployHookTx, sha256 } from '../state/actions/deployHook'
 import estimateFee from '../utils/estimateFee'
 import { getParameters, getInvokeOptions, transactionOptions, SetHookData } from '../utils/setHook'
 import { capitalize } from '../utils/helpers'
+import AccountSequence from './Sequence'
 
 export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
   ({ accountAddress }) => {
@@ -189,6 +190,10 @@ export const SetHookDialog: React.FC<{ accountAddress: string }> = React.memo(
                     value={selectedAccount}
                     onChange={(acc: any) => setSelectedAccount(acc)}
                   />
+                </Box>
+                <Box css={{ width: '100%', position: 'relative' }}>
+                  <Label>Sequence</Label>
+                  <AccountSequence address={selectedAccount?.value} />
                 </Box>
                 <Box css={{ width: '100%' }}>
                   <Label>Invoke on transactions</Label>

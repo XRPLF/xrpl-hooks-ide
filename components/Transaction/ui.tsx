@@ -19,6 +19,7 @@ import { Button } from '..'
 import Textarea from '../Textarea'
 import { getFlags } from '../../state/constants/flags'
 import { Plus, Trash } from 'phosphor-react'
+import AccountSequence from '../Sequence'
 
 interface UIProps {
   setState: (pTx?: Partial<TransactionState> | undefined) => TransactionState | undefined
@@ -160,6 +161,9 @@ export const TxUI: FC<UIProps> = ({
             value={selectedAccount}
             onChange={(acc: any) => handleSetAccount(acc)} // TODO make react-select have correct types for acc
           />
+        </TxField>
+        <TxField label="Sequence">
+          <AccountSequence address={selectedAccount?.value} />
         </TxField>
         {richFields.includes('Destination') && (
           <TxField label="Destination account">
@@ -347,7 +351,7 @@ export const TxUI: FC<UIProps> = ({
                   row
                   css={{
                     flexWrap: 'wrap',
-                    width: '100%',
+                    width: '100%'
                   }}
                 >
                   <Input
