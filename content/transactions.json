@@ -124,7 +124,8 @@
     },
     "Flags": "1",
     "Destination": "",
-    "Fee": "10"
+    "Fee": "10",
+    "Owner": ""
   },
   {
     "TransactionType": "OfferCancel",
