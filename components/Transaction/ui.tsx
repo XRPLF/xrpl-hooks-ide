@@ -15,11 +15,12 @@ import {
 import { useSnapshot } from 'valtio'
 import state from '../../state'
 import { streamState } from '../DebugStream'
-import { Button } from '..'
+import { Box, Button } from '..'
 import Textarea from '../Textarea'
 import { getFlags } from '../../state/constants/flags'
 import { Plus, Trash } from 'phosphor-react'
 import AccountSequence from '../Sequence'
+import { typeIs } from '../../utils/helpers'
 
 interface UIProps {
   setState: (pTx?: Partial<TransactionState> | undefined) => TransactionState | undefined
@@ -87,6 +88,22 @@ export const TxUI: FC<UIProps> = ({
     [setState, txFields]
   )
 
+  const setRawField = useCallback(
+    (field: keyof TxFields, type: string, value: any) => {
+      // TODO $type should be a narrowed type
+      setState({
+        txFields: {
+          ...txFields,
+          [field]: {
+            $type: type,
+            $value: value
+          }
+        }
+      })
+    },
+    [setState, txFields]
+  )
+
   const handleEstimateFee = useCallback(
     async (state?: TransactionState, silent?: boolean) => {
       setFeeLoading(true)
@@ -134,6 +151,16 @@ export const TxUI: FC<UIProps> = ({
   }
 
   const otherFields = Object.keys(txFields).filter(k => !richFields.includes(k)) as [keyof TxFields]
+  const amountOptions = [
+    { label: 'XRP', value: 'xrp' },
+    { label: 'Token', value: 'token' }
+  ] as const
+
+  const defaultTokenAmount = {
+    value: '0',
+    currency: '',
+    issuer: ''
+  }
   return (
     <Container
       css={{
@@ -198,23 +225,111 @@ export const TxUI: FC<UIProps> = ({
           let _value = txFields[field]
 
           let value: string | undefined
-          if (typeof _value === 'object') {
-            if (_value.$type === 'json' && typeof _value.$value === 'object') {
+          if (typeIs(_value, 'object')) {
+            if (_value.$type === 'json' && typeIs(_value.$value, ['object', 'array'])) {
               value = JSON.stringify(_value.$value, null, 2)
             } else {
-              value = _value.$value.toString()
+              value = _value.$value?.toString()
             }
           } else {
             value = _value?.toString()
           }
 
-          const isXrp = typeof _value === 'object' && _value.$type === 'xrp'
+          const isXrpAmount = typeIs(_value, 'object') && _value.$type === 'amount.xrp'
+          const isTokenAmount = typeIs(_value, 'object') && _value.$type === 'amount.token'
           const isJson = typeof _value === 'object' && _value.$type === 'json'
           const isFee = field === 'Fee'
           let rows = isJson ? (value?.match(/\n/gm)?.length || 0) + 1 : undefined
           if (rows && rows > 5) rows = 5
+          let tokenAmount = defaultTokenAmount
+          if (isTokenAmount && typeIs(_value, 'object') && typeIs(_value.$value, 'object')) {
+            tokenAmount = {
+              value: _value.$value.value,
+              currency: _value.$value.currency,
+              issuer: _value.$value.issuer
+            }
+          }
+
+          if (isXrpAmount || isTokenAmount) {
+            return (
+              <TxField key={field} label={field}>
+                <Flex fluid css={{ alignItems: 'center' }}>
+                  {isTokenAmount ? (
+                    <Flex fluid row align="center" justify="space-between">
+                      <Input
+                        type="text"
+                        placeholder="Issuer"
+                        value={tokenAmount.issuer}
+                        onChange={e =>
+                          setRawField(field, 'amount.token', {
+                            ...tokenAmount,
+                            issuer: e.target.value
+                          })
+                        }
+                      />
+                      <Input
+                        type="text"
+                        value={tokenAmount.currency}
+                        placeholder="Currency"
+                        onChange={e => {
+                          setRawField(field, 'amount.token', {
+                            ...tokenAmount,
+                            currency: e.target.value
+                          })
+                        }}
+                      />
+                      <Input
+                        type="text"
+                        value={tokenAmount.value}
+                        placeholder="Value"
+                        onChange={e => {
+                          setRawField(field, 'amount.token', {
+                            ...tokenAmount,
+                            value: e.target.value
+                          })
+                        }}
+                      />
+                    </Flex>
+                  ) : (
+                    <Input
+                      css={{ flex: 'inherit' }}
+                      type="text"
+                      value={value}
+                      onChange={e => handleSetField(field, e.target.value)}
+                      onKeyPress={e => {
+                        if (e.key === '.' || e.key === ',') {
+                          e.preventDefault()
+                        }
+                      }}
+                    />
+                  )}
+                  <Box
+                    css={{
+                      ml: '$1',
+                      width: '200px'
+                    }}
+                  >
+                    <Select
+                      instanceId="currency"
+                      placeholder="Select currency"
+                      options={amountOptions}
+                      value={isXrpAmount ? amountOptions['0'] : amountOptions['1']}
+                      onChange={(e: any) => {
+                        const opt = e as typeof amountOptions[number]
+                        if (opt.value === 'xrp') {
+                          setRawField(field, 'amount.xrp', '0')
+                        } else {
+                          setRawField(field, 'amount.token', defaultTokenAmount)
+                        }
+                      }}
+                    />
+                  </Box>
+                </Flex>
+              </TxField>
+            )
+          }
           return (
-            <TxField key={field} label={field + (isXrp ? ' (XRP)' : '')}>
+            <TxField key={field} label={field}>
               {isJson ? (
                 <Textarea
                   rows={rows}
