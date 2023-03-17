@@ -141,7 +141,7 @@ export const prepareTransaction = (data: any) => {
     // amount.xrp
     if (_value.$type === 'amount.xrp') {
       if (_value.$value) {
-        options[field] = (+_value.$value * 1000000 + '') as any
+        options[field] = (+(_value as any).$value * 1000000 + '')
       } else {
         options[field] = undefined
       }
