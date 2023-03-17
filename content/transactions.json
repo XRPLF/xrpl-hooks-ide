@@ -142,10 +142,17 @@
     "Flags": "0",
     "LastLedgerSequence": 7108682,
     "Sequence": 8,
-    "TakerGets": "6000000",
-    "Amount": {
-      "$value": "100",
-      "$type": "amount.xrp"
+    "TakerGets": {
+      "$type": "amount.xrp",
+      "$value": "6000000"
+    },
+    "TakerPays": {
+      "$type": "amount.token",
+      "$value": {
+        "currency": "GKO",
+        "issuer": "ruazs5h1qEsqpke88pcqnaseXdm6od2xc",
+        "value": "2"
+      }
     }
   },
   {
