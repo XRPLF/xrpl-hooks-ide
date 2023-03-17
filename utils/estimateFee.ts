@@ -24,6 +24,9 @@ const estimateFee = async (
     const { signedTransaction } = sign(copyTx, keypair)
 
     const res = await xrplSend({ command: 'fee', tx_blob: signedTransaction })
+    if (res.error) {
+      throw new Error(`[${res.error}] ${res.error_exception}`);
+    }
     if (res && res.drops) {
       return res.drops
     }
