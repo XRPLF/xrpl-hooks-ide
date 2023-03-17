@@ -31,7 +31,8 @@ const estimateFee = async (
   } catch (err) {
     if (!opts.silent) {
       console.error(err)
-      toast.error('Cannot estimate fee.') // ? Some better msg
+      const msg = err instanceof Error ? err.message : 'Error estimating fee!';
+      toast.error(msg);
     }
     return null
   }

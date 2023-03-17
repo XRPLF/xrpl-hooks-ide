@@ -280,7 +280,7 @@ export const TxUI: FC<UIProps> = ({
                         }}
                       />
                       <Input
-                        type="text"
+                        type="number"
                         value={tokenAmount.value}
                         placeholder="Value"
                         onChange={e => {
@@ -294,14 +294,9 @@ export const TxUI: FC<UIProps> = ({
                   ) : (
                     <Input
                       css={{ flex: 'inherit' }}
-                      type="text"
+                      type="number"
                       value={value}
                       onChange={e => handleSetField(field, e.target.value)}
-                      onKeyPress={e => {
-                        if (e.key === '.' || e.key === ',') {
-                          e.preventDefault()
-                        }
-                      }}
                     />
                   )}
                   <Box
