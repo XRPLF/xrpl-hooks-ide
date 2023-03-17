@@ -268,6 +268,7 @@ export const TxUI: FC<UIProps> = ({
                         }
                       />
                       <Input
+                        css={{ mx: '$1' }}
                         type="text"
                         value={tokenAmount.currency}
                         placeholder="Currency"
@@ -305,13 +306,12 @@ export const TxUI: FC<UIProps> = ({
                   )}
                   <Box
                     css={{
-                      ml: '$1',
-                      width: '200px'
+                      ml: '$2',
+                      width: '150px'
                     }}
                   >
                     <Select
-                      instanceId="currency"
-                      placeholder="Select currency"
+                      instanceId="currency-type"
                       options={amountOptions}
                       value={isXrpAmount ? amountOptions['0'] : amountOptions['1']}
                       onChange={(e: any) => {
@@ -553,7 +553,7 @@ export const TxField: FC<{ label: string; children: ReactNode; multiLine?: boole
         justifyContent: 'flex-end',
         alignItems: multiLine ? 'flex-start' : 'center',
         position: 'relative',
-        mb: '$3',
+        mb: '$2',
         mt: '1px',
         pr: '1px'
       }}
