@@ -39,7 +39,7 @@ const Select = forwardRef<any, Props>((props, ref) => {
           return {
             ...provided,
             position: 'relative',
-            width: '100%'
+            width: '100%',
           }
         },
         singleValue: provided => ({
@@ -108,9 +108,10 @@ const Select = forwardRef<any, Props>((props, ref) => {
         dropdownIndicator: (provided, state) => {
           return {
             ...provided,
+            padding: 6,
             color: state.isFocused ? colors.border : colors.secondary,
             ':hover': {
-              color: colors.border
+              color: colors.border,
             }
           }
         }
