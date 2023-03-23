@@ -38,27 +38,13 @@ export const TxUI: FC<UIProps> = ({
   switchToJson
 }) => {
   const { accounts } = useSnapshot(state)
-  const {
-    selectedAccount,
-    selectedDestAccount,
-    selectedTransaction,
-    txFields,
-    selectedFlags,
-    hookParameters,
-    memos
-  } = txState
+  const { selectedAccount, selectedTransaction, txFields, selectedFlags, hookParameters, memos } =
+    txState
 
   const accountOptions: SelectOption[] = accounts.map(acc => ({
     label: acc.name,
     value: acc.address
   }))
-
-  const destAccountOptions: SelectOption[] = accounts
-    .map(acc => ({
-      label: acc.name,
-      value: acc.address
-    }))
-    .filter(acc => acc.value !== selectedAccount?.value)
 
   const flagsOptions: SelectOption[] = Object.entries(
     getFlags(selectedTransaction?.value) || {}
@@ -215,6 +201,7 @@ export const TxUI: FC<UIProps> = ({
             value = _value?.toString()
           }
 
+          const isAccount = typeIs(_value, 'object') && _value.$type === 'account'
           const isXrpAmount = typeIs(_value, 'object') && _value.$type === 'amount.xrp'
           const isTokenAmount = typeIs(_value, 'object') && _value.$type === 'amount.token'
           const isJson = typeof _value === 'object' && _value.$type === 'json'
@@ -300,6 +287,23 @@ export const TxUI: FC<UIProps> = ({
                     />
                   </Box>
                 </Flex>
+              </TxField>
+            )
+          }
+          if (isAccount) {
+            const label = accountOptions.find(a => a.value === value)?.label || value
+            return (
+              <TxField key={field} label={field}>
+                <Select
+                  instanceId={field}
+                  placeholder={`Select ${field} account`}
+                  options={accountOptions}
+                  value={{
+                    value,
+                    label
+                  }}
+                  onChange={(acc: any) => handleSetField(field, acc.value)}
+                />
               </TxField>
             )
           }

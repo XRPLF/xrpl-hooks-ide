@@ -10,7 +10,6 @@ interface TransactionOptions {
   TransactionType: string
   Account?: string
   Fee?: string
-  Destination?: string
   [index: string]: any
 }
 interface OtherOptions {

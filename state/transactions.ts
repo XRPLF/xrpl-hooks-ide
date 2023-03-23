@@ -130,7 +130,6 @@ export const modifyTxState = (
   return tx.state
 }
 
-// state to tx options
 export const prepareTransaction = (data: any) => {
   let options = { ...data }
 
@@ -145,7 +144,6 @@ export const prepareTransaction = (data: any) => {
         options[field] = undefined
       }
     }
-
     // amount.token
     if (_value.$type === 'amount.token') {
       if (typeIs(_value.$value, 'string')) {
@@ -156,7 +154,10 @@ export const prepareTransaction = (data: any) => {
         options[field] = undefined
       }
     }
-
+    // account
+    if (_value.$type === 'account') {
+      options[field] = _value.$value?.toString();
+    }
     // json
     if (_value.$type === 'json') {
       const val = _value.$value;
@@ -181,7 +182,6 @@ export const prepareTransaction = (data: any) => {
   return options
 }
 
-// editor value to state
 export const prepareState = (value: string, transactionType?: string) => {
   const options = parseJSON(value)
   if (!options) {
@@ -252,19 +252,27 @@ export const prepareState = (value: string, transactionType?: string) => {
     const isAmount = schemaVal &&
       typeIs(schemaVal, "object") &&
       schemaVal.$type.startsWith('amount.');
+    const isAccount = schemaVal &&
+      typeIs(schemaVal, "object") &&
+      schemaVal.$type.startsWith("account");
 
     if (isAmount && ["number", "string"].includes(typeof value)) {
       rest[field] = {
         $type: 'amount.xrp', // TODO narrow typed $type.
         $value: +value / 1000000 // ! maybe use bigint?
       }
-    }
-    else if (isAmount && typeof value === 'object') {
+    } else if (isAmount && typeof value === 'object') {
       rest[field] = {
         $type: 'amount.token',
         $value: value
       }
-    } else if (typeof value === 'object') {
+    } else if (isAccount) {
+      rest[field] = {
+        $type: "account",
+        $value: value?.toString()
+      }
+    }
+    else if (typeof value === 'object') {
       rest[field] = {
         $type: 'json',
         $value: value
