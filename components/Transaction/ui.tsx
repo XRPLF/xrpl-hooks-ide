@@ -221,8 +221,14 @@ export const TxUI: FC<UIProps> = ({
               <TxField key={field} label={field}>
                 <Flex fluid css={{ alignItems: 'center' }}>
                   {isTokenAmount ? (
-                    <Flex fluid row align="center" justify="space-between">
-                      <Input
+                    <Flex
+                      fluid
+                      row
+                      align="center"
+                      justify="space-between"
+                      css={{ position: 'relative' }}
+                    >
+                      {/*  <Input
                         type="text"
                         placeholder="Issuer"
                         value={tokenAmount.issuer}
@@ -232,9 +238,8 @@ export const TxUI: FC<UIProps> = ({
                             issuer: e.target.value
                           })
                         }
-                      />
+                      /> */}
                       <Input
-                        css={{ mx: '$1' }}
                         type="text"
                         value={tokenAmount.currency}
                         placeholder="Currency"
@@ -246,6 +251,7 @@ export const TxUI: FC<UIProps> = ({
                         }}
                       />
                       <Input
+                        css={{ mx: '$1' }}
                         type="number"
                         value={tokenAmount.value}
                         placeholder="Value"
@@ -256,6 +262,18 @@ export const TxUI: FC<UIProps> = ({
                           })
                         }}
                       />
+                      <Box css={{ width: '50%' }}>
+                        <CreatableAccount
+                          value={tokenAmount.issuer}
+                          field={'Issuer' as any}
+                          setField={(_, value = "") => {
+                            setRawField(field, 'amount.token', {
+                              ...tokenAmount,
+                              issuer: value
+                            })
+                          }}
+                        />
+                      </Box>
                     </Flex>
                   ) : (
                     <Input
@@ -290,20 +308,9 @@ export const TxUI: FC<UIProps> = ({
             )
           }
           if (isAccount) {
-            const label = accountOptions.find(a => a.value === value)?.label || value
             return (
               <TxField key={field} label={field}>
-                <CreatableSelect
-                  isClearable
-                  instanceId={field}
-                  placeholder={`Select ${field} account`}
-                  options={accountOptions}
-                  value={{
-                    value,
-                    label
-                  }}
-                  onChange={(acc: any) => handleSetField(field, acc?.value)}
-                />
+                <CreatableAccount value={value} field={field} setField={handleSetField} />
               </TxField>
             )
           }
@@ -516,6 +523,33 @@ export const TxUI: FC<UIProps> = ({
         </TxField>
       </Flex>
     </Container>
+  )
+}
+
+export const CreatableAccount: FC<{
+  value: string | undefined
+  field: keyof TxFields
+  setField: (field: keyof TxFields, value: string, opFields?: TxFields) => void
+}> = ({ value, field, setField }) => {
+  const { accounts } = useSnapshot(state)
+  const accountOptions: SelectOption[] = accounts.map(acc => ({
+    label: acc.name,
+    value: acc.address
+  }))
+  const label = accountOptions.find(a => a.value === value)?.label || value
+  const val = {
+    value,
+    label
+  }
+  return (
+    <CreatableSelect
+      isClearable
+      instanceId={field}
+      placeholder={field}
+      options={accountOptions}
+      value={value ? val : undefined}
+      onChange={(acc: any) => setField(field, acc?.value)}
+    />
   )
 }
 

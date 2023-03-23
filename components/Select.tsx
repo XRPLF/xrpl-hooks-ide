@@ -113,6 +113,16 @@ const getStyles = (isDark: boolean) => {
           color: colors.border
         }
       }
+    },
+    clearIndicator: provided => {
+      return {
+        ...provided,
+        padding: 6,
+        color: colors.secondary,
+        ':hover': {
+          color: colors.border
+        }
+      }
     }
   }
   return styles
@@ -134,7 +144,7 @@ const Select = forwardRef<any, Props>((props, ref) => {
 })
 
 // eslint-disable-next-line react/display-name
-export const CreatableSelect = forwardRef<any, Props>((props, ref) => {
+const Creatable = forwardRef<any, Props>((props, ref) => {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
   const styles = getStyles(isDark)
@@ -150,3 +160,4 @@ export const CreatableSelect = forwardRef<any, Props>((props, ref) => {
 })
 
 export default styled(Select, {})
+export const CreatableSelect = styled(Creatable, {})
