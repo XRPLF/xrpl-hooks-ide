@@ -155,7 +155,7 @@ export const prepareTransaction = (data: any) => {
     }
     // account
     if (_value.$type === 'account') {
-      options[field] = _value.$value?.toString() || ""
+      options[field] = (_value.$value as any)?.toString() || ""
     }
     // json
     if (_value.$type === 'json') {
