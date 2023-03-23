@@ -28,7 +28,6 @@ export type Memos = {
 export interface TransactionState {
   selectedTransaction: SelectOption | null
   selectedAccount: SelectOption | null
-  selectedDestAccount: SelectOption | null
   selectedFlags: SelectOption[] | null
   hookParameters: HookParameters
   memos: Memos
@@ -51,7 +50,6 @@ export type TxFields = Omit<
 export const defaultTransaction: TransactionState = {
   selectedTransaction: null,
   selectedAccount: null,
-  selectedDestAccount: null,
   selectedFlags: null,
   hookParameters: {},
   memos: {},
@@ -131,7 +129,6 @@ export const modifyTxState = (
   return tx.state
 }
 
-// state to tx options
 export const prepareTransaction = (data: any) => {
   let options = { ...data }
 
@@ -143,10 +140,9 @@ export const prepareTransaction = (data: any) => {
       if (_value.$value) {
         options[field] = (+(_value as any).$value * 1000000 + '')
       } else {
-        options[field] = undefined
+        options[field] = ""
       }
     }
-
     // amount.token
     if (_value.$type === 'amount.token') {
       if (typeIs(_value.$value, 'string')) {
@@ -157,7 +153,10 @@ export const prepareTransaction = (data: any) => {
         options[field] = undefined
       }
     }
-
+    // account
+    if (_value.$type === 'account') {
+      options[field] = (_value.$value as any)?.toString() || ""
+    }
     // json
     if (_value.$type === 'json') {
       const val = _value.$value;
@@ -172,17 +171,9 @@ export const prepareTransaction = (data: any) => {
     }
   })
 
-  // delete unnecessary fields
-  Object.keys(options).forEach(field => {
-    if (!options[field]) {
-      delete options[field]
-    }
-  })
-
   return options
 }
 
-// editor value to state
 export const prepareState = (value: string, transactionType?: string) => {
   const options = parseJSON(value)
   if (!options) {
@@ -192,7 +183,7 @@ export const prepareState = (value: string, transactionType?: string) => {
     return
   }
 
-  const { Account, TransactionType, Destination, HookParameters, Memos, ...rest } = options
+  const { Account, TransactionType, HookParameters, Memos, ...rest } = options
   let tx: Partial<TransactionState> = {}
   const schema = getTxFields(transactionType)
 
@@ -238,24 +229,6 @@ export const prepareState = (value: string, transactionType?: string) => {
     }, {})
   }
 
-  if (schema.Destination !== undefined) {
-    const dest = state.accounts.find(acc => acc.address === Destination)
-    if (dest) {
-      tx.selectedDestAccount = {
-        label: dest.name,
-        value: dest.address
-      }
-    } else if (Destination) {
-      tx.selectedDestAccount = {
-        label: Destination,
-        value: Destination
-      }
-    } else {
-      tx.selectedDestAccount = null
-    }
-  } else if (Destination) {
-    rest.Destination = Destination
-  }
 
   if (getFlags(TransactionType) && rest.Flags) {
     const flags = extractFlags(TransactionType, rest.Flags)
@@ -271,19 +244,27 @@ export const prepareState = (value: string, transactionType?: string) => {
     const isAmount = schemaVal &&
       typeIs(schemaVal, "object") &&
       schemaVal.$type.startsWith('amount.');
+    const isAccount = schemaVal &&
+      typeIs(schemaVal, "object") &&
+      schemaVal.$type.startsWith("account");
 
     if (isAmount && ["number", "string"].includes(typeof value)) {
       rest[field] = {
-        $type: 'amount.xrp', // Maybe have $type map or something
+        $type: 'amount.xrp', // TODO narrow typed $type.
         $value: +value / 1000000 // ! maybe use bigint?
       }
-    }
-    else if (isAmount && typeof value === 'object') {
+    } else if (isAmount && typeof value === 'object') {
       rest[field] = {
         $type: 'amount.token',
         $value: value
       }
-    } else if (typeof value === 'object') {
+    } else if (isAccount) {
+      rest[field] = {
+        $type: "account",
+        $value: value?.toString() || ""
+      }
+    }
+    else if (typeof value === 'object') {
       rest[field] = {
         $type: 'json',
         $value: value

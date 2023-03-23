@@ -1,15 +1,14 @@
-import { FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, ReactNode, useCallback, useEffect, useState } from 'react'
 import Container from '../Container'
 import Flex from '../Flex'
 import Input from '../Input'
-import Select from '../Select'
+import Select, { CreatableSelect } from '../Select'
 import Text from '../Text'
 import {
   SelectOption,
   TransactionState,
   transactionsOptions,
   TxFields,
-  getTxFields,
   defaultTransactionType
 } from '../../state/transactions'
 import { useSnapshot } from 'valtio'
@@ -20,7 +19,7 @@ import Textarea from '../Textarea'
 import { getFlags } from '../../state/constants/flags'
 import { Plus, Trash } from 'phosphor-react'
 import AccountSequence from '../Sequence'
-import { typeIs } from '../../utils/helpers'
+import { capitalize, typeIs } from '../../utils/helpers'
 
 interface UIProps {
   setState: (pTx?: Partial<TransactionState> | undefined) => TransactionState | undefined
@@ -38,27 +37,13 @@ export const TxUI: FC<UIProps> = ({
   switchToJson
 }) => {
   const { accounts } = useSnapshot(state)
-  const {
-    selectedAccount,
-    selectedDestAccount,
-    selectedTransaction,
-    txFields,
-    selectedFlags,
-    hookParameters,
-    memos
-  } = txState
+  const { selectedAccount, selectedTransaction, txFields, selectedFlags, hookParameters, memos } =
+    txState
 
   const accountOptions: SelectOption[] = accounts.map(acc => ({
     label: acc.name,
     value: acc.address
   }))
-
-  const destAccountOptions: SelectOption[] = accounts
-    .map(acc => ({
-      label: acc.name,
-      value: acc.address
-    }))
-    .filter(acc => acc.value !== selectedAccount?.value)
 
   const flagsOptions: SelectOption[] = Object.entries(
     getFlags(selectedTransaction?.value) || {}
@@ -136,15 +121,7 @@ export const TxUI: FC<UIProps> = ({
     }
   }, [handleChangeTxType, selectedTransaction?.value])
 
-  const fields = useMemo(
-    () => getTxFields(selectedTransaction?.value),
-    [selectedTransaction?.value]
-  )
-
   const richFields = ['TransactionType', 'Account', 'HookParameters', 'Memos']
-  if (fields.Destination !== undefined) {
-    richFields.push('Destination')
-  }
 
   if (flagsOptions.length) {
     richFields.push('Flags')
@@ -192,18 +169,6 @@ export const TxUI: FC<UIProps> = ({
         <TxField label="Sequence">
           <AccountSequence address={selectedAccount?.value} />
         </TxField>
-        {richFields.includes('Destination') && (
-          <TxField label="Destination account">
-            <Select
-              instanceId="to-account"
-              placeholder="Select the destination account"
-              options={destAccountOptions}
-              value={selectedDestAccount}
-              isClearable
-              onChange={(acc: any) => setState({ selectedDestAccount: acc })}
-            />
-          </TxField>
-        )}
         {richFields.includes('Flags') && (
           <TxField label="Flags">
             <Select
@@ -235,6 +200,7 @@ export const TxUI: FC<UIProps> = ({
             value = _value?.toString()
           }
 
+          const isAccount = typeIs(_value, 'object') && _value.$type === 'account'
           const isXrpAmount = typeIs(_value, 'object') && _value.$type === 'amount.xrp'
           const isTokenAmount = typeIs(_value, 'object') && _value.$type === 'amount.token'
           const isJson = typeof _value === 'object' && _value.$type === 'json'
@@ -255,8 +221,14 @@ export const TxUI: FC<UIProps> = ({
               <TxField key={field} label={field}>
                 <Flex fluid css={{ alignItems: 'center' }}>
                   {isTokenAmount ? (
-                    <Flex fluid row align="center" justify="space-between">
-                      <Input
+                    <Flex
+                      fluid
+                      row
+                      align="center"
+                      justify="space-between"
+                      css={{ position: 'relative' }}
+                    >
+                      {/*  <Input
                         type="text"
                         placeholder="Issuer"
                         value={tokenAmount.issuer}
@@ -266,9 +238,8 @@ export const TxUI: FC<UIProps> = ({
                             issuer: e.target.value
                           })
                         }
-                      />
+                      /> */}
                       <Input
-                        css={{ mx: '$1' }}
                         type="text"
                         value={tokenAmount.currency}
                         placeholder="Currency"
@@ -280,6 +251,7 @@ export const TxUI: FC<UIProps> = ({
                         }}
                       />
                       <Input
+                        css={{ mx: '$1' }}
                         type="number"
                         value={tokenAmount.value}
                         placeholder="Value"
@@ -290,6 +262,19 @@ export const TxUI: FC<UIProps> = ({
                           })
                         }}
                       />
+                      <Box css={{ width: '50%' }}>
+                        <CreatableAccount
+                          value={tokenAmount.issuer}
+                          field={'Issuer' as any}
+                          placeholder="Issuer"
+                          setField={(_, value = '') => {
+                            setRawField(field, 'amount.token', {
+                              ...tokenAmount,
+                              issuer: value
+                            })
+                          }}
+                        />
+                      </Box>
                     </Flex>
                   ) : (
                     <Input
@@ -320,6 +305,13 @@ export const TxUI: FC<UIProps> = ({
                     />
                   </Box>
                 </Flex>
+              </TxField>
+            )
+          }
+          if (isAccount) {
+            return (
+              <TxField key={field} label={field}>
+                <CreatableAccount value={value} field={field} setField={handleSetField} />
               </TxField>
             )
           }
@@ -532,6 +524,35 @@ export const TxUI: FC<UIProps> = ({
         </TxField>
       </Flex>
     </Container>
+  )
+}
+
+export const CreatableAccount: FC<{
+  value: string | undefined
+  field: keyof TxFields
+  placeholder?: string
+  setField: (field: keyof TxFields, value: string, opFields?: TxFields) => void
+}> = ({ value, field, setField, placeholder }) => {
+  const { accounts } = useSnapshot(state)
+  const accountOptions: SelectOption[] = accounts.map(acc => ({
+    label: acc.name,
+    value: acc.address
+  }))
+  const label = accountOptions.find(a => a.value === value)?.label || value
+  const val = {
+    value,
+    label
+  }
+  placeholder = placeholder || `${capitalize(field)} account`
+  return (
+    <CreatableSelect
+      isClearable
+      instanceId={field}
+      placeholder={placeholder}
+      options={accountOptions}
+      value={value ? val : undefined}
+      onChange={(acc: any) => setField(field, acc?.value)}
+    />
   )
 }
 
