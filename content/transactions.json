@@ -2,7 +2,10 @@
   {
     "TransactionType": "AccountDelete",
     "Account": "rWYkbWkCeg8dP6rXALnjgZSjjLyih5NXm",
-    "Destination": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
+    "Destination": {
+      "$type": "account",
+      "$value": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe"
+    },
     "DestinationTag": 13,
     "Fee": "2000000",
     "Sequence": 2470665,
@@ -40,7 +43,10 @@
   {
     "TransactionType": "CheckCreate",
     "Account": "rUn84CUYbNjRoTQ6mSW7BVJPSVJNLb1QLo",
-    "Destination": "rfkE1aSy9G8Upk4JssnwBxhEv5p4mn2KTy",
+    "Destination": {
+      "$type": "account",
+      "$value": "rfkE1aSy9G8Upk4JssnwBxhEv5p4mn2KTy"
+    },
     "SendMax": "100000000",
     "Expiration": 570113521,
     "InvoiceID": "6F1DFD1D0FE8A32E40E1F2C05CF1C15545BAB56B617F9C6C2D63A6B704BEF59B",
@@ -58,7 +64,10 @@
   {
     "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
     "TransactionType": "EscrowCancel",
-    "Owner": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+    "Owner": {
+      "$type": "account",
+      "$value": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"
+    },
     "OfferSequence": 7,
     "Fee": "10"
   },
@@ -69,7 +78,10 @@
       "$value": "100",
       "$type": "amount.xrp"
     },
-    "Destination": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+    "Destination": {
+      "$type": "account",
+      "$value": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW"
+    },
     "CancelAfter": 533257958,
     "FinishAfter": 533171558,
     "Condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
@@ -80,7 +92,10 @@
   {
     "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
     "TransactionType": "EscrowFinish",
-    "Owner": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+    "Owner": {
+      "$type": "account",
+      "$value": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"
+    },
     "OfferSequence": 7,
     "Condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
     "Fulfillment": "A0028000",
@@ -127,7 +142,10 @@
       "$type": "amount.xrp"
     },
     "Flags": "1",
-    "Destination": "",
+    "Destination": {
+      "$type": "account",
+      "$value": ""
+    },
     "Fee": "10"
   },
   {
@@ -162,7 +180,10 @@
   {
     "TransactionType": "Payment",
     "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-    "Destination": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+    "Destination": {
+      "$type": "account",
+      "$value": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX"
+    },
     "Amount": {
       "$value": "100",
       "$type": "amount.xrp"
@@ -178,7 +199,10 @@
       "$value": "100",
       "$type": "amount.xrp"
     },
-    "Destination": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+    "Destination": {
+      "$type": "account",
+      "$value": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW"
+    },
     "SettleDelay": 86400,
     "PublicKey": "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
     "CancelAfter": 533171558,

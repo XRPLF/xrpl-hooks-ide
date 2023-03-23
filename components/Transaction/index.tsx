@@ -52,7 +52,6 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
       } = state
 
       const TransactionType = selectedTransaction?.value || null
-      const Destination = selectedDestAccount?.value || txFields?.Destination
       const Account = selectedAccount?.value || null
       const Flags = combineFlags(selectedFlags?.map(flag => flag.value)) || txFields?.Flags
       const HookParameters = Object.entries(hookParameters || {}).reduce<
@@ -75,7 +74,6 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
         HookParameters,
         Flags,
         TransactionType,
-        Destination,
         Account,
         Memos
       })
@@ -129,11 +127,6 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
       }
       const options = prepareOptions(st)
 
-      const fields = getTxFields(options.TransactionType)
-      if (fields.Destination && !options.Destination) {
-        throw Error('Destination account is required!')
-      }
-
       await sendTransaction(account, options, { logPrefix })
     } catch (error) {
       console.error(error)
@@ -165,13 +158,6 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
       const nwState: Partial<TransactionState> = {
         viewType,
         selectedTransaction: transactionType
-      }
-
-      if (fields.Destination !== undefined) {
-        nwState.selectedDestAccount = null
-        fields.Destination = ''
-      } else {
-        fields.Destination = undefined
       }
 
       if (transactionType?.value && transactionFlags[transactionType?.value] && fields.Flags) {

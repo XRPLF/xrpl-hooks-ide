@@ -28,7 +28,6 @@ export type Memos = {
 export interface TransactionState {
   selectedTransaction: SelectOption | null
   selectedAccount: SelectOption | null
-  selectedDestAccount: SelectOption | null
   selectedFlags: SelectOption[] | null
   hookParameters: HookParameters
   memos: Memos
@@ -192,7 +191,7 @@ export const prepareState = (value: string, transactionType?: string) => {
     return
   }
 
-  const { Account, TransactionType, Destination, HookParameters, Memos, ...rest } = options
+  const { Account, TransactionType, HookParameters, Memos, ...rest } = options
   let tx: Partial<TransactionState> = {}
   const schema = getTxFields(transactionType)
 
@@ -238,24 +237,6 @@ export const prepareState = (value: string, transactionType?: string) => {
     }, {})
   }
 
-  if (schema.Destination !== undefined) {
-    const dest = state.accounts.find(acc => acc.address === Destination)
-    if (dest) {
-      tx.selectedDestAccount = {
-        label: dest.name,
-        value: dest.address
-      }
-    } else if (Destination) {
-      tx.selectedDestAccount = {
-        label: Destination,
-        value: Destination
-      }
-    } else {
-      tx.selectedDestAccount = null
-    }
-  } else if (Destination) {
-    rest.Destination = Destination
-  }
 
   if (getFlags(TransactionType) && rest.Flags) {
     const flags = extractFlags(TransactionType, rest.Flags)
@@ -274,7 +255,7 @@ export const prepareState = (value: string, transactionType?: string) => {
 
     if (isAmount && ["number", "string"].includes(typeof value)) {
       rest[field] = {
-        $type: 'amount.xrp', // Maybe have $type map or something
+        $type: 'amount.xrp', // TODO narrow typed $type.
         $value: +value / 1000000 // ! maybe use bigint?
       }
     }

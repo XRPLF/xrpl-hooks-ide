@@ -136,15 +136,7 @@ export const TxUI: FC<UIProps> = ({
     }
   }, [handleChangeTxType, selectedTransaction?.value])
 
-  const fields = useMemo(
-    () => getTxFields(selectedTransaction?.value),
-    [selectedTransaction?.value]
-  )
-
   const richFields = ['TransactionType', 'Account', 'HookParameters', 'Memos']
-  if (fields.Destination !== undefined) {
-    richFields.push('Destination')
-  }
 
   if (flagsOptions.length) {
     richFields.push('Flags')
@@ -192,18 +184,6 @@ export const TxUI: FC<UIProps> = ({
         <TxField label="Sequence">
           <AccountSequence address={selectedAccount?.value} />
         </TxField>
-        {richFields.includes('Destination') && (
-          <TxField label="Destination account">
-            <Select
-              instanceId="to-account"
-              placeholder="Select the destination account"
-              options={destAccountOptions}
-              value={selectedDestAccount}
-              isClearable
-              onChange={(acc: any) => setState({ selectedDestAccount: acc })}
-            />
-          </TxField>
-        )}
         {richFields.includes('Flags') && (
           <TxField label="Flags">
             <Select
