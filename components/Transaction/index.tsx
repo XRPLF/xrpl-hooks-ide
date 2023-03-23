@@ -43,7 +43,6 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
     (state: Partial<TransactionState> = txState) => {
       const {
         selectedTransaction,
-        selectedDestAccount,
         selectedAccount,
         txFields,
         selectedFlags,
@@ -126,6 +125,12 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
         throw Error('Account must be selected from imported accounts!')
       }
       const options = prepareOptions(st)
+      // delete unnecessary fields
+      Object.keys(options).forEach(field => {
+        if (!options[field]) {
+          delete options[field]
+        }
+      })
 
       await sendTransaction(account, options, { logPrefix })
     } catch (error) {

@@ -141,7 +141,7 @@ export const prepareTransaction = (data: any) => {
       if (_value.$value) {
         options[field] = (+(_value as any).$value * 1000000 + '')
       } else {
-        options[field] = undefined
+        options[field] = ""
       }
     }
     // amount.token
@@ -156,7 +156,7 @@ export const prepareTransaction = (data: any) => {
     }
     // account
     if (_value.$type === 'account') {
-      options[field] = _value.$value?.toString();
+      options[field] = _value.$value?.toString() || ""
     }
     // json
     if (_value.$type === 'json') {
@@ -169,13 +169,6 @@ export const prepareTransaction = (data: any) => {
       } else {
         options[field] = res;
       }
-    }
-  })
-
-  // delete unnecessary fields
-  Object.keys(options).forEach(field => {
-    if (!options[field]) {
-      delete options[field]
     }
   })
 
@@ -269,7 +262,7 @@ export const prepareState = (value: string, transactionType?: string) => {
     } else if (isAccount) {
       rest[field] = {
         $type: "account",
-        $value: value?.toString()
+        $value: value?.toString() || ""
       }
     }
     else if (typeof value === 'object') {

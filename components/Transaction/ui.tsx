@@ -1,4 +1,4 @@
-import { FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, ReactNode, useCallback, useEffect, useState } from 'react'
 import Container from '../Container'
 import Flex from '../Flex'
 import Input from '../Input'
@@ -9,7 +9,6 @@ import {
   TransactionState,
   transactionsOptions,
   TxFields,
-  getTxFields,
   defaultTransactionType
 } from '../../state/transactions'
 import { useSnapshot } from 'valtio'
@@ -295,6 +294,7 @@ export const TxUI: FC<UIProps> = ({
             return (
               <TxField key={field} label={field}>
                 <Select
+                  isClearable
                   instanceId={field}
                   placeholder={`Select ${field} account`}
                   options={accountOptions}
@@ -302,7 +302,7 @@ export const TxUI: FC<UIProps> = ({
                     value,
                     label
                   }}
-                  onChange={(acc: any) => handleSetField(field, acc.value)}
+                  onChange={(acc: any) => handleSetField(field, acc?.value)}
                 />
               </TxField>
             )
