@@ -19,7 +19,7 @@ import Textarea from '../Textarea'
 import { getFlags } from '../../state/constants/flags'
 import { Plus, Trash } from 'phosphor-react'
 import AccountSequence from '../Sequence'
-import { typeIs } from '../../utils/helpers'
+import { capitalize, typeIs } from '../../utils/helpers'
 
 interface UIProps {
   setState: (pTx?: Partial<TransactionState> | undefined) => TransactionState | undefined
@@ -266,7 +266,8 @@ export const TxUI: FC<UIProps> = ({
                         <CreatableAccount
                           value={tokenAmount.issuer}
                           field={'Issuer' as any}
-                          setField={(_, value = "") => {
+                          placeholder="Issuer"
+                          setField={(_, value = '') => {
                             setRawField(field, 'amount.token', {
                               ...tokenAmount,
                               issuer: value
@@ -529,8 +530,9 @@ export const TxUI: FC<UIProps> = ({
 export const CreatableAccount: FC<{
   value: string | undefined
   field: keyof TxFields
+  placeholder?: string
   setField: (field: keyof TxFields, value: string, opFields?: TxFields) => void
-}> = ({ value, field, setField }) => {
+}> = ({ value, field, setField, placeholder }) => {
   const { accounts } = useSnapshot(state)
   const accountOptions: SelectOption[] = accounts.map(acc => ({
     label: acc.name,
@@ -541,11 +543,12 @@ export const CreatableAccount: FC<{
     value,
     label
   }
+  placeholder = placeholder || `${capitalize(field)} account`
   return (
     <CreatableSelect
       isClearable
       instanceId={field}
-      placeholder={field}
+      placeholder={placeholder}
       options={accountOptions}
       value={value ? val : undefined}
       onChange={(acc: any) => setField(field, acc?.value)}
