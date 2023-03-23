@@ -2,7 +2,7 @@ import { FC, ReactNode, useCallback, useEffect, useState } from 'react'
 import Container from '../Container'
 import Flex from '../Flex'
 import Input from '../Input'
-import Select from '../Select'
+import Select, { CreatableSelect } from '../Select'
 import Text from '../Text'
 import {
   SelectOption,
@@ -293,7 +293,7 @@ export const TxUI: FC<UIProps> = ({
             const label = accountOptions.find(a => a.value === value)?.label || value
             return (
               <TxField key={field} label={field}>
-                <Select
+                <CreatableSelect
                   isClearable
                   instanceId={field}
                   placeholder={`Select ${field} account`}
