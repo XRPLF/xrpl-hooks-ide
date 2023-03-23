@@ -50,7 +50,6 @@ export type TxFields = Omit<
 export const defaultTransaction: TransactionState = {
   selectedTransaction: null,
   selectedAccount: null,
-  selectedDestAccount: null,
   selectedFlags: null,
   hookParameters: {},
   memos: {},
