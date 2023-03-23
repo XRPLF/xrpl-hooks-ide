@@ -146,6 +146,10 @@
       "$type": "account",
       "$value": ""
     },
+    "Owner": {
+      "$type": "account",
+      "$value": ""
+    },
     "Fee": "10"
   },
   {
