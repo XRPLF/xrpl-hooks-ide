@@ -85,7 +85,8 @@ export const getInvokeOptions = (content?: string) => {
 export function toHex(str: string) {
   var result = ''
   for (var i = 0; i < str.length; i++) {
-    result += str.charCodeAt(i).toString(16)
+    const hex = str.charCodeAt(i).toString(16)
+    result += hex.padStart(2, '0')
   }
   return result.toUpperCase()
 }
