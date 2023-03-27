@@ -287,6 +287,10 @@
   },
   {
     "TransactionType": "Invoke",
+    "Destination": {
+      "$type": "account",
+      "$value": ""
+    },
     "Fee": "12"
   },
   {
