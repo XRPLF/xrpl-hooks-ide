@@ -406,7 +406,7 @@ export const TxUI: FC<UIProps> = ({
                   />
                   <Input
                     css={{ mx: '$2' }}
-                    placeholder="Value"
+                    placeholder="Value (hex-quoted)"
                     value={value}
                     onChange={e => {
                       setState({
@@ -469,7 +469,7 @@ export const TxUI: FC<UIProps> = ({
                     }}
                   />
                   <Input
-                    placeholder="Data"
+                    placeholder="Data (hex-quoted)"
                     css={{ mx: '$2' }}
                     value={memo.data}
                     onChange={e => {

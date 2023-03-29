@@ -57,13 +57,13 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
         SetHookData['HookParameters']
       >((acc, [_, { label, value }]) => {
         return acc.concat({
-          HookParameter: { HookParameterName: toHex(label), HookParameterValue: toHex(value) }
+          HookParameter: { HookParameterName: toHex(label), HookParameterValue: value }
         })
       }, [])
       const Memos = memos
         ? Object.entries(memos).reduce<SetHookData['Memos']>((acc, [_, { format, data, type }]) => {
             return acc?.concat({
-              Memo: { MemoData: toHex(data), MemoFormat: toHex(format), MemoType: toHex(type) }
+              Memo: { MemoData: data, MemoFormat: toHex(format), MemoType: toHex(type) }
             })
           }, [])
         : undefined
