@@ -215,7 +215,7 @@ export const prepareState = (value: string, transactionType?: string) => {
 
   if (HookParameters && HookParameters instanceof Array) {
     tx.hookParameters = HookParameters.reduce<TransactionState["hookParameters"]>((acc, cur, idx) => {
-      const param = { label: fromHex(cur.HookParameter?.HookParameterName || ""), value: fromHex(cur.HookParameter?.HookParameterValue || "") }
+      const param = { label: fromHex(cur.HookParameter?.HookParameterName || ""), value: cur.HookParameter?.HookParameterValue || "" }
       acc[idx] = param;
       return acc;
     }, {})
@@ -223,7 +223,7 @@ export const prepareState = (value: string, transactionType?: string) => {
 
   if (Memos && Memos instanceof Array) {
     tx.memos = Memos.reduce<TransactionState["memos"]>((acc, cur, idx) => {
-      const memo = { data: fromHex(cur.Memo?.MemoData || ""), type: fromHex(cur.Memo?.MemoType || ""), format: fromHex(cur.Memo?.MemoFormat || "") }
+      const memo = { data: cur.Memo?.MemoData || "", type: fromHex(cur.Memo?.MemoType || ""), format: fromHex(cur.Memo?.MemoFormat || "") }
       acc[idx] = memo;
       return acc;
     }, {})
