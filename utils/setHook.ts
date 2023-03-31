@@ -20,6 +20,13 @@ export type SetHookData = {
     }
     $metaData?: any
   }[]
+  Memos?: {
+    Memo: {
+      MemoType: string,
+      MemoData: string
+      MemoFormat: string
+    }
+  }[]
   // HookGrants: {
   //   HookGrant: {
   //     Authorize: string;
@@ -73,4 +80,21 @@ export const getInvokeOptions = (content?: string) => {
   }
 
   return invokeOptions
+}
+
+export function toHex(str: string) {
+  var result = ''
+  for (var i = 0; i < str.length; i++) {
+    const hex = str.charCodeAt(i).toString(16)
+    result += hex.padStart(2, '0')
+  }
+  return result.toUpperCase()
+}
+
+export function fromHex(hex: string) {
+  var str = ''
+  for (var i = 0; i < hex.length; i += 2) {
+    str += String.fromCharCode(parseInt(hex.substring(i, i + 2), 16))
+  }
+  return str
 }

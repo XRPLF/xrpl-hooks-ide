@@ -2,7 +2,10 @@
   {
     "TransactionType": "AccountDelete",
     "Account": "rWYkbWkCeg8dP6rXALnjgZSjjLyih5NXm",
-    "Destination": "rPT1Sjq2YGrBMTttX4GZHjKu9dyfzbpAYe",
+    "Destination": {
+      "$type": "account",
+      "$value": ""
+    },
     "DestinationTag": 13,
     "Fee": "2000000",
     "Sequence": 2470665,
@@ -28,7 +31,11 @@
     "TransactionType": "CheckCash",
     "Amount": {
       "$value": "100",
-      "$type": "xrp"
+      "$type": "amount.xrp"
+    },
+    "DeliverMin": {
+      "$value": "",
+      "$type": "amount.xrp"
     },
     "CheckID": "838766BA2B995C00744175F69A1B11E32C3DBC40E64801A4056FCBD657F57334",
     "Fee": "12"
@@ -36,7 +43,10 @@
   {
     "TransactionType": "CheckCreate",
     "Account": "rUn84CUYbNjRoTQ6mSW7BVJPSVJNLb1QLo",
-    "Destination": "rfkE1aSy9G8Upk4JssnwBxhEv5p4mn2KTy",
+    "Destination": {
+      "$type": "account",
+      "$value": ""
+    },
     "SendMax": "100000000",
     "Expiration": 570113521,
     "InvoiceID": "6F1DFD1D0FE8A32E40E1F2C05CF1C15545BAB56B617F9C6C2D63A6B704BEF59B",
@@ -54,7 +64,10 @@
   {
     "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
     "TransactionType": "EscrowCancel",
-    "Owner": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+    "Owner": {
+      "$type": "account",
+      "$value": ""
+    },
     "OfferSequence": 7,
     "Fee": "10"
   },
@@ -63,9 +76,12 @@
     "TransactionType": "EscrowCreate",
     "Amount": {
       "$value": "100",
-      "$type": "xrp"
+      "$type": "amount.xrp"
     },
-    "Destination": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+    "Destination": {
+      "$type": "account",
+      "$value": ""
+    },
     "CancelAfter": 533257958,
     "FinishAfter": 533171558,
     "Condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
@@ -76,7 +92,10 @@
   {
     "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
     "TransactionType": "EscrowFinish",
-    "Owner": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+    "Owner": {
+      "$type": "account",
+      "$value": ""
+    },
     "OfferSequence": 7,
     "Condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
     "Fulfillment": "A0028000",
@@ -120,10 +139,17 @@
     "NFTokenID": "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
     "Amount": {
       "$value": "100",
-      "$type": "xrp"
+      "$type": "amount.xrp"
     },
     "Flags": "1",
-    "Destination": "",
+    "Destination": {
+      "$type": "account",
+      "$value": ""
+    },
+    "Owner": {
+      "$type": "account",
+      "$value": ""
+    },
     "Fee": "10"
   },
   {
@@ -142,19 +168,29 @@
     "Flags": "0",
     "LastLedgerSequence": 7108682,
     "Sequence": 8,
-    "TakerGets": "6000000",
-    "Amount": {
-      "$value": "100",
-      "$type": "xrp"
+    "TakerGets": {
+      "$type": "amount.xrp",
+      "$value": "6000000"
+    },
+    "TakerPays": {
+      "$type": "amount.token",
+      "$value": {
+        "currency": "GKO",
+        "issuer": "ruazs5h1qEsqpke88pcqnaseXdm6od2xc",
+        "value": "2"
+      }
     }
   },
   {
     "TransactionType": "Payment",
     "Account": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
-    "Destination": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+    "Destination": {
+      "$type": "account",
+      "$value": ""
+    },
     "Amount": {
       "$value": "100",
-      "$type": "xrp"
+      "$type": "amount.xrp"
     },
     "Fee": "12",
     "Flags": "2147483648",
@@ -165,9 +201,12 @@
     "TransactionType": "PaymentChannelCreate",
     "Amount": {
       "$value": "100",
-      "$type": "xrp"
+      "$type": "amount.xrp"
     },
-    "Destination": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+    "Destination": {
+      "$type": "account",
+      "$value": ""
+    },
     "SettleDelay": 86400,
     "PublicKey": "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A",
     "CancelAfter": 533171558,
@@ -181,7 +220,7 @@
     "Channel": "C1AE6DDDEEC05CF2978C0BAD6FE302948E9533691DC749DCDD3B9E5992CA6198",
     "Amount": {
       "$value": "200",
-      "$type": "xrp"
+      "$type": "amount.xrp"
     },
     "Expiration": 543171558,
     "Fee": "10"
@@ -237,7 +276,7 @@
     "Flags": "262144",
     "LastLedgerSequence": 8007750,
     "LimitAmount": {
-      "$type": "json",
+      "$type": "amount.token",
       "$value": {
         "currency": "USD",
         "issuer": "rsP3mgGb2tcYUrxiLFiHJiQXhsziegtwBc",
@@ -248,6 +287,10 @@
   },
   {
     "TransactionType": "Invoke",
+    "Destination": {
+      "$type": "account",
+      "$value": ""
+    },
     "Fee": "12"
   },
   {

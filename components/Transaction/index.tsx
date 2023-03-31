@@ -20,6 +20,7 @@ import { TxUI } from './ui'
 import { default as _estimateFee } from '../../utils/estimateFee'
 import toast from 'react-hot-toast'
 import { combineFlags, extractFlags, transactionFlags } from '../../state/constants/flags'
+import { SetHookData, toHex } from '../../utils/setHook'
 
 export interface TransactionProps {
   header: string
@@ -40,20 +41,40 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
 
   const prepareOptions = useCallback(
     (state: Partial<TransactionState> = txState) => {
-      const { selectedTransaction, selectedDestAccount, selectedAccount, txFields, selectedFlags } =
-        state
+      const {
+        selectedTransaction,
+        selectedAccount,
+        txFields,
+        selectedFlags,
+        hookParameters,
+        memos
+      } = state
 
       const TransactionType = selectedTransaction?.value || null
-      const Destination = selectedDestAccount?.value || txFields?.Destination
       const Account = selectedAccount?.value || null
       const Flags = combineFlags(selectedFlags?.map(flag => flag.value)) || txFields?.Flags
+      const HookParameters = Object.entries(hookParameters || {}).reduce<
+        SetHookData['HookParameters']
+      >((acc, [_, { label, value }]) => {
+        return acc.concat({
+          HookParameter: { HookParameterName: toHex(label), HookParameterValue: value }
+        })
+      }, [])
+      const Memos = memos
+        ? Object.entries(memos).reduce<SetHookData['Memos']>((acc, [_, { format, data, type }]) => {
+            return acc?.concat({
+              Memo: { MemoData: data, MemoFormat: toHex(format), MemoType: toHex(type) }
+            })
+          }, [])
+        : undefined
 
       return prepareTransaction({
         ...txFields,
+        HookParameters,
         Flags,
         TransactionType,
-        Destination,
-        Account
+        Account,
+        Memos
       })
     },
     [txState]
@@ -69,15 +90,29 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
     }
   }, [selectedAccount?.value, selectedTransaction?.value, setState, txIsLoading])
 
+  const getJsonString = useCallback(
+    (state?: Partial<TransactionState>) =>
+      JSON.stringify(prepareOptions?.(state) || {}, null, editorSettings.tabSize),
+    [editorSettings.tabSize, prepareOptions]
+  )
+
+  const saveEditorState = useCallback(
+    (value: string = '', transactionType?: string) => {
+      const pTx = prepareState(value, transactionType)
+      if (pTx) {
+        pTx.editorValue = getJsonString(pTx)
+        return setState(pTx)
+      }
+    },
+    [getJsonString, setState]
+  )
+
   const submitTest = useCallback(async () => {
     let st: TransactionState | undefined
     const tt = txState.selectedTransaction?.value
     if (viewType === 'json') {
-      // save the editor state first
-      const pst = prepareState(editorValue || '', tt)
-      if (!pst) return
-
-      st = setState(pst)
+      st = saveEditorState(editorValue, tt)
+      if (!st) return
     }
 
     const account = accounts.find(acc => acc.address === selectedAccount?.value)
@@ -90,11 +125,12 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
         throw Error('Account must be selected from imported accounts!')
       }
       const options = prepareOptions(st)
-
-      const fields = getTxFields(options.TransactionType)
-      if (fields.Destination && !options.Destination) {
-        throw Error('Destination account is required!')
-      }
+      // delete unnecessary fields
+      Object.keys(options).forEach(field => {
+        if (!options[field]) {
+          delete options[field]
+        }
+      })
 
       await sendTransaction(account, options, { logPrefix })
     } catch (error) {
@@ -108,22 +144,17 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
     }
     setState({ txIsLoading: false })
   }, [
+    txState.selectedTransaction?.value,
     viewType,
     accounts,
     txIsDisabled,
     setState,
     header,
+    saveEditorState,
     editorValue,
-    txState,
     selectedAccount?.value,
     prepareOptions
   ])
-
-  const getJsonString = useCallback(
-    (state?: Partial<TransactionState>) =>
-      JSON.stringify(prepareOptions?.(state) || {}, null, editorSettings.tabSize),
-    [editorSettings.tabSize, prepareOptions]
-  )
 
   const resetState = useCallback(
     (transactionType: SelectOption | undefined = defaultTransactionType) => {
@@ -132,13 +163,6 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
       const nwState: Partial<TransactionState> = {
         viewType,
         selectedTransaction: transactionType
-      }
-
-      if (fields.Destination !== undefined) {
-        nwState.selectedDestAccount = null
-        fields.Destination = ''
-      } else {
-        fields.Destination = undefined
       }
 
       if (transactionType?.value && transactionFlags[transactionType?.value] && fields.Flags) {
@@ -177,11 +201,21 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
     [accounts, prepareOptions, setState, txState]
   )
 
+  const switchToJson = useCallback(() => {
+    const editorValue = getJsonString()
+    setState({ viewType: 'json', editorValue })
+  }, [getJsonString, setState])
+
+  const switchToUI = useCallback(() => {
+    setState({ viewType: 'ui' })
+  }, [setState])
+
   return (
     <Box css={{ position: 'relative', height: 'calc(100% - 28px)' }} {...props}>
       {viewType === 'json' ? (
         <TxJson
           getJsonString={getJsonString}
+          saveEditorState={saveEditorState}
           header={header}
           state={txState}
           setState={setState}
@@ -189,6 +223,7 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
         />
       ) : (
         <TxUI
+          switchToJson={switchToJson}
           state={txState}
           resetState={resetState}
           setState={setState}
@@ -209,8 +244,8 @@ const Transaction: FC<TransactionProps> = ({ header, state: txState, ...props })
         <Button
           onClick={() => {
             if (viewType === 'ui') {
-              setState({ viewType: 'json' })
-            } else setState({ viewType: 'ui' })
+              switchToJson()
+            } else switchToUI()
           }}
           outline
         >

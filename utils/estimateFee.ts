@@ -24,6 +24,9 @@ const estimateFee = async (
     const { signedTransaction } = sign(copyTx, keypair)
 
     const res = await xrplSend({ command: 'fee', tx_blob: signedTransaction })
+    if (res.error) {
+      throw new Error(`[${res.error}] ${res.error_exception}.`);
+    }
     if (res && res.drops) {
       return res.drops
     }
@@ -31,7 +34,8 @@ const estimateFee = async (
   } catch (err) {
     if (!opts.silent) {
       console.error(err)
-      toast.error('Cannot estimate fee.') // ? Some better msg
+      const msg = err instanceof Error ? err.message : 'Error estimating fee!';
+      toast.error(msg);
     }
     return null
   }
