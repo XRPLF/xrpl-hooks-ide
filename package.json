@@ -14,7 +14,7 @@
   "dependencies": {
     "@codingame/monaco-jsonrpc": "^0.3.1",
     "@codingame/monaco-languageclient": "^0.17.0",
-    "@eqlabs/assemblyscript": "^0.0.0-alpha.1676908005",
+    "@eqlabs/assemblyscript": "^0.0.0-alpha.1680097351",
     "@monaco-editor/react": "^4.4.5",
     "@octokit/core": "^3.5.1",
     "@radix-ui/colors": "^0.1.7",

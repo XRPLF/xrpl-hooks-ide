@@ -172,10 +172,10 @@
   resolved "https://registry.npmjs.org/@emotion/weak-memoize/-/weak-memoize-0.2.5.tgz"
   integrity sha512-6U71C2Wp7r5XtFtQzYrW5iKFT67OixrSxjI4MptCHzdSVlgabczzqLe0ZSgnub/5Kp4hSbpDB1tMytZY9pwxxA==
 
-"@eqlabs/assemblyscript@^0.0.0-alpha.1676908005":
-  version "0.0.0-alpha.1676908005"
-  resolved "https://registry.yarnpkg.com/@eqlabs/assemblyscript/-/assemblyscript-0.0.0-alpha.1676908005.tgz#19bec6d796b259cb13856e450a418ffcc2573968"
-  integrity sha512-b9gMjdoXJXGmCR8radlKCjVSi+paV9ZMN2jVFGvnEgN3awEF+iCoSx5kvqcRXHq3kn51caWmctQf4zCby7SYFQ==
+"@eqlabs/assemblyscript@^0.0.0-alpha.1680097351":
+  version "0.0.0-alpha.1680097351"
+  resolved "https://registry.yarnpkg.com/@eqlabs/assemblyscript/-/assemblyscript-0.0.0-alpha.1680097351.tgz#a5cb6e92b603390334c9a012523e69b1a3e1865c"
+  integrity sha512-kte3wC5uPvVEJpt0uVjlnfhhR7j8hs2eJzueb2VXonRmlht8Q3G9m38ocSJsUXmTc848FOf7DllEor3PXl4XOg==
   dependencies:
     binaryen "110.0.0-nightly.20221019"
     long "^5.2.0"
@@ -1482,7 +1482,7 @@ bignumber.js@^9.0.0:
 
 binaryen@110.0.0-nightly.20221019:
   version "110.0.0-nightly.20221019"
-  resolved "https://registry.npmjs.org/binaryen/-/binaryen-110.0.0-nightly.20221019.tgz"
+  resolved "https://registry.yarnpkg.com/binaryen/-/binaryen-110.0.0-nightly.20221019.tgz#3c458f114ea3eb34c64d47d6a03b9529199638c7"
   integrity sha512-BmuVpV5hpeU1G9ENWQUslwaxbmol810S3+yd7xVJap+vrSQz7ybXiirwya1FfYSFtuDbfGYPfQAObiW5O2PS1w==
 
 bindings@^1.3.0:
@@ -3733,7 +3733,7 @@ lodash@^4.17.15, lodash@^4.17.4:
 
 long@^5.2.0:
   version "5.2.1"
-  resolved "https://registry.npmjs.org/long/-/long-5.2.1.tgz"
+  resolved "https://registry.yarnpkg.com/long/-/long-5.2.1.tgz#e27595d0083d103d2fa2c20c7699f8e0c92b897f"
   integrity sha512-GKSNGeNAtw8IryjjkhZxuKB3JzlcLTwjtiQCHKvqQet81I93kXslhDQruGI/QsddO83mcDToBVy7GqGS/zYf/A==
 
 loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.4.0:
