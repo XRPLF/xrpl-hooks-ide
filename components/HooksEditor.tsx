@@ -94,6 +94,14 @@ const setMarkers = (monacoE: typeof monaco) => {
   })
 }
 
+const langWarnings: Record<string, { shown: boolean; message: string }> = {
+  ts: {
+    shown: false,
+    message:
+      'Typescript suppport for hooks is still in early planning stage, write actual hooks in C only for now!'
+  }
+}
+
 const HooksEditor = () => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>()
   const monacoRef = useRef<typeof monaco>()
@@ -124,6 +132,14 @@ const HooksEditor = () => {
   }, [])
 
   const file = snap.files[snap.active]
+
+  useEffect(() => {
+    let warning = langWarnings[file?.language || '']
+    if (warning && !warning.shown) {
+      alert(warning.message) // TODO Custom dialog.
+      warning.shown = true
+    }
+  }, [file])
 
   const renderNav = () => (
     <Tabs
@@ -221,7 +237,7 @@ const HooksEditor = () => {
                 monaco.languages.register({
                   id: 'text',
                   extensions: ['.txt'],
-                  mimetypes: ['text/plain'],
+                  mimetypes: ['text/plain']
                 })
                 MonacoServices.install(monaco)
                 const webSocket = createWebSocket(
@@ -240,7 +256,7 @@ const HooksEditor = () => {
                       try {
                         disposable.dispose()
                       } catch (err) {
-                        console.log('err', err)
+                        console.error('err', err)
                       }
                     })
                   }

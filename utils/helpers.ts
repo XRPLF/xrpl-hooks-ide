@@ -20,6 +20,12 @@ export const getFileExtention = (filename?: string): string | undefined => {
   return ext
 }
 
+export const getFileNamePart = (filename?: string): string | undefined => {
+  if (!filename) return
+  const name = (filename.includes('.') && filename.split('.').slice(0, -1).join(".")) || filename
+  return name
+}
+
 type Type = "array" | "undefined" | "object" | "string" | "number" | "bigint" | "boolean" | "symbol" | "function"
 type obj = Record<string | number | symbol, unknown>
 type arr = unknown[]

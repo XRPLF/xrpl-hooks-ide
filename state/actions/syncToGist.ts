@@ -55,7 +55,7 @@ export const syncToGist = async (session?: Session | null, createNewGist?: boole
         return toast.success('Updated to gist successfully!', { id: toastId })
       })
       .catch(err => {
-        console.log(err)
+        console.error(err)
         state.gistLoading = false
         return toast.error(`Could not update Gist, try again later!`, {
           id: toastId
@@ -85,7 +85,7 @@ export const syncToGist = async (session?: Session | null, createNewGist?: boole
         return toast.success('Created new gist successfully!', { id: toastId })
       })
       .catch(err => {
-        console.log(err)
+        console.error(err)
         state.gistLoading = false
         return toast.error(`Could not create Gist, try again later!`, {
           id: toastId

@@ -160,7 +160,7 @@ export const Log: FC<ILog> = ({
         )}
         <Pre>{message}</Pre>
         {link && (
-          <NextLink href={link} shallow passHref>
+          <NextLink legacyBehavior href={link} shallow passHref>
             <Link as="a">{linkText}</Link>
           </NextLink>
         )}

@@ -247,7 +247,7 @@ export const deleteHook = async (account: IAccount & { name?: string }) => {
       })
     }
   } catch (err) {
-    console.log(err)
+    console.error(err)
     toast.error('Error occurred while deleting hook', { id: toastId })
     state.deployLogs.push({
       type: 'error',

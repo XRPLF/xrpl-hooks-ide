@@ -1,8 +1,8 @@
 import { getFileExtention } from '../../utils/helpers'
-import state, { IFile } from '../index'
+import state, { IFile, ILang } from '../index'
 
-const languageMapping: Record<string, string | undefined> = {
-  ts: 'typescript',
+const languageMapping: Record<string, ILang | undefined> = {
+  ts: 'ts',
   js: 'javascript',
   md: 'markdown',
   c: 'c',
