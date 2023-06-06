@@ -231,7 +231,7 @@ const Navigation = () => {
                             as="a"
                             rel="noreferrer noopener"
                             target="_blank"
-                            href="https://xrpl-hooks.readme.io//docs"
+                            href="https://xrpl-hooks.readme.io/docs"
                           >
                             <ArrowUpRight size="15px" /> Hooks documentation
                           </Text>

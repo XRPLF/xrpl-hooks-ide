@@ -11,4 +11,4 @@ Like for loops, while loops must have a guard in their condition:
 ```
 
 <BR/>
-[Read more](https://xrpl-hooks.readme.io//docs/loops-and-guarding)
+[Read more](https://xrpl-hooks.readme.io/docs/loops-and-guarding)

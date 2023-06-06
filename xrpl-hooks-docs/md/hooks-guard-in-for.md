@@ -32,4 +32,4 @@ for(int i = 0; GUARD(3), i < 3; ++i) {
 This check will warn if the GUARD call is missing and also it will propose a GUARD value based on the for loop initial value,
 the increment and loop condition.
 
-[Read more](https://xrpl-hooks.readme.io//docs/loops-and-guarding)
+[Read more](https://xrpl-hooks.readme.io/docs/loops-and-guarding)
