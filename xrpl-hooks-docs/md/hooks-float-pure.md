@@ -1,7 +1,7 @@
 # hooks-float-pure
 
-Hooks can use floating-point values in XFL format, creating them from mantissa and exponent by calling the [float_set](https://xrpl-hooks.readme.io/v2.0/reference/float_set) function. If the mantissa and exponent never change, a more efficient way to do this is to precompute the floating-point value.
+Hooks can use floating-point values in XFL format, creating them from mantissa and exponent by calling the [float_set](https://xrpl-hooks.readme.io/reference/float_set) function. If the mantissa and exponent never change, a more efficient way to do this is to precompute the floating-point value.
 
 This check warns about calls of `float_set` with constant inputs and proposes to add a tracing statement showing the computed value (so that the user can use it to replace the call). In the special case of 0 mantissa and 0 exponent ("canonical 0"), a replacement value of 0 is proposed directly, with no need to trace it.
 
-[Read more](https://xrpl-hooks.readme.io/v2.0/docs/floating-point-numbers-xfl)
+[Read more](https://xrpl-hooks.readme.io/docs/floating-point-numbers-xfl)
