@@ -1,6 +1,6 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import { useSnapshot } from 'valtio'
-import state, { prepareState, transactionsData, TransactionState } from '../../state'
+import state, { transactionsData, TransactionState } from '../../state'
 import Text from '../Text'
 import { Flex, Link } from '..'
 import { showAlert } from '../../state/actions/showAlert'
@@ -11,26 +11,26 @@ import Monaco from '../Monaco'
 import type monaco from 'monaco-editor'
 
 interface JsonProps {
-  getJsonString?: (state?: Partial<TransactionState>) => string
+  getJsonString: (st?: Partial<TransactionState>) => string
+  saveEditorState: (val?: string, tt?: string) => TransactionState | undefined
   header?: string
   setState: (pTx?: Partial<TransactionState> | undefined) => void
   state: TransactionState
   estimateFee?: () => Promise<string | undefined>
 }
 
-export const TxJson: FC<JsonProps> = ({ getJsonString, state: txState, header, setState }) => {
+export const TxJson: FC<JsonProps> = ({
+  getJsonString,
+  state: txState,
+  header,
+  setState,
+  saveEditorState
+}) => {
   const { editorSettings, accounts } = useSnapshot(state)
-  const { editorValue, estimatedFee } = txState
+  const { editorValue, estimatedFee, editorIsSaved } = txState
   const [currTxType, setCurrTxType] = useState<string | undefined>(
     txState.selectedTransaction?.value
   )
-
-  useEffect(() => {
-    setState({
-      editorValue: getJsonString?.()
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   useEffect(() => {
     const parsed = parseJSON(editorValue)
@@ -44,29 +44,19 @@ export const TxJson: FC<JsonProps> = ({ getJsonString, state: txState, header, s
     }
   }, [editorValue])
 
-  const saveState = (value: string, transactionType?: string) => {
-    const tx = prepareState(value, transactionType)
-    if (tx) {
-      setState(tx)
-      setState({
-        editorValue: getJsonString?.(tx)
-      })
-    }
-  }
-
   const discardChanges = () => {
     showAlert('Confirm', {
       body: 'Are you sure to discard these changes?',
       confirmText: 'Yes',
       onCancel: () => {},
-      onConfirm: () => setState({ editorValue: getJsonString?.() })
+      onConfirm: () => setState({ editorValue: getJsonString() })
     })
   }
 
   const onExit = (value: string) => {
     const options = parseJSON(value)
     if (options) {
-      saveState(value, currTxType)
+      saveEditorState(value, currTxType)
       return
     }
     showAlert('Error!', {
@@ -163,8 +153,6 @@ export const TxJson: FC<JsonProps> = ({ getJsonString, state: txState, header, s
     })
   }, [getSchemas, monacoInst])
 
-  const hasUnsaved = useMemo(() => editorValue !== getJsonString?.(), [editorValue, getJsonString])
-
   return (
     <Monaco
       rootProps={{
@@ -174,7 +162,7 @@ export const TxJson: FC<JsonProps> = ({ getJsonString, state: txState, header, s
       id={header}
       height="100%"
       value={editorValue}
-      onChange={val => setState({ editorValue: val })}
+      onChange={val => setState({ editorValue: val, editorIsSaved: false })}
       onMount={(editor, monaco) => {
         editor.updateOptions({
           minimap: { enabled: false },
@@ -190,12 +178,12 @@ export const TxJson: FC<JsonProps> = ({ getJsonString, state: txState, header, s
         model?.onWillDispose(() => onExit(model.getValue()))
       }}
       overlay={
-        hasUnsaved ? (
+        !editorIsSaved ? (
           <Flex row align="center" css={{ fontSize: '$xs', color: '$textMuted', ml: 'auto' }}>
             <Text muted small>
               This file has unsaved changes.
             </Text>
-            <Link css={{ ml: '$1' }} onClick={() => saveState(editorValue || '', currTxType)}>
+            <Link css={{ ml: '$1' }} onClick={() => saveEditorState(editorValue, currTxType)}>
               save
             </Link>
             <Link css={{ ml: '$1' }} onClick={discardChanges}>

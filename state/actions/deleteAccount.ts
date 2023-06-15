@@ -14,11 +14,4 @@ export const deleteAccount = (addr?: string) => {
       if (!acc) return
       acc.label = acc.value
     })
-  transactionsState.transactions
-    .filter(t => t.state.selectedDestAccount?.value === addr)
-    .forEach(t => {
-      const acc = t.state.selectedDestAccount
-      if (!acc) return
-      acc.label = acc.value
-    })
 }
