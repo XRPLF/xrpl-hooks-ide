@@ -65,11 +65,5 @@ export const getInvokeOptions = (content?: string) => {
     label: opt,
     value: opt
   }))
-
-  // default
-  if (!invokeOptions.length) {
-    return []
-  }
-
   return invokeOptions
 }
