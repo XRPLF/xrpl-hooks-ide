@@ -83,50 +83,6 @@
     "Fee": "10"
   },
   {
-    "TransactionType": "NFTokenMint",
-    "Account": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
-    "Fee": "10",
-    "NFTokenTaxon": 0,
-    "URI": "697066733A2F2F516D614374444B5A4656767666756676626479346573745A626851483744586831364354707631686F776D424779"
-  },
-  {
-    "TransactionType": "NFTokenBurn",
-    "Account": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
-    "Fee": "10",
-    "NFTokenID": "000B013A95F14B0044F78A264E41713C64B5F89242540EE208C3098E00000D65"
-  },
-  {
-    "TransactionType": "NFTokenAcceptOffer",
-    "Account": "rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B",
-    "Fee": "10",
-    "NFTokenSellOffer": "A2FA1A9911FE2AEF83DAB05F437768E26A301EF899BD31EB85E704B3D528FF18",
-    "NFTokenBuyOffer": "4AAAEEA76E3C8148473CB3840CE637676E561FB02BD4CA22CA59729EA815B862",
-    "NFTokenBrokerFee": "10"
-  },
-  {
-    "TransactionType": "NFTokenCancelOffer",
-    "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
-    "Fee": "10",
-    "NFTokenOffers": {
-      "$type": "json",
-      "$value": [
-        "4AAAEEA76E3C8148473CB3840CE637676E561FB02BD4CA22CA59729EA815B862"
-      ]
-    }
-  },
-  {
-    "TransactionType": "NFTokenCreateOffer",
-    "Account": "rs8jBmmfpwgmrSPgwMsh7CvKRmRt1JTVSX",
-    "NFTokenID": "000100001E962F495F07A990F4ED55ACCFEEF365DBAA76B6A048C0A200000007",
-    "Amount": {
-      "$value": "100",
-      "$type": "xrp"
-    },
-    "Flags": "1",
-    "Destination": "",
-    "Fee": "10"
-  },
-  {
     "TransactionType": "OfferCancel",
     "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
     "Fee": "12",
@@ -251,8 +207,47 @@
     "Fee": "12"
   },
   {
-    "TransactionType": "UriToken",
-    "Fee": "12",
-    "URI": "697066733A2F2F516D614374444B5A4656767666756676626479346573745A626851483744586831364354707631686F776D424779"
+    "TransactionType": "URITokenMint",
+    "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+    "URI": "697066733A2F2F434944",
+    "Fee": "10",
+    "Sequence": 1
+  },
+  {
+    "TransactionType": "URITokenBurn",
+    "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+    "URITokenID": "B792B56B558C89C4E942E41B5DB66074E005CB198DB70C26C707AAC2FF5F74CB",
+    "Fee": "10",
+    "Sequence": 1
+  },
+  {
+    "TransactionType": "URITokenCreateSellOffer",
+    "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+    "URITokenID": "B792B56B558C89C4E942E41B5DB66074E005CB198DB70C26C707AAC2FF5F74CB",
+    "Destination": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+    "Amount": {
+      "$value": "100",
+      "$type": "xrp"
+    },
+    "Fee": "10",
+    "Sequence": 1
+  },
+  {
+    "TransactionType": "URITokenCancelSellOffer",
+    "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+    "URITokenID": "B792B56B558C89C4E942E41B5DB66074E005CB198DB70C26C707AAC2FF5F74CB",
+    "Fee": "10",
+    "Sequence": 1
+  },
+  {
+    "TransactionType": "URITokenBuy",
+    "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+    "URITokenID": "B792B56B558C89C4E942E41B5DB66074E005CB198DB70C26C707AAC2FF5F74CB",
+    "Amount": {
+      "$value": "100",
+      "$type": "xrp"
+    },
+    "Fee": "10",
+    "Sequence": 1
   }
 ]

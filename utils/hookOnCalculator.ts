@@ -8,6 +8,7 @@ export const tts = {
   ttOFFER_CREATE: 7,
   ttOFFER_CANCEL: 8,
   ttTICKET_CREATE: 10,
+  ttTICKET_CANCEL: 11,
   ttSIGNER_LIST_SET: 12,
   ttPAYCHAN_CREATE: 13,
   ttPAYCHAN_FUND: 14,
@@ -18,18 +19,20 @@ export const tts = {
   ttDEPOSIT_PREAUTH: 19,
   ttTRUST_SET: 20,
   ttACCOUNT_DELETE: 21,
-  ttHOOK_SET: 22,
-  ttNFTOKEN_MINT: 25,
-  ttNFTOKEN_BURN: 26,
-  ttNFTOKEN_CREATE_OFFER: 27,
-  ttNFTOKEN_CANCEL_OFFER: 28,
-  ttNFTOKEN_ACCEPT_OFFER: 29
+  ttSET_HOOK: 22,
+  ttURI_TOKEN_MINT: 45,
+  ttURI_TOKEN_BURN: 46,
+  ttURI_TOKEN_BUY: 47,
+  ttURI_TOKEN_CREATE_SELL_OFFER: 48,
+  ttURI_TOKEN_CANCEL_SELL_OFFER: 49,
+  ttIMPORT: 97,
+  ttINVOKE: 99
 }
 
 export type TTS = typeof tts
 
 const calculateHookOn = (arr: (keyof TTS)[]) => {
-  let s = '0x3e3ff5bf'
+  let s = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffbfffff'
   arr.forEach(n => {
     let v = BigInt(s)
     v ^= BigInt(1) << BigInt(tts[n])
