@@ -263,7 +263,7 @@
     "Destination": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
     "Amount": {
       "$value": "100",
-      "$type": "xrp"
+      "$type": "amount.xrp"
     },
     "Fee": "10",
     "Sequence": 1
@@ -281,7 +281,7 @@
     "URITokenID": "B792B56B558C89C4E942E41B5DB66074E005CB198DB70C26C707AAC2FF5F74CB",
     "Amount": {
       "$value": "100",
-      "$type": "xrp"
+      "$type": "amount.xrp"
     },
     "Fee": "10",
     "Sequence": 1
