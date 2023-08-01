@@ -72,13 +72,6 @@ export const getInvokeOptions = (content?: string) => {
     label: opt,
     value: opt
   }))
-
-  // default
-  if (!invokeOptions.length) {
-    const payment = transactionOptions.find(tx => tx.value === 'ttPAYMENT')
-    if (payment) return [payment]
-  }
-
   return invokeOptions
 }
 

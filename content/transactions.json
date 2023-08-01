@@ -294,8 +294,47 @@
     "Fee": "12"
   },
   {
-    "TransactionType": "UriToken",
-    "Fee": "12",
-    "URI": "697066733A2F2F516D614374444B5A4656767666756676626479346573745A626851483744586831364354707631686F776D424779"
+    "TransactionType": "URITokenMint",
+    "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+    "URI": "697066733A2F2F434944",
+    "Fee": "10",
+    "Sequence": 1
+  },
+  {
+    "TransactionType": "URITokenBurn",
+    "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+    "URITokenID": "B792B56B558C89C4E942E41B5DB66074E005CB198DB70C26C707AAC2FF5F74CB",
+    "Fee": "10",
+    "Sequence": 1
+  },
+  {
+    "TransactionType": "URITokenCreateSellOffer",
+    "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+    "URITokenID": "B792B56B558C89C4E942E41B5DB66074E005CB198DB70C26C707AAC2FF5F74CB",
+    "Destination": "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+    "Amount": {
+      "$value": "100",
+      "$type": "xrp"
+    },
+    "Fee": "10",
+    "Sequence": 1
+  },
+  {
+    "TransactionType": "URITokenCancelSellOffer",
+    "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+    "URITokenID": "B792B56B558C89C4E942E41B5DB66074E005CB198DB70C26C707AAC2FF5F74CB",
+    "Fee": "10",
+    "Sequence": 1
+  },
+  {
+    "TransactionType": "URITokenBuy",
+    "Account": "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+    "URITokenID": "B792B56B558C89C4E942E41B5DB66074E005CB198DB70C26C707AAC2FF5F74CB",
+    "Amount": {
+      "$value": "100",
+      "$type": "xrp"
+    },
+    "Fee": "10",
+    "Sequence": 1
   }
 ]

@@ -83,6 +83,6 @@
     "typescript": "4.4.4"
   },
   "resolutions": {
-    "ripple-binary-codec": "=1.4.2"
+    "ripple-binary-codec": "=1.6.0"
   }
 }
