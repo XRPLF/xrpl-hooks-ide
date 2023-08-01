@@ -47,6 +47,9 @@ export const transactionFlags: { [key: /* TransactionType */ string]: Flags } = 
         tfSetFreeze: '0x00100000',
         tfClearFreeze: '0x00200000',
     },
+    URITokenMint: {
+        tfBurnable: '0x00000001',
+    },
 }
 
 export const getFlags = (tt?: string) => {
